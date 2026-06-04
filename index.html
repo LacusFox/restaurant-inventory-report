@@ -1,0 +1,848 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>餐厅库存软件竞对分析｜3分钟重点版 V6</title>
+<style>
+:root{--bg:#f5f7fb;--ink:#111827;--muted:#667085;--line:#e6e9ef;--blue:#2563eb;--dark:#0f172a;--amber:#d97706;--green:#059669;--red:#dc2626}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",Arial,sans-serif;line-height:1.45}
+.hero{background:linear-gradient(135deg,#0f172a 0%,#1d4ed8 65%,#06b6d4 100%);color:#fff;padding:58px 36px}
+.wrap{max-width:1280px;margin:0 auto}
+.kicker{font-size:14px;opacity:.82;margin-bottom:10px}
+h1{font-size:50px;line-height:1.08;margin:0 0 18px;font-weight:950;letter-spacing:-.03em}
+.hero .big{font-size:30px;font-weight:900;max-width:1080px;line-height:1.25}
+.hero .sub{font-size:16px;opacity:.84;margin-top:12px}
+.section{max-width:1280px;margin:22px auto;padding:28px;background:#fff;border:1px solid var(--line);border-radius:24px;box-shadow:0 10px 28px rgba(15,23,42,.06)}
+.section-title{display:flex;justify-content:space-between;align-items:end;gap:14px;margin-bottom:18px}
+.section-title h2{margin:0;font-size:30px;line-height:1.15;font-weight:950;letter-spacing:-.02em}
+.section-title span{color:var(--muted);font-size:14px;font-weight:700}
+.groups{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+.group-card{padding:18px;border:1px solid var(--line);border-radius:18px;background:linear-gradient(180deg,#fff,#f8fbff)}
+.group-card div{font-size:12px;color:var(--blue);font-weight:800;margin-bottom:6px}
+.group-card b{display:block;font-size:20px;margin-bottom:6px}
+.group-card span{display:block;color:var(--muted);font-size:14px}
+.flow{display:grid;grid-template-columns:repeat(5,1fr);gap:14px}
+.flow-step{padding:18px;border:1px solid var(--line);border-radius:18px;background:linear-gradient(180deg,#fff,#f8fbff)}
+.flow-step b{display:block;font-size:18px;line-height:1.25;margin-bottom:10px}
+.flow-step span{display:inline-flex;padding:8px 12px;border-radius:999px;background:#eff6ff;color:#1d4ed8;font-weight:900}
+.persona-grid{display:grid;grid-template-columns:1fr;gap:18px}
+.persona-card{display:grid;grid-template-columns:minmax(336px, .7fr) 1fr;gap:20px;border:1px solid var(--line);border-radius:24px;padding:18px;background:#fcfdff;align-items:center}
+.persona-image-wrap img{width:100%;aspect-ratio:1/1;object-fit:cover;border-radius:20px;display:block;border:1px solid #edf1f7;box-shadow:0 8px 22px rgba(15,23,42,.08)}
+.persona-info{display:flex;flex-direction:column;gap:12px}
+.persona-title{font-size:31px;font-weight:950;line-height:1.05;letter-spacing:-.02em}
+.persona-need{margin:0;color:#334155;font-size:17px;font-weight:700}
+.persona-sub{font-size:13px;color:var(--muted);font-weight:900;text-transform:uppercase;letter-spacing:.04em}
+.brand-list{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.brand-card{display:flex;align-items:center;gap:10px;padding:13px;border-radius:18px;border:1px solid color-mix(in srgb,var(--brand) 32%,white);background:linear-gradient(180deg,color-mix(in srgb,var(--brand) 9%,white),#fff);min-height:76px}
+.brand-logo{flex:0 0 auto;width:46px;height:46px;border-radius:14px;background:var(--brand);color:#fff;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:950;box-shadow:0 6px 15px color-mix(in srgb,var(--brand) 26%,transparent)}
+.brand-name{font-weight:950;font-size:16px;line-height:1.1}
+.brand-fit{font-size:12px;color:#475467;font-weight:700;line-height:1.25;margin-top:4px}
+.table-wrap{overflow:auto;border:1px solid var(--line);border-radius:18px}
+table{width:100%;border-collapse:collapse;min-width:980px}
+th,td{padding:16px 14px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
+th{background:#f8fafc;font-size:13px;color:#475467;text-transform:none;letter-spacing:.01em}
+td b{font-size:16px}
+.price{display:inline-flex;align-items:center;padding:6px 10px;border-radius:999px;background:#eff6ff;color:#1d4ed8;font-weight:900;font-size:13px}
+.price.custom{background:#fff7ed;color:var(--amber)}
+.product-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.product-tile{display:grid;grid-template-columns:1fr 1.2fr;gap:14px;align-items:center;padding:16px;border:1px solid var(--line);border-radius:22px;background:#fcfdff}
+.prod-text{padding:6px}
+.prod-type{display:inline-block;font-size:12px;font-weight:800;color:var(--blue);background:#eff6ff;border-radius:999px;padding:6px 10px;margin-bottom:10px}
+.product-tile h3{margin:0 0 8px;font-size:28px;font-weight:950;line-height:1.08}
+.punch{margin:0 0 12px;font-size:18px;font-weight:800;color:#111827}
+.mini{display:flex;flex-wrap:wrap;gap:8px;align-items:center;color:#475467;font-size:13px;font-weight:700}
+.scene-figure{margin:0}
+.scene-figure img{width:100%;display:block;border-radius:18px;border:1px solid #edf1f7}
+.good div+div{margin-top:8px}
+.good{color:#065f46;font-weight:700}
+.bad{color:#991b1b;font-weight:700}
+.final-call{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.call{padding:22px;border-radius:22px;color:#fff}
+.call.primary{background:linear-gradient(135deg,#2563eb,#06b6d4)}
+.call.secondary{background:linear-gradient(135deg,#7c3aed,#ec4899)}
+.call h3{margin:0 0 8px;font-size:22px}
+.call p{margin:0;font-size:16px;font-weight:700;line-height:1.45}
+.footer{text-align:center;color:var(--muted);font-size:12px;padding:20px 0 34px}
+@media (max-width:1080px){
+  .groups{grid-template-columns:repeat(2,1fr)}
+  .product-grid{grid-template-columns:1fr}
+  .flow{grid-template-columns:repeat(2,1fr)}
+  .brand-list{grid-template-columns:1fr}
+}
+@media (max-width:760px){
+  .hero{padding:38px 20px}
+  h1{font-size:36px}
+  .hero .big{font-size:22px}
+  .section{margin:14px;padding:18px}
+  .section-title{flex-direction:column;align-items:flex-start}
+  .persona-card,.product-tile{grid-template-columns:1fr}
+  .groups,.flow,.final-call{grid-template-columns:1fr}
+}
+@media print{
+  body{background:#fff}
+  .section,.persona-card,.product-tile{break-inside:avoid}
+}
+
+.zoomable{display:block;position:relative;cursor:zoom-in;text-decoration:none}
+.zoomable:after{content:"点击放大";position:absolute;right:12px;bottom:12px;background:rgba(15,23,42,.78);color:#fff;font-size:12px;font-weight:800;padding:6px 10px;border-radius:999px;opacity:0;transform:translateY(4px);transition:.18s ease}
+.zoomable:hover:after{opacity:1;transform:translateY(0)}
+.zoomable img{transition:transform .18s ease, box-shadow .18s ease}
+.zoomable:hover img{transform:scale(1.012);box-shadow:0 14px 34px rgba(15,23,42,.16)}
+.persona-image-wrap{min-height:0}
+.persona-image-wrap .zoomable img{aspect-ratio:1/1;object-fit:cover}
+
+
+.persona-image-wrap{max-width:360px;width:100%;justify-self:center}
+.persona-card{align-items:center}
+
+
+.zoomable{appearance:none;border:0;background:transparent;padding:0;margin:0;width:100%;display:block;position:relative;cursor:zoom-in;text-align:left}
+.zoomable:focus-visible{outline:3px solid #2563eb;outline-offset:4px;border-radius:22px}
+.zoom-modal{position:fixed;inset:0;z-index:9999;display:none;align-items:center;justify-content:center;background:rgba(15,23,42,.82);padding:28px}
+.zoom-modal.active{display:flex}
+.zoom-modal-inner{position:relative;max-width:min(92vw,1100px);max-height:90vh}
+.zoom-modal img{display:block;max-width:100%;max-height:86vh;border-radius:22px;box-shadow:0 28px 80px rgba(0,0,0,.45);background:#fff}
+.zoom-close{position:absolute;right:-14px;top:-14px;width:44px;height:44px;border:0;border-radius:999px;background:#fff;color:#0f172a;font-size:26px;font-weight:900;cursor:pointer;box-shadow:0 12px 28px rgba(0,0,0,.25);line-height:1}
+.zoom-caption{margin-top:10px;text-align:center;color:#fff;font-size:14px;font-weight:800}
+body.zoom-locked{overflow:hidden}
+
+</style>
+</head>
+<body>
+<header class="hero">
+  <div class="wrap">
+    <div class="kicker">餐厅库存 / 成本 / 发票 / 采购软件竞对 · 3分钟重点版 V6</div>
+    <h1>老板买的不是“库存软件”<br>而是“成本可见 + 经营闭环”</h1>
+    <div class="big">发票 / 采购 → 库存 → 菜品成本 → P&L → 调价 / 换供应商 / 控损耗</div>
+    <div class="sub">新增独立模块：8 类餐厅用户画像 × 推荐库存/成本管理系统。</div>
+  </div>
+</header>
+
+<section class="section">
+  <div class="section-title"><h2>01｜供应商地图</h2><span>先看供应商类型，再看产品</span></div>
+  <div class="groups"><div class='group-card'><div>老板成本雷达</div><b>MarginEdge</b><span>发票 → 成本 → Daily P&amp;L</span></div><div class='group-card'><div>库存订货工具</div><b>MarketMan / BlueCart</b><span>盘点 → 订货 → 供应商</span></div><div class='group-card'><div>POS原生</div><b>xtraCHEF / Lightspeed</b><span>依赖 Toast 或 Lightspeed 生态</span></div><div class='group-card'><div>总部ERP</div><b>Restaurant365 / Compeat</b><span>财务 + 库存 + 劳动力</span></div><div class='group-card'><div>大型连锁运营</div><b>Crunchtime</b><span>SOP + 执行 + 合规</span></div><div class='group-card'><div>酒水专项</div><b>WISK / BevSpot / Craftable</b><span>酒水损耗 + 采购/AP</span></div><div class='group-card'><div>菜谱菜单治理</div><b>Apicbase</b><span>配方 + 成本 + 菜单毛利</span></div></div>
+</section>
+
+
+<section class="section">
+  <div class="section-title"><h2>02｜餐馆老板的决策逻辑</h2><span>答案直接看产品名</span></div>
+  <div class="flow"><div class="flow-step"><b>已经用 Toast？</b><span>xtraCHEF</span></div><div class="flow-step"><b>最烦发票 / 每日成本？</b><span>MarginEdge</span></div><div class="flow-step"><b>最烦盘点 / 订货？</b><span>MarketMan</span></div><div class="flow-step"><b>酒水损耗严重？</b><span>WISK / BevSpot</span></div><div class="flow-step"><b>总部要财务闭环？</b><span>Restaurant365 / Compeat</span></div><div class="flow-step"><b>大型连锁管执行？</b><span>Crunchtime</span></div><div class="flow-step"><b>酒吧 / 采购 AP 复杂？</b><span>Craftable</span></div><div class="flow-step"><b>还没选 POS？</b><span>Lightspeed</span></div><div class="flow-step"><b>只想统一下单？</b><span>BlueCart</span></div><div class="flow-step"><b>菜谱标准化最重要？</b><span>Apicbase</span></div></div>
+</section>
+
+
+<section class="section">
+  <div class="section-title"><h2>03｜餐厅用户画像</h2><span>8 类餐厅分别更可能选择的库存/成本系统</span></div>
+  <div class="persona-grid">
+    <section class="persona-card">
+      <div class="persona-image-wrap">
+        <button class="zoomable" type="button" data-full="restaurant_persona_images_v3/chain_milk_tea.png" data-alt="连锁奶茶店" aria-label="点击放大图片"><img src="restaurant_persona_images_v3/chain_milk_tea.png" alt="连锁奶茶店" loading="lazy"></button>
+      </div>
+      <div class="persona-info">
+        <div class="persona-title">连锁奶茶店</div>
+        <p class="persona-need">典型需求：多门店 SKU、原料/包材消耗、加盟或区域门店标准化。</p>
+        <div class="persona-sub">更可能选择的库存/成本管理系统</div>
+        <div class="brand-list">
+          
+    <div class="brand-card" style="--brand:#0ea5e9">
+      <div class="brand-logo">MM</div>
+      <div>
+        <div class="brand-name">MarketMan</div>
+        <div class="brand-fit">库存 + 订货 + 供应商</div>
+      </div>
+    </div>
+    
+    <div class="brand-card" style="--brand:#2563eb">
+      <div class="brand-logo">ME</div>
+      <div>
+        <div class="brand-name">MarginEdge</div>
+        <div class="brand-fit">发票自动化 + Daily P&amp;L</div>
+      </div>
+    </div>
+    
+    <div class="brand-card" style="--brand:#f59e0b">
+      <div class="brand-logo">LS</div>
+      <div>
+        <div class="brand-name">Lightspeed</div>
+        <div class="brand-fit">POS + 基础库存</div>
+      </div>
+    </div>
+    
+        </div>
+      </div>
+    </section>
+    
+    <section class="persona-card">
+      <div class="persona-image-wrap">
+        <button class="zoomable" type="button" data-full="restaurant_persona_images_v3/small_fastfood_chain.png" data-alt="小型快餐连锁店" aria-label="点击放大图片"><img src="restaurant_persona_images_v3/small_fastfood_chain.png" alt="小型快餐连锁店" loading="lazy"></button>
+      </div>
+      <div class="persona-info">
+        <div class="persona-title">小型快餐连锁店</div>
+        <p class="persona-need">典型需求：标准化出餐、订货补货、低库存预警、门店复制。</p>
+        <div class="persona-sub">更可能选择的库存/成本管理系统</div>
+        <div class="brand-list">
+          
+    <div class="brand-card" style="--brand:#0ea5e9">
+      <div class="brand-logo">MM</div>
+      <div>
+        <div class="brand-name">MarketMan</div>
+        <div class="brand-fit">库存 + 订货 + 供应商</div>
+      </div>
+    </div>
+    
+    <div class="brand-card" style="--brand:#f59e0b">
+      <div class="brand-logo">LS</div>
+      <div>
+        <div class="brand-name">Lightspeed</div>
+        <div class="brand-fit">POS + 基础库存</div>
+      </div>
+    </div>
+    
+    <div class="brand-card" style="--brand:#2563eb">
+      <div class="brand-logo">ME</div>
+      <div>
+        <div class="brand-name">MarginEdge</div>
+        <div class="brand-fit">发票自动化 + Daily P&amp;L</div>
+      </div>
+    </div>
+    
+        </div>
+      </div>
+    </section>
+    
+    <section class="persona-card">
+      <div class="persona-image-wrap">
+        <button class="zoomable" type="button" data-full="restaurant_persona_images_v3/large_buffet_chain.png" data-alt="大型自助餐连锁" aria-label="点击放大图片"><img src="restaurant_persona_images_v3/large_buffet_chain.png" alt="大型自助餐连锁" loading="lazy"></button>
+      </div>
+      <div class="persona-info">
+        <div class="persona-title">大型自助餐连锁</div>
+        <p class="persona-need">典型需求：SKU 多、损耗高、食材周转快，需要总部和门店双层管控。</p>
+        <div class="persona-sub">更可能选择的库存/成本管理系统</div>
+        <div class="brand-list">
+          
+    <div class="brand-card" style="--brand:#1d4ed8">
+      <div class="brand-logo">R365</div>
+      <div>
+        <div class="brand-name">Restaurant365</div>
+        <div class="brand-fit">财务 + 库存 + 劳动力</div>
+      </div>
+    </div>
+    
+    <div class="brand-card" style="--brand:#7c3aed">
+      <div class="brand-logo">CT</div>
+      <div>
+        <div class="brand-name">Crunchtime</div>
+        <div class="brand-fit">运营标准化 + 劳动力</div>
+      </div>
+    </div>
+    
+    <div class="brand-card" style="--brand:#0f766e">
+      <div class="brand-logo">CR</div>
+      <div>
+        <div class="brand-name">Craftable</div>
+        <div class="brand-fit">采购 + AP + 食材酒水</div>
+      </div>
+    </div>
+    
+        </div>
+      </div>
+    </section>
+    
+    <section class="persona-card">
+      <div class="persona-image-wrap">
+        <button class="zoomable" type="button" data-full="restaurant_persona_images_v3/food_court_fastfood.png" data-alt="FoodCourt快餐店" aria-label="点击放大图片"><img src="restaurant_persona_images_v3/food_court_fastfood.png" alt="FoodCourt快餐店" loading="lazy"></button>
+      </div>
+      <div class="persona-info">
+        <div class="persona-title">FoodCourt快餐店</div>
+        <p class="persona-need">典型需求：外带为主、空间小、点单快、库存轻量但周转快。</p>
+        <div class="persona-sub">更可能选择的库存/成本管理系统</div>
+        <div class="brand-list">
+          
+    <div class="brand-card" style="--brand:#f59e0b">
+      <div class="brand-logo">LS</div>
+      <div>
+        <div class="brand-name">Lightspeed</div>
+        <div class="brand-fit">POS + 基础库存</div>
+      </div>
+    </div>
+    
+    <div class="brand-card" style="--brand:#2563eb">
+      <div class="brand-logo">ME</div>
+      <div>
+        <div class="brand-name">MarginEdge</div>
+        <div class="brand-fit">发票自动化 + Daily P&amp;L</div>
+      </div>
+    </div>
+    
+    <div class="brand-card" style="--brand:#0284c7">
+      <div class="brand-logo">BC</div>
+      <div>
+        <div class="brand-name">BlueCart</div>
+        <div class="brand-fit">线上下单 + 供应商协同</div>
+      </div>
+    </div>
+    
+        </div>
+      </div>
+    </section>
+    
+    <section class="persona-card">
+      <div class="persona-image-wrap">
+        <button class="zoomable" type="button" data-full="restaurant_persona_images_v3/independent_cafe_light_meal.png" data-alt="独立咖啡轻食店" aria-label="点击放大图片"><img src="restaurant_persona_images_v3/independent_cafe_light_meal.png" alt="独立咖啡轻食店" loading="lazy"></button>
+      </div>
+      <div class="persona-info">
+        <div class="persona-title">独立咖啡轻食店</div>
+        <p class="persona-need">典型需求：咖啡豆、轻食食材、包材和日常发票成本要看得清。</p>
+        <div class="persona-sub">更可能选择的库存/成本管理系统</div>
+        <div class="brand-list">
+          
+    <div class="brand-card" style="--brand:#2563eb">
+      <div class="brand-logo">ME</div>
+      <div>
+        <div class="brand-name">MarginEdge</div>
+        <div class="brand-fit">发票自动化 + Daily P&amp;L</div>
+      </div>
+    </div>
+    
+    <div class="brand-card" style="--brand:#f59e0b">
+      <div class="brand-logo">LS</div>
+      <div>
+        <div class="brand-name">Lightspeed</div>
+        <div class="brand-fit">POS + 基础库存</div>
+      </div>
+    </div>
+    
+    <div class="brand-card" style="--brand:#0ea5e9">
+      <div class="brand-logo">MM</div>
+      <div>
+        <div class="brand-name">MarketMan</div>
+        <div class="brand-fit">库存 + 订货 + 供应商</div>
+      </div>
+    </div>
+    
+        </div>
+      </div>
+    </section>
+    
+    <section class="persona-card">
+      <div class="persona-image-wrap">
+        <button class="zoomable" type="button" data-full="restaurant_persona_images_v3/mid_japanese_restaurant.png" data-alt="中型日料店" aria-label="点击放大图片"><img src="restaurant_persona_images_v3/mid_japanese_restaurant.png" alt="中型日料店" loading="lazy"></button>
+      </div>
+      <div class="persona-info">
+        <div class="persona-title">中型日料店</div>
+        <p class="persona-need">典型需求：海鲜成本高、菜谱复杂、损耗敏感，需要订货和毛利分析。</p>
+        <div class="persona-sub">更可能选择的库存/成本管理系统</div>
+        <div class="brand-list">
+          
+    <div class="brand-card" style="--brand:#0ea5e9">
+      <div class="brand-logo">MM</div>
+      <div>
+        <div class="brand-name">MarketMan</div>
+        <div class="brand-fit">库存 + 订货 + 供应商</div>
+      </div>
+    </div>
+    
+    <div class="brand-card" style="--brand:#2563eb">
+      <div class="brand-logo">ME</div>
+      <div>
+        <div class="brand-name">MarginEdge</div>
+        <div class="brand-fit">发票自动化 + Daily P&amp;L</div>
+      </div>
+    </div>
+    
+    <div class="brand-card" style="--brand:#8b5cf6">
+      <div class="brand-logo">AP</div>
+      <div>
+        <div class="brand-name">Apicbase</div>
+        <div class="brand-fit">菜谱成本 + 菜单利润</div>
+      </div>
+    </div>
+    
+        </div>
+      </div>
+    </section>
+    
+    <section class="persona-card">
+      <div class="persona-image-wrap">
+        <button class="zoomable" type="button" data-full="restaurant_persona_images_v3/large_chinese_banquet.png" data-alt="大型中餐宴会" aria-label="点击放大图片"><img src="restaurant_persona_images_v3/large_chinese_banquet.png" alt="大型中餐宴会" loading="lazy"></button>
+      </div>
+      <div class="persona-info">
+        <div class="persona-title">大型中餐宴会</div>
+        <p class="persona-need">典型需求：采购复杂、宴会备货量大、人工和食材成本都要管。</p>
+        <div class="persona-sub">更可能选择的库存/成本管理系统</div>
+        <div class="brand-list">
+          
+    <div class="brand-card" style="--brand:#1d4ed8">
+      <div class="brand-logo">R365</div>
+      <div>
+        <div class="brand-name">Restaurant365</div>
+        <div class="brand-fit">财务 + 库存 + 劳动力</div>
+      </div>
+    </div>
+    
+    <div class="brand-card" style="--brand:#475467">
+      <div class="brand-logo">CP</div>
+      <div>
+        <div class="brand-name">Compeat</div>
+        <div class="brand-fit">Prime Cost + 财务</div>
+      </div>
+    </div>
+    
+    <div class="brand-card" style="--brand:#7c3aed">
+      <div class="brand-logo">CT</div>
+      <div>
+        <div class="brand-name">Crunchtime</div>
+        <div class="brand-fit">运营标准化 + 劳动力</div>
+      </div>
+    </div>
+    
+        </div>
+      </div>
+    </section>
+    
+    <section class="persona-card">
+      <div class="persona-image-wrap">
+        <button class="zoomable" type="button" data-full="restaurant_persona_images_v3/bar_gastropub.png" data-alt="酒吧餐吧" aria-label="点击放大图片"><img src="restaurant_persona_images_v3/bar_gastropub.png" alt="酒吧餐吧" loading="lazy"></button>
+      </div>
+      <div class="persona-info">
+        <div class="persona-title">酒吧餐吧</div>
+        <p class="persona-need">典型需求：酒水损耗、酒瓶盘点、食材和酒水双库存。</p>
+        <div class="persona-sub">更可能选择的库存/成本管理系统</div>
+        <div class="brand-list">
+          
+    <div class="brand-card" style="--brand:#be123c">
+      <div class="brand-logo">WK</div>
+      <div>
+        <div class="brand-name">WISK</div>
+        <div class="brand-fit">酒水盘点 + 损耗</div>
+      </div>
+    </div>
+    
+    <div class="brand-card" style="--brand:#059669">
+      <div class="brand-logo">BS</div>
+      <div>
+        <div class="brand-name">BevSpot</div>
+        <div class="brand-fit">酒水 COGS + 订货</div>
+      </div>
+    </div>
+    
+    <div class="brand-card" style="--brand:#0f766e">
+      <div class="brand-logo">CR</div>
+      <div>
+        <div class="brand-name">Craftable</div>
+        <div class="brand-fit">采购 + AP + 食材酒水</div>
+      </div>
+    </div>
+    
+        </div>
+      </div>
+    </section>
+    </div>
+</section>
+
+<section class="section">
+  <div class="section-title"><h2>04｜竞对总表</h2><span>当前客户量 & 对接 POS 数量</span></div>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>产品</th>
+          <th>适合谁</th>
+          <th>主打能力</th>
+          <th>当前客户量</th>
+          <th>POS 数量</th>
+          <th>价格</th>
+        </tr>
+      </thead>
+      <tbody>
+    <tr>
+      <td><b>Restaurant365</b></td>
+      <td>多门店总部</td>
+      <td>财务 + 库存 + 劳动力</td>
+      <td>40,000+ 门店</td>
+      <td>136</td>
+      <td><span class='price custom'>定制化</span></td>
+    </tr>
+    
+    <tr>
+      <td><b>Crunchtime</b></td>
+      <td>大型连锁</td>
+      <td>运营标准化 + 劳动力</td>
+      <td>850+ 品牌 / 150,000+ 门店</td>
+      <td>25+</td>
+      <td><span class='price custom'>定制化</span></td>
+    </tr>
+    
+    <tr>
+      <td><b>Lightspeed</b></td>
+      <td>轻库存 / 未定POS</td>
+      <td>POS + 基础库存</td>
+      <td>全球数万门店</td>
+      <td>原生/扩展</td>
+      <td><span class='price '>$89+</span></td>
+    </tr>
+    
+    <tr>
+      <td><b>MarginEdge</b></td>
+      <td>单店 / 小连锁</td>
+      <td>发票自动化 + Daily P&amp;L</td>
+      <td>11,000+ 餐厅</td>
+      <td>50+</td>
+      <td><span class='price '>$330+</span></td>
+    </tr>
+    
+    <tr>
+      <td><b>MarketMan</b></td>
+      <td>库存订货型门店</td>
+      <td>库存 + 订货 + 供应商</td>
+      <td>12,000+ 餐厅</td>
+      <td>30+</td>
+      <td><span class='price '>$199+</span></td>
+    </tr>
+    
+    <tr>
+      <td><b>Apicbase</b></td>
+      <td>标准化菜单 / 多店</td>
+      <td>菜谱成本 + 菜单利润</td>
+      <td>1,000+ 品牌站点</td>
+      <td>42</td>
+      <td><span class='price custom'>定制化</span></td>
+    </tr>
+    
+    <tr>
+      <td><b>xtraCHEF</b></td>
+      <td>Toast 用户</td>
+      <td>Toast 原生成本 / 发票</td>
+      <td>Toast 生态 100,000+</td>
+      <td>Toast 原生</td>
+      <td><span class='price '>Toast套餐</span></td>
+    </tr>
+    
+    <tr>
+      <td><b>BlueCart</b></td>
+      <td>订货协同</td>
+      <td>线上下单 + 供应商协同</td>
+      <td>未公开</td>
+      <td>未公开</td>
+      <td><span class='price '>$199+</span></td>
+    </tr>
+    
+    <tr>
+      <td><b>Compeat</b></td>
+      <td>中型集团</td>
+      <td>Prime Cost + 财务</td>
+      <td>未公开</td>
+      <td>未公开</td>
+      <td><span class='price custom'>定制化</span></td>
+    </tr>
+    
+    <tr>
+      <td><b>WISK</b></td>
+      <td>酒水重型门店</td>
+      <td>酒水盘点 + 损耗</td>
+      <td>未公开</td>
+      <td>50</td>
+      <td><span class='price '>$189+</span></td>
+    </tr>
+    
+    <tr>
+      <td><b>BevSpot</b></td>
+      <td>纯酒水场景</td>
+      <td>酒水 COGS + 订货</td>
+      <td>未公开</td>
+      <td>16</td>
+      <td><span class='price '>$100+</span></td>
+    </tr>
+    
+    <tr>
+      <td><b>Craftable</b></td>
+      <td>酒店 / 酒吧 / 集团</td>
+      <td>采购 + AP + 食材酒水</td>
+      <td>1,000+ 品牌站点</td>
+      <td>60+</td>
+      <td><span class='price custom'>定制化</span></td>
+    </tr>
+    </tbody>
+    </table>
+  </div>
+</section>
+
+<section class="section">
+  <div class="section-title"><h2>05｜逐个产品场景图</h2><span>产品如何被餐厅角色使用</span></div>
+  <div class="product-grid">
+    <section class="product-tile">
+      <div class="prod-text">
+        <div class="prod-type">单店 / 小连锁</div>
+        <h3>MarginEdge</h3>
+        <p class="punch">发票自动化 + Daily P&amp;L</p>
+        <div class="mini"><span>客户量：11,000+ 餐厅</span><span class='price '>$330+</span></div>
+      </div>
+      <figure class="scene-figure"><button class="zoomable" type="button" data-full="competitor_scene_images_v3/marginedge.png" data-alt="MarginEdge 场景图" aria-label="点击放大图片"><img src="competitor_scene_images_v3/marginedge.png" alt="MarginEdge 场景图" loading="lazy"></button></figure>
+    </section>
+    
+    <section class="product-tile">
+      <div class="prod-text">
+        <div class="prod-type">库存订货型门店</div>
+        <h3>MarketMan</h3>
+        <p class="punch">库存 + 订货 + 供应商</p>
+        <div class="mini"><span>客户量：12,000+ 餐厅</span><span class='price '>$199+</span></div>
+      </div>
+      <figure class="scene-figure"><button class="zoomable" type="button" data-full="competitor_scene_images_v3/marketman.png" data-alt="MarketMan 场景图" aria-label="点击放大图片"><img src="competitor_scene_images_v3/marketman.png" alt="MarketMan 场景图" loading="lazy"></button></figure>
+    </section>
+    
+    <section class="product-tile">
+      <div class="prod-text">
+        <div class="prod-type">Toast 用户</div>
+        <h3>xtraCHEF</h3>
+        <p class="punch">Toast 原生成本 / 发票</p>
+        <div class="mini"><span>客户量：Toast 生态 100,000+</span><span class='price '>Toast套餐</span></div>
+      </div>
+      <figure class="scene-figure"><button class="zoomable" type="button" data-full="competitor_scene_images_v3/xtrachef.png" data-alt="xtraCHEF 场景图" aria-label="点击放大图片"><img src="competitor_scene_images_v3/xtrachef.png" alt="xtraCHEF 场景图" loading="lazy"></button></figure>
+    </section>
+    
+    <section class="product-tile">
+      <div class="prod-text">
+        <div class="prod-type">多门店总部</div>
+        <h3>Restaurant365</h3>
+        <p class="punch">财务 + 库存 + 劳动力</p>
+        <div class="mini"><span>客户量：40,000+ 门店</span><span class='price custom'>定制化</span></div>
+      </div>
+      <figure class="scene-figure"><button class="zoomable" type="button" data-full="competitor_scene_images_v3/restaurant365.png" data-alt="Restaurant365 场景图" aria-label="点击放大图片"><img src="competitor_scene_images_v3/restaurant365.png" alt="Restaurant365 场景图" loading="lazy"></button></figure>
+    </section>
+    
+    <section class="product-tile">
+      <div class="prod-text">
+        <div class="prod-type">大型连锁</div>
+        <h3>Crunchtime</h3>
+        <p class="punch">运营标准化 + 劳动力</p>
+        <div class="mini"><span>客户量：850+ 品牌 / 150,000+ 门店</span><span class='price custom'>定制化</span></div>
+      </div>
+      <figure class="scene-figure"><button class="zoomable" type="button" data-full="competitor_scene_images_v3/crunchtime.png" data-alt="Crunchtime 场景图" aria-label="点击放大图片"><img src="competitor_scene_images_v3/crunchtime.png" alt="Crunchtime 场景图" loading="lazy"></button></figure>
+    </section>
+    
+    <section class="product-tile">
+      <div class="prod-text">
+        <div class="prod-type">中型集团</div>
+        <h3>Compeat</h3>
+        <p class="punch">Prime Cost + 财务</p>
+        <div class="mini"><span>客户量：未公开</span><span class='price custom'>定制化</span></div>
+      </div>
+      <figure class="scene-figure"><button class="zoomable" type="button" data-full="competitor_scene_images_v3/compeat.png" data-alt="Compeat 场景图" aria-label="点击放大图片"><img src="competitor_scene_images_v3/compeat.png" alt="Compeat 场景图" loading="lazy"></button></figure>
+    </section>
+    
+    <section class="product-tile">
+      <div class="prod-text">
+        <div class="prod-type">酒店 / 酒吧 / 集团</div>
+        <h3>Craftable</h3>
+        <p class="punch">采购 + AP + 食材酒水</p>
+        <div class="mini"><span>客户量：1,000+ 品牌站点</span><span class='price custom'>定制化</span></div>
+      </div>
+      <figure class="scene-figure"><button class="zoomable" type="button" data-full="competitor_scene_images_v3/craftable.png" data-alt="Craftable 场景图" aria-label="点击放大图片"><img src="competitor_scene_images_v3/craftable.png" alt="Craftable 场景图" loading="lazy"></button></figure>
+    </section>
+    
+    <section class="product-tile">
+      <div class="prod-text">
+        <div class="prod-type">酒水重型门店</div>
+        <h3>WISK</h3>
+        <p class="punch">酒水盘点 + 损耗</p>
+        <div class="mini"><span>客户量：未公开</span><span class='price '>$189+</span></div>
+      </div>
+      <figure class="scene-figure"><button class="zoomable" type="button" data-full="competitor_scene_images_v3/wisk.png" data-alt="WISK 场景图" aria-label="点击放大图片"><img src="competitor_scene_images_v3/wisk.png" alt="WISK 场景图" loading="lazy"></button></figure>
+    </section>
+    
+    <section class="product-tile">
+      <div class="prod-text">
+        <div class="prod-type">纯酒水场景</div>
+        <h3>BevSpot</h3>
+        <p class="punch">酒水 COGS + 订货</p>
+        <div class="mini"><span>客户量：未公开</span><span class='price '>$100+</span></div>
+      </div>
+      <figure class="scene-figure"><button class="zoomable" type="button" data-full="competitor_scene_images_v3/bevspot.png" data-alt="BevSpot 场景图" aria-label="点击放大图片"><img src="competitor_scene_images_v3/bevspot.png" alt="BevSpot 场景图" loading="lazy"></button></figure>
+    </section>
+    
+    <section class="product-tile">
+      <div class="prod-text">
+        <div class="prod-type">标准化菜单 / 多店</div>
+        <h3>Apicbase</h3>
+        <p class="punch">菜谱成本 + 菜单利润</p>
+        <div class="mini"><span>客户量：1,000+ 品牌站点</span><span class='price custom'>定制化</span></div>
+      </div>
+      <figure class="scene-figure"><button class="zoomable" type="button" data-full="competitor_scene_images_v3/apicbase.png" data-alt="Apicbase 场景图" aria-label="点击放大图片"><img src="competitor_scene_images_v3/apicbase.png" alt="Apicbase 场景图" loading="lazy"></button></figure>
+    </section>
+    
+    <section class="product-tile">
+      <div class="prod-text">
+        <div class="prod-type">订货协同</div>
+        <h3>BlueCart</h3>
+        <p class="punch">线上下单 + 供应商协同</p>
+        <div class="mini"><span>客户量：未公开</span><span class='price '>$199+</span></div>
+      </div>
+      <figure class="scene-figure"><button class="zoomable" type="button" data-full="competitor_scene_images_v3/bluecart.png" data-alt="BlueCart 场景图" aria-label="点击放大图片"><img src="competitor_scene_images_v3/bluecart.png" alt="BlueCart 场景图" loading="lazy"></button></figure>
+    </section>
+    
+    <section class="product-tile">
+      <div class="prod-text">
+        <div class="prod-type">轻库存 / 未定POS</div>
+        <h3>Lightspeed</h3>
+        <p class="punch">POS + 基础库存</p>
+        <div class="mini"><span>客户量：全球数万门店</span><span class='price '>$89+</span></div>
+      </div>
+      <figure class="scene-figure"><button class="zoomable" type="button" data-full="competitor_scene_images_v3/lightspeed.png" data-alt="Lightspeed 场景图" aria-label="点击放大图片"><img src="competitor_scene_images_v3/lightspeed.png" alt="Lightspeed 场景图" loading="lazy"></button></figure>
+    </section>
+    </div>
+</section>
+
+<section class="section">
+  <div class="section-title"><h2>06｜一句话优势 & 劣势</h2><span>优势与劣势，快速判断</span></div>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>产品</th>
+          <th>优势</th>
+          <th>劣势</th>
+        </tr>
+      </thead>
+      <tbody>
+    <tr>
+      <td><b>Restaurant365</b></td>
+      <td class="good"><div>① 总部财务闭环很强，适合复杂连锁组织。</div><div>② 库存、会计、排班可统一管理。</div></td>
+      <td class="bad">⚠️ 实施和学习成本较高，中小店会觉得偏重。</td>
+    </tr>
+    
+    <tr>
+      <td><b>Crunchtime</b></td>
+      <td class="good"><div>① 大型连锁执行力强，SOP、合规和巡店能力突出。</div><div>② 总部可强控门店动作与数据。</div></td>
+      <td class="bad">⚠️ 更适合大型品牌，中小餐厅通常用不到这么重。</td>
+    </tr>
+    
+    <tr>
+      <td><b>Lightspeed</b></td>
+      <td class="good"><div>① POS 与基础库存一体化，上手快。</div><div>② 对轻量门店和新开店很友好。</div></td>
+      <td class="bad">⚠️ 深度成本分析和复杂后厨能力相对一般。</td>
+    </tr>
+    
+    <tr>
+      <td><b>MarginEdge</b></td>
+      <td class="good"><div>① 发票自动化和实时食材成本体验很强。</div><div>② 老板很快能看到 Daily P&amp;L 和价格波动。</div></td>
+      <td class="bad">⚠️ 不是完整 ERP，总部级复杂财务能力较弱。</td>
+    </tr>
+    
+    <tr>
+      <td><b>MarketMan</b></td>
+      <td class="good"><div>① 盘点、订货、供应商管理链路完整。</div><div>② 对后厨运营和采购协同很实用。</div></td>
+      <td class="bad">⚠️ 财务闭环和总部报表深度不如 ERP 型产品。</td>
+    </tr>
+    
+    <tr>
+      <td><b>Apicbase</b></td>
+      <td class="good"><div>① 菜谱、配方和菜单毛利治理能力强。</div><div>② 特别适合研发和标准化要求高的品牌。</div></td>
+      <td class="bad">⚠️ 美国 SMB 心智较弱，单店老板未必优先考虑。</td>
+    </tr>
+    
+    <tr>
+      <td><b>xtraCHEF</b></td>
+      <td class="good"><div>① Toast 用户接入最顺，发票与成本可以自然打通。</div><div>② 留在 Toast 生态内，培训和切换成本更低。</div></td>
+      <td class="bad">⚠️ 强依赖 Toast，非 Toast 用户通常不会优先看它。</td>
+    </tr>
+    
+    <tr>
+      <td><b>BlueCart</b></td>
+      <td class="good"><div>① 统一给供应商下单的体验很直接。</div><div>② 适合订货链路混乱、需要集中采购的门店。</div></td>
+      <td class="bad">⚠️ 不是深度库存或 P&amp;L 平台，经营分析能力有限。</td>
+    </tr>
+    
+    <tr>
+      <td><b>Compeat</b></td>
+      <td class="good"><div>① Prime Cost 和财务报告能力扎实。</div><div>② 适合注重成本控制的中型集团。</div></td>
+      <td class="bad">⚠️ 产品相对偏传统，轻量化和易用性不是强项。</td>
+    </tr>
+    
+    <tr>
+      <td><b>WISK</b></td>
+      <td class="good"><div>① 酒水库存和损耗管理很强。</div><div>② 对酒吧、餐吧和高酒水占比餐厅价值明显。</div></td>
+      <td class="bad">⚠️ 如果酒水不是核心，产品价值会下降。</td>
+    </tr>
+    
+    <tr>
+      <td><b>BevSpot</b></td>
+      <td class="good"><div>① 聚焦酒水，界面清晰，成本趋势好理解。</div><div>② 对酒吧经理和酒水负责人很友好。</div></td>
+      <td class="bad">⚠️ 食材库存能力有限，覆盖面不如综合产品。</td>
+    </tr>
+    
+    <tr>
+      <td><b>Craftable</b></td>
+      <td class="good"><div>① 食材和酒水双库存能力都强。</div><div>② 采购、收货、AP 对账一体化很适合 hospitality。</div></td>
+      <td class="bad">⚠️ 小门店会觉得偏复杂，通常更适合集团。</td>
+    </tr>
+    </tbody>
+    </table>
+  </div>
+</section>
+
+<section class="section">
+  <div class="section-title"><h2>07｜最后结论</h2><span>So That</span></div>
+  <div class="final-call">
+    <div class="call primary">
+      <h3>中小餐厅</h3>
+      <p>优先选 MarginEdge、MarketMan、xtraCHEF（Toast 用户）、WISK、Lightspeed。</p>
+    </div>
+    <div class="call secondary">
+      <h3>总部 / 多门店</h3>
+      <p>优先选 Restaurant365、Compeat、Crunchtime、Craftable、Apicbase。</p>
+    </div>
+  </div>
+</section>
+
+<div class="footer">重点版 V6 · 已改为当前页面弹窗放大图片</div>
+
+<div class="zoom-modal" id="zoomModal" aria-hidden="true" role="dialog" aria-label="图片放大预览">
+  <div class="zoom-modal-inner">
+    <button class="zoom-close" type="button" aria-label="关闭">×</button>
+    <img id="zoomModalImage" src="" alt="">
+    <div class="zoom-caption" id="zoomModalCaption"></div>
+  </div>
+</div>
+<script>
+(function(){
+  const modal = document.getElementById('zoomModal');
+  const modalImg = document.getElementById('zoomModalImage');
+  const caption = document.getElementById('zoomModalCaption');
+  const closeBtn = modal.querySelector('.zoom-close');
+
+  function openModal(src, alt){
+    modalImg.src = src;
+    modalImg.alt = alt || '';
+    caption.textContent = alt || '';
+    modal.classList.add('active');
+    modal.setAttribute('aria-hidden', 'false');
+    document.body.classList.add('zoom-locked');
+    closeBtn.focus();
+  }
+
+  function closeModal(){
+    modal.classList.remove('active');
+    modal.setAttribute('aria-hidden', 'true');
+    document.body.classList.remove('zoom-locked');
+    modalImg.src = '';
+  }
+
+  document.querySelectorAll('.zoomable').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      openModal(btn.getAttribute('data-full'), btn.getAttribute('data-alt'));
+    });
+  });
+
+  closeBtn.addEventListener('click', closeModal);
+  modal.addEventListener('click', function(e){
+    if(e.target === modal) closeModal();
+  });
+  document.addEventListener('keydown', function(e){
+    if(e.key === 'Escape' && modal.classList.contains('active')) closeModal();
+  });
+})();
+</script>
+
+</body>
+</html>
