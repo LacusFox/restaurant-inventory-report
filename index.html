@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>餐厅库存软件竞对分析｜3分钟重点版 V7</title>
+<title>餐厅库存软件竞对分析｜3分钟重点版 V11</title>
 <style>
 :root{--bg:#f5f7fb;--ink:#111827;--muted:#667085;--line:#e6e9ef;--blue:#2563eb;--dark:#0f172a;--amber:#d97706;--green:#059669;--red:#dc2626}
 *{box-sizing:border-box}
@@ -108,15 +108,44 @@ td b{font-size:16px}
 .zoom-caption{margin-top:10px;text-align:center;color:#fff;font-size:14px;font-weight:800}
 body.zoom-locked{overflow:hidden}
 
+
+.shortlist-section{border:2px solid #bfdbfe;background:linear-gradient(180deg,#ffffff,#f8fbff)}
+.strategy-hero{padding:24px;border-radius:22px;background:linear-gradient(135deg,#0f172a,#1d4ed8);color:#fff;margin-bottom:18px}
+.strategy-big{font-size:25px;line-height:1.25;font-weight:950;letter-spacing:-.02em;margin-bottom:18px}
+.strategy-picks{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.pick-card{background:#fff;color:#0f172a;border-radius:18px;padding:16px;border:1px solid rgba(255,255,255,.35);box-shadow:0 8px 20px rgba(15,23,42,.15)}
+.pick-card b{display:block;font-size:22px;color:var(--pick);margin-bottom:6px}
+.pick-card span{font-size:13px;color:#475467;font-weight:800}
+
+
+
+
+
+
+
+
+.shortlist-table-wrap{overflow:auto;border:1px solid var(--line);border-radius:18px;background:#fff}
+.shortlist-table{min-width:960px}
+.shortlist-table td:nth-child(1){color:#1d4ed8;font-weight:950}
+@media(max-width:1080px){.strategy-picks,}
+@media(max-width:760px){.strategy-picks,.strategy-big{font-size:21px}}
+
+
+.final-call.four{grid-template-columns:repeat(4,1fr)}
+.call.tertiary{background:linear-gradient(135deg,#059669,#10b981)}
+.call.quaternary{background:linear-gradient(135deg,#f97316,#f59e0b)}
+@media(max-width:1080px){.final-call.four{grid-template-columns:1fr 1fr}}
+@media(max-width:760px){.final-call.four{grid-template-columns:1fr}}
+
 </style>
 </head>
 <body>
 <header class="hero">
   <div class="wrap">
-    <div class="kicker">餐厅库存 / 成本 / 发票 / 采购软件竞对 · 3分钟重点版 V7</div>
+    <div class="kicker">餐厅库存 / 成本 / 发票 / 采购软件竞对 · 3分钟重点版 V11</div>
     <h1>老板买的不是“库存软件”<br>而是“成本可见 + 经营闭环”</h1>
     <div class="big">发票 / 采购 → 库存 → 菜品成本 → P&L → 调价 / 换供应商 / 控损耗</div>
-    <div class="sub">新增独立模块：8 类餐厅用户画像 × 推荐库存/成本管理系统。</div>
+    
   </div>
 </header>
 
@@ -131,9 +160,65 @@ body.zoom-locked{overflow:hidden}
   <div class="flow"><div class="flow-step"><b>已经用 Toast？</b><span>xtraCHEF</span></div><div class="flow-step"><b>最烦发票 / 每日成本？</b><span>MarginEdge</span></div><div class="flow-step"><b>最烦盘点 / 订货？</b><span>MarketMan</span></div><div class="flow-step"><b>酒水损耗严重？</b><span>WISK / BevSpot</span></div><div class="flow-step"><b>总部要财务闭环？</b><span>Restaurant365 / Compeat</span></div><div class="flow-step"><b>大型连锁管执行？</b><span>Crunchtime</span></div><div class="flow-step"><b>酒吧 / 采购 AP 复杂？</b><span>Craftable</span></div><div class="flow-step"><b>还没选 POS？</b><span>Lightspeed</span></div><div class="flow-step"><b>只想统一下单？</b><span>BlueCart</span></div><div class="flow-step"><b>菜谱标准化最重要？</b><span>Apicbase</span></div></div>
 </section>
 
+<section class="section shortlist-section">
+  <div class="section-title">
+    <h2>03｜Chowbus POS 第三方对接结论</h2>
+    <span>从 12 家竞品收敛到 4 个最值得对接的库存 / 成本系统</span>
+  </div>
+
+  <div class="strategy-hero">
+    <div class="strategy-big">如果目标是给 Chowbus POS 补齐第三方库存 / 成本能力，真正适合优先对接的不是 12 家，而是 4 家：</div>
+    <div class="strategy-picks">
+      <div class="pick-card" style="--pick:#2563eb"><b>MarginEdge</b><span>发票自动化 + Daily P&L</span></div>
+      <div class="pick-card" style="--pick:#0f766e"><b>Craftable</b><span>采购 + AP + 食材酒水库存</span></div>
+      <div class="pick-card" style="--pick:#0ea5e9"><b>MarketMan</b><span>库存 + 订货 + 供应商</span></div>
+      <div class="pick-card" style="--pick:#be123c"><b>WISK</b><span>酒水库存 + 损耗管理</span></div>
+    </div>
+  </div>
+
+  <div class="shortlist-table-wrap">
+    <table class="shortlist-table">
+      <thead>
+        <tr>
+          <th>优先级</th>
+          <th>产品</th>
+          <th>为什么适合 Chowbus POS 对接</th>
+          <th>最适合的商户</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><b>P0</b></td>
+          <td><b>MarginEdge</b></td>
+          <td>最能补齐 Chowbus 商户的发票、成本、Daily P&L 和供应商价格变化能力。</td>
+          <td>中餐、日料、火锅、快餐小连锁、发票多的老板型商户</td>
+        </tr>
+        <tr>
+          <td><b>P0</b></td>
+          <td><b>Craftable</b></td>
+          <td>适合更复杂的采购、收货、AP 对账、食材和酒水双库存场景。</td>
+          <td>大型 full-service、餐吧、酒店餐饮、多门店 hospitality group</td>
+        </tr>
+        <tr>
+          <td><b>P1</b></td>
+          <td><b>MarketMan</b></td>
+          <td>最能补齐库存盘点、订货建议、供应商和采购流程能力。</td>
+          <td>奶茶、咖啡轻食、快餐连锁、中型日料、多门店轻餐</td>
+        </tr>
+        <tr>
+          <td><b>P1</b></td>
+          <td><b>WISK</b></td>
+          <td>适合补齐酒水库存、酒瓶盘点、pour cost 和损耗管理能力。</td>
+          <td>酒吧、餐吧、夜店、酒水占比高的餐饮商户</td>
+        </tr>
+</tbody>
+    </table>
+  </div>
+</section>
+
 
 <section class="section">
-  <div class="section-title"><h2>03｜餐厅用户画像</h2><span>8 类餐厅分别更可能选择的库存/成本系统</span></div>
+  <div class="section-title"><h2>04｜餐厅用户画像</h2><span>8 类餐厅分别更可能选择的库存/成本系统</span></div>
   <div class="persona-grid">
     <section class="persona-card">
       <div class="persona-image-wrap">
@@ -183,29 +268,29 @@ body.zoom-locked{overflow:hidden}
         <div class="persona-sub">更可能选择的库存/成本管理系统</div>
         <div class="brand-list">
           
-    <div class="brand-card" style="--brand:#0ea5e9">
+    
+<div class="brand-card" style="--brand:#0ea5e9">
       <div class="brand-logo">MM</div>
       <div>
         <div class="brand-name">MarketMan</div>
         <div class="brand-fit">库存 + 订货 + 供应商</div>
       </div>
     </div>
-    
-    <div class="brand-card" style="--brand:#f59e0b">
-      <div class="brand-logo">LS</div>
-      <div>
-        <div class="brand-name">Lightspeed</div>
-        <div class="brand-fit">POS + 基础库存</div>
-      </div>
-    </div>
-    
-    <div class="brand-card" style="--brand:#2563eb">
+<div class="brand-card" style="--brand:#2563eb">
       <div class="brand-logo">ME</div>
       <div>
         <div class="brand-name">MarginEdge</div>
         <div class="brand-fit">发票自动化 + Daily P&amp;L</div>
       </div>
     </div>
+<div class="brand-card" style="--brand:#f59e0b">
+      <div class="brand-logo">LS</div>
+      <div>
+        <div class="brand-name">Lightspeed</div>
+        <div class="brand-fit">POS + 基础库存</div>
+      </div>
+    </div>
+
     
         </div>
       </div>
@@ -403,7 +488,7 @@ body.zoom-locked{overflow:hidden}
 </section>
 
 <section class="section">
-  <div class="section-title"><h2>04｜竞对总表</h2><span>当前客户量 & 对接 POS 数量</span></div>
+  <div class="section-title"><h2>05｜产品总表</h2><span>当前客户量 & 对接 POS 数量</span></div>
   <div class="table-wrap">
     <table>
       <thead>
@@ -530,7 +615,7 @@ body.zoom-locked{overflow:hidden}
 </section>
 
 <section class="section">
-  <div class="section-title"><h2>05｜逐个产品场景图</h2><span>产品如何被餐厅角色使用</span></div>
+  <div class="section-title"><h2>06｜逐个产品场景图</h2><span>产品如何被餐厅角色使用</span></div>
   <div class="product-grid">
     <section class="product-tile">
       <div class="prod-text">
@@ -655,7 +740,7 @@ body.zoom-locked{overflow:hidden}
 </section>
 
 <section class="section">
-  <div class="section-title"><h2>06｜一句话优势 & 劣势</h2><span>优势与劣势，快速判断</span></div>
+  <div class="section-title"><h2>07｜一句话优势 & 劣势</h2><span>优势与劣势，快速判断</span></div>
   <div class="table-wrap">
     <table>
       <thead>
@@ -742,21 +827,34 @@ body.zoom-locked{overflow:hidden}
   </div>
 </section>
 
+
+
+
+
 <section class="section">
-  <div class="section-title"><h2>07｜最后结论</h2><span>So That</span></div>
-  <div class="final-call">
+  <div class="section-title"><h2>08｜最后结论</h2><span>So That</span></div>
+  <div class="final-call four">
     <div class="call primary">
       <h3>中小餐厅</h3>
-      <p>优先选 MarginEdge、MarketMan、xtraCHEF（Toast 用户）、WISK、Lightspeed。</p>
+      <p>优先选 MarginEdge、MarketMan</p>
     </div>
     <div class="call secondary">
-      <h3>总部 / 多门店</h3>
-      <p>优先选 Restaurant365、Compeat、Crunchtime、Craftable、Apicbase。</p>
+      <h3>总部强控</h3>
+      <p>优先选 Restaurant365、Crunchtime、Craftable</p>
+    </div>
+    <div class="call tertiary">
+      <h3>看重酒水管理</h3>
+      <p>优先选 WISK、Craftable</p>
+    </div>
+    <div class="call quaternary">
+      <h3>华人餐厅</h3>
+      <p>优先选 MarginEdge</p>
     </div>
   </div>
 </section>
 
-<div class="footer">重点版 V7 · 已删除 FoodCourt 用户画像，保留图片弹窗放大</div>
+
+<div class="footer">重点版 V11 · 已调整 Chowbus 对接优先级与顺序</div>
 
 <div class="zoom-modal" id="zoomModal" aria-hidden="true" role="dialog" aria-label="图片放大预览">
   <div class="zoom-modal-inner">
