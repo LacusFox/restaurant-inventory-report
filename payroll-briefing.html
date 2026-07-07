@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Payroll & Salsa 系统介绍</title>
+<style>
+  :root{
+    --ink:#1a1a1a; --sub:#6b6b6b; --line:#e2e5ea; --bg:#ffffff;
+    --accent:#e11d6b; --accent-soft:#fdeaf1;
+    --purple:#6d28d9; --purple-soft:#ede9fe;
+    --slate:#334155; --slate-soft:#f1f5f9;
+  }
+  *{box-sizing:border-box}
+  body{background:var(--bg); color:var(--ink); margin:0;
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+    line-height:1.7; font-size:15.5px;}
+  .wrap{max-width:980px; margin:0 auto; padding:52px 26px 96px;}
+  header.top{border-bottom:2px solid var(--ink); padding-bottom:18px; margin-bottom:32px;}
+  header.top .kicker{font-size:12.5px; letter-spacing:.14em; color:var(--accent); font-weight:700; text-transform:uppercase;}
+  header.top h1{font-size:28px; margin:8px 0 6px; letter-spacing:-.01em;}
+  header.top p{margin:0; color:var(--sub); font-size:14.5px;}
+  h2{font-size:20px; margin:44px 0 8px; letter-spacing:-.01em; display:flex; align-items:baseline; gap:10px;}
+  h2 .num{color:var(--accent); font-weight:800;}
+  h2.plain .num{color:var(--slate);}
+  p{margin:10px 0;}
+  .oneline{background:var(--accent-soft); border-radius:10px; padding:12px 16px; font-weight:600; margin:12px 0;}
+  .note{background:#fafbfc; border:1px solid var(--line); border-radius:10px; padding:12px 16px; margin:14px 0; font-size:14px; color:#444;}
+  table{border-collapse:collapse; width:100%; margin:16px 0; font-size:13.8px;}
+  th,td{border:1px solid var(--line); padding:8px 10px; text-align:left; vertical-align:top;}
+  th{background:#f4f6f8; font-weight:700; font-size:13px;}
+  .cap td:nth-child(2){font-weight:600;}
+  .cap td:first-child{font-weight:700; color:var(--ink); white-space:nowrap;}
+  .std td:first-child{font-weight:700; color:var(--slate); white-space:nowrap; background:#f8fafc;}
+  /* 竞对:中性,无粉色 */
+  .comp th{background:#eef1f4; color:var(--slate);}
+  .comp td:first-child{font-weight:700; color:var(--ink);}
+  .key{display:inline-block; font-size:10.5px; font-weight:800; color:#fff; background:var(--ink); border-radius:5px; padding:1px 6px; margin-left:6px; vertical-align:middle; letter-spacing:.03em;}
+  .legend{margin:10px 0 2px; font-size:13px; color:var(--sub);}
+  strong.k{color:var(--accent);}
+  .footer{margin-top:52px; padding-top:18px; border-top:1px solid var(--line); color:var(--sub); font-size:12.5px;}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="top">
+  <div class="kicker">Chowbus · Payroll</div>
+  <h1>Payroll &amp; Salsa 系统介绍</h1>
+  <p>基于 Salsa 官方文档 + 后台梳理 · 产品视角</p>
+</header>
+
+<!-- 1 -->
+<h2><span class="num">1</span> 什么是 Payroll</h2>
+<div class="oneline">狭义 = 发工资:算出 gross → 扣税 &amp; 代扣 → 算出 net → 打到员工账户。</div>
+<p><b>广义 = 整条链路:</b>入职 → 工时 → 算薪 → 代扣税 → 替商家向 IRS/州报税缴款 → 福利/代扣 → 年终 W-2/1099 → 合规。<strong class="k">业内的 Payroll 系统,卖的都是这一整套。</strong></p>
+<h3 style="font-size:15.5px;margin:22px 0 6px">Payroll 软件标配功能</h3>
+<table class="std">
+  <tr><th>大类</th><th>功能</th><th>解释</th></tr>
+  <tr><td rowspan="2">员工</td><td>员工自助入职 Onboarding</td><td>员工自己填 W-4 / I-9 / 银行卡</td></tr>
+  <tr><td>员工档案与分类</td><td>建档,区分 W-2 员工 / 1099 合同工</td></tr>
+  <tr><td rowspan="6">薪酬</td><td>发薪周期设置</td><td>支持周结 / 双周 / 半月 / 月结等</td></tr>
+  <tr><td>算工资 gross-to-net</td><td>工时 → 薪资 → 应发 → 扣减 → 实发</td></tr>
+  <tr><td>发工资 direct deposit</td><td>工资直接打入员工银行账户</td></tr>
+  <tr><td>看工资单 paystub</td><td>每期工资明细,员工可查</td></tr>
+  <tr><td>加班费计算</td><td>根据州法规则,自动计算加班费</td></tr>
+  <tr><td>带薪 / 无薪休假</td><td>设置带薪假规则,自动累计带薪假</td></tr>
+  <tr><td rowspan="4">税务</td><td>自动算税</td><td>联邦 / 州 / 地方、员工侧 + 公司侧税自动计算</td></tr>
+  <tr><td>自动缴税 + 报税</td><td>替商家把税款缴给政府并按时申报</td></tr>
+  <tr><td>年终 W-2 / 1099</td><td>年度税表自动生成</td></tr>
+  <tr><td>税率自动更新</td><td>跟随法规和政策自动更新</td></tr>
+  <tr><td rowspan="3">其他</td><td>代扣管理 Deductions</td><td>税前 / 税后代扣(医保、退休金等)</td></tr>
+  <tr><td>扣发令 Garnishments</td><td>从员工的工资里扣一笔,直接转给第三方</td></tr>
+  <tr><td>基础报表 Reports</td><td>工资成本、税款、汇总报表</td></tr>
+</table>
+
+<!-- 2 -->
+<h2><span class="num">2</span> 市场格局:三层货架 &amp; 我们的位置</h2>
+<table>
+  <tr><th>层级</th><th>代表</th></tr>
+  <tr><td>成品 Payroll 系统</td><td>ADP、Paychex、Gusto、QuickBooks</td></tr>
+  <tr><td>POS 内嵌自研 Payroll</td><td>Toast、Square</td></tr>
+  <tr><td>白标基础设施</td><td>Salsa、Check、Gusto Embedded、ADP Embedded</td></tr>
+</table>
+<div class="oneline">🎈 我们的位置:通过接入 <strong class="k">Salsa 白标</strong>,做成我们的 <strong class="k">Chowbus Payroll</strong> —— 客户层面感知不到 Salsa 的存在。</div>
+
+<!-- 3 竞对(中性色) -->
+<h2 class="plain"><span class="num">3</span> 竞对分析</h2>
+<table class="comp">
+  <tr><th>公司</th><th>针对客户</th><th>标配外功能</th><th>绝对优势</th><th>价位</th><th>市场地位(用户量)</th></tr>
+  <tr><td>ADP</td><td>全行业,从个体到跨国企业,以中大型、连锁、多州/跨国用工见长</td><td>全套 HR、福利/401k、考勤、招聘、工伤险、全球 payroll、合规咨询</td><td>规模最大最全 + 跨国能力</td><td>报价制 $79+/起 + 人头费</td><td>第一,100 万+ 商家</td></tr>
+  <tr><td>QuickBooks Payroll</td><td>小微到中型商家,覆盖面广,已用 QuickBooks 记账的商家,从个体户到中小连锁</td><td>当日到账、工伤险对接、报税罚款保障</td><td>与 QuickBooks 记账无缝一体</td><td>$45/月 +$5/人 → Elite ~$125+$10</td><td>装机量极大(依托 QB 生态)</td></tr>
+  <tr><td>Paychex</td><td>小微到中型,更适合"HR 外包"的商家</td><td>HR 外包、福利/401k、工伤险、合规服务</td><td>重服务 + 专属客户经理</td><td>报价制,跟 ADP 一档</td><td>~74 万+ 商家,份额约 12%</td></tr>
+  <tr><td>Gusto</td><td>小微到中型,看重体验的现代 SMB</td><td>福利市场(医保)、401k、合同工、考勤、招聘入职、当日到账</td><td>SMB 里体验最好 + 福利一站式</td><td>$49/月 +$6/人 → Plus $80+$12</td><td>40 万+ 商家,SMB 最火</td></tr>
+  <tr><td>Square Payroll</td><td>小微商家为主,尤其已用 Square 收银的零售/餐饮/服务业</td><td>工时/小费从 POS 自动进、小费分配、纯合同工模式、可按季暂停</td><td>极简 + 已在 Square POS 上几乎零录入</td><td>~$35–40/月 +$6/人;合同工 $6/人无底费</td><td>Block 体系内量大(未披露)</td></tr>
+  <tr><td>Toast Payroll</td><td>仅限用 Toast POS 的商家</td><td>餐饮排班、工时/小费从 Toast POS 一条龙、小费池分配、餐饮税务(FICA tip credit)</td><td>唯一为餐饮而生 + POS 数据全打通 + 小费处理最专业</td><td>报价制,跟 Toast POS 打包</td><td>依托 Toast ~14 万+ 门店</td></tr>
+  <tr><td>Salsa</td><td>平台/软件公司(不直接面向餐厅)</td><td>白标 UI(Express)/API(Advanced)、EWA 日结、自动跑薪、多地点、嵌入或托管</td><td>白标可嵌入——让平台自己变成 payroll 提供方</td><td>B2B2B 批发价,不公开</td><td>创业公司;用户 = 平台伙伴</td></tr>
+</table>
+
+<!-- 4 Salsa 能力 -->
+<h2><span class="num">4</span> Salsa 能力全景(基于 API 文档)</h2>
+<div class="legend"><span class="key">重点</span> = 核心必备(没它就不能叫 payroll)</div>
+<table class="cap">
+  <tr><th>模块</th><th>功能名称</th><th>通俗解释 / 用户场景</th></tr>
+
+  <tr><td rowspan="6">A 商家开通<br>与配置</td>
+      <td>雇主入职 Employer Onboarding<span class="key">重点</span></td><td>商家第一次开通:填公司信息、税号、银行、签字人,系统帮去联邦/州登记</td></tr>
+  <tr><td>历史工资迁移 Historical Workers</td><td>从原来的发薪方式导入历史工资数据,换软件时年度累计、税表不断档</td></tr>
+  <tr><td>税务设置 Taxes Setup<span class="key">重点</span></td><td>登记公司联邦/州税务信息,后续才能自动扣税报税</td></tr>
+  <tr><td>银行账户 Bank Accounts<span class="key">重点</span></td><td>绑定并验证扣款账户,发薪日从这里扣钱</td></tr>
+  <tr><td>薪资组 Pay Groups</td><td>按发薪频率分组:全职月结、兼职周结分开跑</td></tr>
+  <tr><td>经营地址 Address List</td><td>管理多个经营地点/门店地址</td></tr>
+
+  <tr><td rowspan="6">B 员工管理<br>与入职</td>
+      <td>员工入职 Worker Onboarding<span class="key">重点</span></td><td>新员工扫码自助填 W-4/I-9/银行卡,老板不用手动录</td></tr>
+  <tr><td>员工分类 Worker Classification<span class="key">重点</span></td><td>区分 W-2 员工和 1099 合同工,税务和表单走不同流程</td></tr>
+  <tr><td>员工档案 Worker Profile</td><td>个人信息、税务预扣、发薪方式、入离职日期一站维护</td></tr>
+  <tr><td>多工作地点 Work Locations</td><td>一个员工可分配到多家门店/跨州,税率分开算</td></tr>
+  <tr><td>员工自助档案 Self-Managed Profile</td><td>员工自己登录更新地址、银行卡等</td></tr>
+  <tr><td>员工文档 Worker Documents</td><td>员工相关表单、证件的存档与下载</td></tr>
+
+  <tr><td rowspan="11">C 发薪<br>与算薪</td>
+      <td>跑薪 Run Payroll<span class="key">重点</span></td><td>发起一次工资:确认工时和金额,一键发薪</td></tr>
+  <tr><td>算薪 Gross-to-Net<span class="key">重点</span></td><td>工时 × 时薪 → 应发 → 扣税/代扣 → 实发,自动算准</td></tr>
+  <tr><td>工资类型 Pay Types</td><td>支持时薪、固定薪等不同计薪方式</td></tr>
+  <tr><td>加班 Overtime</td><td>超法定工时自动按 1.5 倍算,餐饮高频</td></tr>
+  <tr><td>小费 Tips</td><td>把小费纳入工资和报税口径(餐饮命门);理想:小费从 POS 自动流进工资</td></tr>
+  <tr><td>特殊工资 Premium Pay / Wage Parity</td><td>处理地区性特殊工资规则(如纽约工资平价)</td></tr>
+  <tr><td>补发 Off-cycle</td><td>常规发薪日之外临时发一笔:离职结清、算错补发</td></tr>
+  <tr><td>自动跑薪 Auto Payroll</td><td>固定工资的员工到点自动发</td></tr>
+  <tr><td>提前领薪 EWA / 日结</td><td>员工不等发薪日,先支取已挣的工资</td></tr>
+  <tr><td>工资单 Paystub<span class="key">重点</span></td><td>每期工资明细,员工随时可查(多数州法律要求)</td></tr>
+  <tr><td>年度累计 YTD</td><td>工资、税款的年度累计自动记录</td></tr>
+
+  <tr><td rowspan="6">D 税务<br>与合规</td>
+      <td>税款计算 Tax Calculation<span class="key">重点</span></td><td>联邦/州/地方、员工侧+公司侧税自动算(SS、Medicare、FUTA、州失业等)</td></tr>
+  <tr><td>缴税+报税 Money Movement + Filing<span class="key">重点</span></td><td>替商家把税款缴给政府、按时申报</td></tr>
+  <tr><td>年终 W-2 / 1099<span class="key">重点</span></td><td>年底自动给每个员工/合同工生成税表</td></tr>
+  <tr><td>代扣 Deductions</td><td>医保、退休金等税前/税后从工资扣</td></tr>
+  <tr><td>扣发令 Garnishments</td><td>法院要求的扣款(如抚养费)自动每期扣转</td></tr>
+  <tr><td>审计数据 Audit Data</td><td>关键操作留痕,可追溯</td></tr>
+
+  <tr><td rowspan="2">E 福利<br>与休假</td>
+      <td>福利 Benefits</td><td>医保、退休金等福利的接入与扣费管理</td></tr>
+  <tr><td>带薪/无薪休假 Time Off</td><td>假期余额自动累计,发薪时带薪假计入工资</td></tr>
+
+  <tr><td rowspan="3">F 报表<br>与对接</td>
+      <td>报表 Reports</td><td>工资成本、税款、汇总等各类报表</td></tr>
+  <tr><td>记账集成 Accounting Integration</td><td>工资数据导出/同步到 QuickBooks 等</td></tr>
+  <tr><td>雇主风险指标 Employer Risk Metrics</td><td>给平台提供商家风控信号</td></tr>
+</table>
+
+<!-- 5 版本规划 -->
+<h2><span class="num">5</span> 版本规划 Roadmap</h2>
+<style>
+  .rm{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:8px 0}
+  @media(max-width:760px){.rm{grid-template-columns:1fr}}
+  .rm-card{border:1px solid var(--line);border-radius:12px;overflow:hidden;background:#fff;display:flex;flex-direction:column}
+  .rm-card .hd{padding:12px 14px;color:#fff}
+  .rm-card .hd .v{font-size:16px;font-weight:800;display:block}
+  .rm-card .hd .s{font-size:12px;opacity:.92}
+  .rm-card .bd{padding:10px 14px 14px;font-size:13.3px}
+  .rm-card .bd ul{margin:0;padding:0}
+  .rm-card .bd li{list-style:none;margin:9px 0;line-height:1.5;border-bottom:1px dashed #eef0f3;padding-bottom:8px}
+  .rm-card .bd li:last-child{border-bottom:none;padding-bottom:0}
+  .rm-card .bd b{font-weight:700}
+  .rm-card .bd .d{color:#6b6b6b;font-size:12px}
+  .rm-mvp .hd{background:#0f766e}
+  .rm-20 .hd{background:#e11d6b}
+  .rm-30 .hd{background:#6d28d9}
+</style>
+<div class="rm">
+  <div class="rm-card rm-mvp">
+    <div class="hd"><span class="v">MVP</span><span class="s">Salsa Express · 现状</span></div>
+    <div class="bd"><ul>
+      <li><b>Express 全部内容内嵌</b> Chowbus 后台</li>
+      <li><b>Chowbus 提供</b>工时、小费等数据源</li>
+      <li><b>发薪在后台完成</b></li>
+    </ul></div>
+  </div>
+  <div class="rm-card rm-20">
+    <div class="hd"><span class="v">2.0</span><span class="s">手机端 Chowbus Go · 老板端 &amp; 员工端</span></div>
+    <div class="bd"><ul>
+      <li><b>入职 Onboarding</b><br><span class="d">手机自助填表(敏感项走 Salsa 托管)</span></li>
+      <li><b>工时确认 / 补卡审批</b><br><span class="d">老板审批、员工申请补卡</span></li>
+      <li><b>工资</b><br><span class="d">员工看工资单/YTD/W-2;老板看汇总报表</span></li>
+      <li><b>通知</b><br><span class="d">到账 / 截止 / 待审批 / 补卡结果</span></li>
+    </ul></div>
+  </div>
+  <div class="rm-card rm-30">
+    <div class="hd"><span class="v">3.0</span><span class="s">HR / OA 补充</span></div>
+    <div class="bd"><ul>
+      <li><b>带薪假期 / 请假审批</b><br><span class="d">假期余额查看 + 请假申请审批</span></li>
+      <li><b>工资单电子签名</b><br><span class="d">员工电子签收(合规触发)</span></li>
+      <li><b>福利 Benefits</b><br><span class="d">福利 / 代扣自助查看与登记</span></li>
+    </ul></div>
+  </div>
+</div>
+<div class="note">🔪 边界:工时/假期的"最终确认"只能有<b>一个 source of truth</b>——审批做在考勤系统、payroll 消费结果,别两处各做一套。工时确认/补卡审批、请假审批本质属考勤系统,列入本规划但需向考勤 PM 提需求并对齐排期。</div>
+
+<!-- 6 技术简析 -->
+<h2><span class="num">6</span> Salsa Payroll 技术简析</h2>
+<ol style="margin:12px 0;padding-left:22px;line-height:1.9">
+  <li><b>业务底层</b>:联邦税法 + 50 州税法 / 劳动法</li>
+  <li><b>Salsa 的技术底层</b>:Symmetry 引擎(把法律变成可算的税率/规则)</li>
+  <li><b>Chowbus 提供</b>:员工信息、带薪工时、时薪、小费 —— 这些数据输入</li>
+  <li><b>Salsa 产出</b>:把每一期的工资明细体现在用户界面上,并直连银行进行发薪</li>
+</ol>
+
+<svg viewBox="0 0 900 440" role="img" aria-labelledby="archtitle archdesc" style="width:100%;height:auto;font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Microsoft YaHei',sans-serif;margin:10px 0 4px">
+  <title id="archtitle">Chowbus × Salsa Payroll 技术底层与数据流</title>
+  <desc id="archdesc">左栏为依赖栈:法律→Symmetry→Salsa→Chowbus→用户;右栏为数据流。</desc>
+  <defs>
+    <marker id="ah" markerWidth="9" markerHeight="9" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#64748b"/></marker>
+    <marker id="ahp" markerWidth="9" markerHeight="9" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#e11d6b"/></marker>
+  </defs>
+  <text x="20" y="26" font-size="15" font-weight="700" fill="#1a1a1a">Chowbus × Salsa Payroll · 技术底层与数据流</text>
+  <g font-size="11" fill="#334155">
+    <rect x="20" y="38" width="12" height="12" rx="2" fill="#fdeaf1" stroke="#e11d6b"/><text x="37" y="48">你们拥有</text>
+    <rect x="110" y="38" width="12" height="12" rx="2" fill="#ede9fe" stroke="#6d28d9"/><text x="127" y="48">Salsa</text>
+    <rect x="182" y="38" width="12" height="12" rx="2" fill="#f1f5f9" stroke="#64748b"/><text x="199" y="48">外部 / 第三方 / 政府</text>
+  </g>
+  <line x1="392" y1="68" x2="392" y2="420" stroke="#e7e7e7" stroke-width="1"/>
+  <text x="60" y="80" font-size="12.5" font-weight="700" fill="#6b6b6b">A · 依赖栈(谁建在谁之上)</text>
+  <line x1="46" y1="96" x2="46" y2="356" stroke="#cbd5e1" stroke-width="2" marker-end="url(#ah)"/>
+  <text x="30" y="240" font-size="10.5" fill="#94a3b8" transform="rotate(-90 30 240)">越往下越底层 · 越依赖外部 · 越难自建</text>
+  <g font-family="inherit">
+    <rect x="68" y="92" width="290" height="40" rx="8" fill="#ffffff" stroke="#64748b"/>
+    <text x="80" y="117" font-size="12.5" font-weight="700" fill="#334155">① 用户　商家老板 / 员工</text>
+    <rect x="68" y="142" width="290" height="48" rx="8" fill="#fdeaf1" stroke="#e11d6b"/>
+    <text x="80" y="164" font-size="12.5" font-weight="700" fill="#9d174d">② Chowbus</text>
+    <text x="80" y="181" font-size="10.5" fill="#9d174d">POS + 后台(嵌入 Salsa 界面)</text>
+    <rect x="68" y="200" width="290" height="48" rx="8" fill="#ede9fe" stroke="#6d28d9"/>
+    <text x="80" y="222" font-size="12.5" font-weight="700" fill="#5b21b6">③ Salsa 白标编排层(引擎)</text>
+    <text x="80" y="239" font-size="10.5" fill="#5b21b6">API · 白标UI · 资金流转 · 报税</text>
+    <rect x="68" y="258" width="290" height="48" rx="8" fill="#f1f5f9" stroke="#64748b"/>
+    <text x="80" y="280" font-size="12.5" font-weight="700" fill="#334155">④ Symmetry 税引擎</text>
+    <text x="80" y="297" font-size="10.5" fill="#475569">把法律变成可算的税率/规则</text>
+    <rect x="68" y="316" width="290" height="50" rx="8" fill="#e8edf3" stroke="#64748b"/>
+    <text x="80" y="338" font-size="12.5" font-weight="700" fill="#334155">⑤ 法律基础</text>
+    <text x="80" y="355" font-size="10.5" fill="#475569">联邦税法 + 50 州税法 / 劳动法</text>
+  </g>
+  <text x="470" y="80" font-size="12.5" font-weight="700" fill="#6b6b6b">B · 数据流(Chowbus 数据怎么跑)</text>
+  <rect x="520" y="92" width="300" height="48" rx="8" fill="#fdeaf1" stroke="#e11d6b"/>
+  <text x="534" y="114" font-size="12.5" font-weight="700" fill="#9d174d">Chowbus POS</text>
+  <text x="534" y="131" font-size="10.5" fill="#9d174d">工时 · 小费 · 员工映射(External ID)</text>
+  <line x1="670" y1="140" x2="670" y2="172" stroke="#e11d6b" stroke-width="2.5" marker-end="url(#ahp)"/>
+  <text x="680" y="162" font-size="10.5" fill="#9d174d">① 按发薪周期喂入</text>
+  <rect x="520" y="174" width="300" height="54" rx="8" fill="#ede9fe" stroke="#6d28d9"/>
+  <text x="534" y="196" font-size="12.5" font-weight="700" fill="#5b21b6">Salsa 编排层</text>
+  <text x="534" y="214" font-size="10.5" fill="#5b21b6">算薪 → 调 Symmetry 算税 → 资金流转</text>
+  <path d="M516,200 C476,200 476,116 512,116" fill="none" stroke="#94a3b8" stroke-width="1.5" stroke-dasharray="4 3" marker-end="url(#ah)"/>
+  <text x="404" y="160" font-size="9.5" fill="#94a3b8">结果回传</text>
+  <text x="404" y="172" font-size="9.5" fill="#94a3b8">Webhook</text>
+  <line x1="560" y1="228" x2="470" y2="296" stroke="#64748b" stroke-width="1.5" marker-end="url(#ah)"/>
+  <line x1="670" y1="228" x2="665" y2="296" stroke="#64748b" stroke-width="1.5" marker-end="url(#ah)"/>
+  <line x1="770" y1="228" x2="815" y2="296" stroke="#64748b" stroke-width="1.5" marker-end="url(#ah)"/>
+  <rect x="406" y="300" width="140" height="50" rx="8" fill="#f1f5f9" stroke="#64748b"/>
+  <text x="418" y="321" font-size="11.5" font-weight="700" fill="#334155">员工银行</text>
+  <text x="418" y="338" font-size="10.5" fill="#475569">② 到账(ACH)</text>
+  <rect x="596" y="300" width="150" height="50" rx="8" fill="#f1f5f9" stroke="#64748b"/>
+  <text x="608" y="321" font-size="11.5" font-weight="700" fill="#334155">IRS + 州税局</text>
+  <text x="608" y="338" font-size="10.5" fill="#475569">③ 缴税 · 报税</text>
+  <rect x="756" y="300" width="124" height="50" rx="8" fill="#f1f5f9" stroke="#64748b"/>
+  <text x="768" y="321" font-size="11.5" font-weight="700" fill="#334155">员工</text>
+  <text x="768" y="338" font-size="10.5" fill="#475569">④ W-2 / 1099</text>
+  <text x="470" y="392" font-size="10.5" fill="#94a3b8">注:右图的「Salsa 编排层」= 左图第 ③ 层;对内调 Symmetry(第④层)算税。</text>
+  <text x="470" y="408" font-size="10.5" fill="#94a3b8">我们只负责喂准「工时 · 小费 · 人」,算税/缴税/发钱/税表都是 Salsa。</text>
+</svg>
+
+<!-- 7 数据字段 -->
+<h2><span class="num">7</span> 数据字段:Chowbus 维护 vs Payroll 新增</h2>
+
+<h3 style="font-size:15.5px;margin:20px 0 6px">表 1 · Chowbus 系统内维护的字段(我们已有,直接推送给 Salsa)</h3>
+<table>
+  <tr><th>字段</th><th>用途</th><th>送给 Salsa 的方式</th></tr>
+  <tr><td>员工唯一 ID</td><td>和 Salsa worker 做映射</td><td>External ID</td></tr>
+  <tr><td>姓名</td><td>建档</td><td>onboarding</td></tr>
+  <tr><td>邮箱 / 手机</td><td>通知、员工自助入口</td><td>onboarding</td></tr>
+  <tr><td>时薪</td><td>算薪</td><td>pay entry rate(或档案默认)</td></tr>
+  <tr><td>工时</td><td>算薪</td><td>每期 pay entry hours</td></tr>
+  <tr><td>小费</td><td>算薪 + 报税</td><td>每期 pay entry amount(Tips)</td></tr>
+  <tr><td>工作地点 / 门店</td><td>多店、税区</td><td>Work Location</td></tr>
+  <tr><td>在职 / 离职状态</td><td>是否发薪、结清</td><td>onboarding / 状态更新</td></tr>
+</table>
+
+<h3 style="font-size:15.5px;margin:22px 0 6px">表 2 · 为 Payroll 新增的字段(原系统没有)</h3>
+<table>
+  <tr><th>字段</th><th>为什么新增</th><th>数据存储位置</th></tr>
+  <tr><td>用工分类 W-2 / 1099</td><td>决定扣不扣税</td><td>Salsa</td></tr>
+  <tr><td>SSN / 税号</td><td>报税、出 W-2/1099</td><td>Salsa(高敏感,别进 Chowbus)</td></tr>
+  <tr><td>W-4(联邦预扣)</td><td>算联邦所得税</td><td>Salsa(员工自助填)</td></tr>
+  <tr><td>州 W-4</td><td>算州所得税</td><td>Salsa</td></tr>
+  <tr><td>居住地址</td><td>决定州/地方税区</td><td>Salsa(POS 若没有就得新收)</td></tr>
+  <tr><td>生日 birthDate</td><td>身份 / 合规</td><td>Salsa</td></tr>
+  <tr><td>I-9 工作资格</td><td>法律强制</td><td>Salsa</td></tr>
+  <tr><td>银行卡 / 直接存款信息</td><td>发钱</td><td>Salsa(高敏感,别进 Chowbus)</td></tr>
+  <tr><td>公司税务登记 / EIN / 签字人</td><td>雇主开通</td><td>Salsa</td></tr>
+  <tr><td>Garnishments 扣发令</td><td>法院令扣款(抚养费等)</td><td>Salsa</td></tr>
+  <tr><td>Time Off 带薪假</td><td>假期规则 + 余额</td><td>Salsa</td></tr>
+  <tr><td>Deductions 代扣</td><td>医保 / 退休金等</td><td>Salsa</td></tr>
+  <tr><td>Benefits 福利</td><td>医保 / 401k 接入</td><td>Salsa</td></tr>
+  <tr><td>Workers Comp 工伤险</td><td>工伤险分类(若接)</td><td>Salsa</td></tr>
+</table>
+
+<div class="footer">
+  数据来源:Salsa 官方文档 docs.salsa.dev;Symmetry 客户案例;Gusto/QuickBooks 官方定价;Toast 门店数公开披露。ADP/Gusto/Toast/Square 竞品信息为行业通识。
+</div>
+
+</div>
+</body>
+</html>
