@@ -149,8 +149,48 @@
   <tr><td>雇主风险指标 Employer Risk Metrics</td><td>给平台提供商家风控信号</td></tr>
 </table>
 
-<!-- 5 版本规划 -->
-<h2><span class="num">5</span> 版本规划 Roadmap</h2>
+<!-- 5 扣费明细 -->
+<h2><span class="num">5</span> 扣费明细(从员工工资里扣)</h2>
+<style>
+  .ded-badge{display:inline-block;font-size:11px;font-weight:700;border-radius:5px;padding:2px 8px;white-space:nowrap;}
+  .ded-m{background:#fde8ec;color:#b91c1c;}
+  .ded-c{background:#fef3e2;color:#b45309;}
+  .ded-o{background:#f1f5f9;color:#64748b;}
+  .ded-n{color:#b0b8c4;}
+  .ded-legend{display:flex;flex-wrap:wrap;gap:16px;margin:8px 0 6px;font-size:13px;color:#555;align-items:center;}
+  .ded td:first-child{font-weight:700;color:#1a1a1a;}
+  .ded td:nth-child(2),.ded td:nth-child(3){text-align:center;white-space:nowrap;color:#555;}
+  .ded td:nth-child(4),.ded td:nth-child(5){text-align:center;}
+  .catT{color:#334155;} .catB{color:#0f766e;} .catO{color:#6d28d9;}
+</style>
+<div class="ded-legend">
+  <span class="ded-badge ded-m">强制</span>
+  <span class="ded-badge ded-c">非强制·餐厅常见</span>
+  <span class="ded-badge ded-o">非强制</span>
+  <span>— 不适用</span>
+</div>
+<table class="ded">
+  <tr><th>项目</th><th>类别</th><th>州覆盖</th><th>小时工</th><th>经理(固定薪)</th><th>解释</th></tr>
+  <tr><td>联邦所得税 FIT</td><td class="catT">税</td><td>全美</td><td><span class="ded-badge ded-m">强制</span></td><td><span class="ded-badge ded-m">强制</span></td><td>按 W-4 预扣的联邦收入税</td></tr>
+  <tr><td>Social Security</td><td class="catT">税</td><td>全美</td><td><span class="ded-badge ded-m">强制</span></td><td><span class="ded-badge ded-m">强制</span></td><td>社保税,员工 6.2%(有年度工资上限)</td></tr>
+  <tr><td>Medicare</td><td class="catT">税</td><td>全美</td><td><span class="ded-badge ded-m">强制</span></td><td><span class="ded-badge ded-m">强制</span></td><td>医保税,员工 1.45%</td></tr>
+  <tr><td>州所得税</td><td class="catT">税</td><td>部分州</td><td><span class="ded-badge ded-m">强制</span></td><td><span class="ded-badge ded-m">强制</span></td><td>约 43 州有;TX/FL/WA 等无州所得税</td></tr>
+  <tr><td>地方所得税</td><td class="catT">税</td><td>部分州</td><td><span class="ded-badge ded-m">强制</span></td><td><span class="ded-badge ded-m">强制</span></td><td>某些市/县另收(如 NYC)</td></tr>
+  <tr><td>州残障险 SDI</td><td class="catT">税(准税)</td><td>部分州</td><td><span class="ded-badge ded-m">强制</span></td><td><span class="ded-badge ded-m">强制</span></td><td>CA/NY/NJ/RI/HI 等;员工承担或分担</td></tr>
+  <tr><td>州带薪家庭假 PFML</td><td class="catT">税(准税)</td><td>部分州</td><td><span class="ded-badge ded-m">强制</span></td><td><span class="ded-badge ded-m">强制</span></td><td>部分州员工分担一小部分保费</td></tr>
+  <tr><td>小费计税</td><td class="catT">税</td><td>全美</td><td><span class="ded-badge ded-m">强制</span></td><td><span class="ded-n">—</span></td><td>现金+刷卡小费算应税收入,按它预扣;经理通常无小费</td></tr>
+  <tr><td>扣发令 Garnishment*</td><td class="catO">其他(法定)</td><td>全美</td><td><span class="ded-badge ded-m">强制*</span></td><td><span class="ded-badge ded-m">强制*</span></td><td>抚养费/欠税/欠债,收到法院令时强制扣转</td></tr>
+  <tr><td>医保保费</td><td class="catB">福利</td><td>全美·可选</td><td><span class="ded-badge ded-o">非强制</span></td><td><span class="ded-badge ded-c">常见</span></td><td>员工那份保费,税前;小时工少参加、经理常参加</td></tr>
+  <tr><td>牙科 / 视力</td><td class="catB">福利</td><td>全美·可选</td><td><span class="ded-badge ded-o">非强制</span></td><td><span class="ded-badge ded-c">常见</span></td><td>通常随医保打包</td></tr>
+  <tr><td>401k 供款</td><td class="catB">福利</td><td>全美·可选</td><td><span class="ded-badge ded-o">非强制</span></td><td><span class="ded-badge ded-c">常见</span></td><td>退休金供款,税前/Roth;经理更可能参加</td></tr>
+  <tr><td>HSA / FSA</td><td class="catB">福利</td><td>全美·可选</td><td><span class="ded-badge ded-o">非强制</span></td><td><span class="ded-badge ded-o">非强制</span></td><td>健康储蓄 / 弹性支出账户,若公司提供</td></tr>
+  <tr><td>人寿 / 伤残险</td><td class="catB">福利</td><td>全美·可选</td><td><span class="ded-badge ded-o">非强制</span></td><td><span class="ded-badge ded-o">非强制</span></td><td>若公司提供</td></tr>
+  <tr><td>工服 / 工作餐</td><td class="catO">其他</td><td>—</td><td><span class="ded-badge ded-c">部分餐厅</span></td><td><span class="ded-badge ded-o">非强制</span></td><td>有些餐厅扣;⚠️ 不能扣到低于最低工资</td></tr>
+</table>
+<div class="note">注:本表为「<b>从员工工资里扣</b>」的项目。雇主另承担 SS/Medicare 匹配、FUTA、SUTA、工伤险(<b>不从员工扣,不在此表</b>)。* 扣发令在收到法院/政府令时强制。</div>
+
+<!-- 6 版本规划 -->
+<h2><span class="num">6</span> 版本规划 Roadmap</h2>
 <style>
   .rm{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:8px 0}
   @media(max-width:760px){.rm{grid-template-columns:1fr}}
@@ -197,8 +237,8 @@
 </div>
 <div class="note">🔪 边界:工时/假期的"最终确认"只能有<b>一个 source of truth</b>——审批做在考勤系统、payroll 消费结果,别两处各做一套。工时确认/补卡审批、请假审批本质属考勤系统,列入本规划但需向考勤 PM 提需求并对齐排期。</div>
 
-<!-- 6 技术简析 -->
-<h2><span class="num">6</span> Salsa Payroll 技术简析</h2>
+<!-- 7 技术简析 -->
+<h2><span class="num">7</span> Salsa Payroll 技术简析</h2>
 <ol style="margin:12px 0;padding-left:22px;line-height:1.9">
   <li><b>业务底层</b>:联邦税法 + 50 州税法 / 劳动法</li>
   <li><b>Salsa 的技术底层</b>:Symmetry 引擎(把法律变成可算的税率/规则)</li>
@@ -267,8 +307,8 @@
   <text x="470" y="408" font-size="10.5" fill="#94a3b8">我们只负责喂准「工时 · 小费 · 人」,算税/缴税/发钱/税表都是 Salsa。</text>
 </svg>
 
-<!-- 7 数据字段 -->
-<h2><span class="num">7</span> 数据字段:Chowbus 维护 vs Payroll 新增</h2>
+<!-- 8 数据字段 -->
+<h2><span class="num">8</span> 数据字段:Chowbus 维护 vs Payroll 新增</h2>
 
 <h3 style="font-size:15.5px;margin:20px 0 6px">表 1 · Chowbus 系统内维护的字段(我们已有,直接推送给 Salsa)</h3>
 <table>
