@@ -201,6 +201,64 @@
 </table>
 <div class="note">这些由 Salsa(payroll-of-record)自动申报缴纳;钱通常<b>在每次发薪时就从雇主账户扣走</b>(现金需求 debit 的一部分),Salsa 持有后按各自周期缴给政府。<b>唯一需人工:SUTA 经验费率每年更新。</b>(工伤险已确认:通过 NEXT 内嵌、按薪付费。)</div>
 
+<h3 style="font-size:15.5px;margin:26px 0 6px">实战:一张示例工资单(所有扣费怎么走)</h3>
+<div class="note" style="margin-bottom:12px">以 Chicago 一名餐厅员工、<b>周结</b>、时薪 $20 为例(虚构数据、逻辑自洽,加班超 40h/周按 1.5 倍)。看颜色即可:<b style="color:#0f766e">绿=自动扣+自动缴给政府</b>;<b style="color:#b45309">琥珀=自动扣、线下/第三方缴</b>。</div>
+<style>
+  .psw{border:1px solid var(--line);border-radius:14px;padding:22px 26px;box-shadow:0 3px 10px rgba(0,0,0,.04);max-width:780px;}
+  .psw table{border-collapse:collapse;width:100%;font-size:13.5px;margin:0;}
+  .psw td{border:none;padding:6px 9px;text-align:left;vertical-align:top;}
+  .psw .sec td{color:#e11d6b;font-weight:800;font-size:11.5px;letter-spacing:.02em;border-bottom:2px solid #e11d6b;padding-top:13px;}
+  .psw .r{text-align:right;}
+  .psw tr.row td{border-bottom:1px solid #eee;}
+  .psw tr.row td:first-child{font-weight:700;}
+  .psw tr.tot td{border-bottom:1px solid #ddd;font-weight:800;}
+  .psw tr.tot td:first-child{color:#e11d6b;}
+  .psw tr.net td{background:#0f172a;color:#fff;font-weight:800;font-size:15px;}
+  .psw .anno{text-align:center;vertical-align:middle;border-radius:10px;font-size:12px;line-height:1.5;}
+  .psw .anno .tag{display:inline-block;font-size:11px;font-weight:800;border-radius:6px;padding:2px 9px;margin-bottom:4px;}
+  .psw .g{background:#eafaf4;} .psw .g .tag{background:#0f766e;color:#fff;} .psw .g .tx{color:#0f766e;}
+  .psw .a{background:#fef6e7;} .psw .a .tag{background:#b45309;color:#fff;} .psw .a .tx{color:#8a5a13;}
+</style>
+<div class="psw">
+<table>
+  <tr class="sec"><td>PAY 收入项</td><td class="r">HOURS</td><td class="r">RATE</td><td class="r">CURRENT 本期</td><td class="r">YTD 累计</td></tr>
+  <tr class="row"><td>Hourly 时薪</td><td class="r">40</td><td class="r">$20.00</td><td class="r">$800.00</td><td class="r">$800.00</td></tr>
+  <tr class="row"><td>Overtime 加班</td><td class="r">8</td><td class="r">$30.00</td><td class="r">$240.00</td><td class="r">$240.00</td></tr>
+  <tr class="row"><td>Tips 小费</td><td class="r"></td><td class="r"></td><td class="r">$160.00</td><td class="r">$160.00</td></tr>
+  <tr class="row"><td>Bonus 奖金</td><td class="r"></td><td class="r"></td><td class="r">$100.00</td><td class="r">$100.00</td></tr>
+  <tr class="tot"><td>TOTAL 应发</td><td class="r">48 HR</td><td class="r"></td><td class="r">$1,300.00</td><td class="r">$1,300.00</td></tr>
+
+  <tr class="sec"><td>TAXES WITHHELD 员工侧扣税</td><td></td><td></td><td class="r">CURRENT</td><td class="r">YTD</td></tr>
+  <tr class="row"><td>Federal Income Tax 联邦所得税</td><td colspan="2" rowspan="4" class="anno g"><span class="tag">✅ 自动扣 + 自动缴</span><br><span class="tx">Salsa 自动缴给政府(IRS / 伊州)</span></td><td class="r">$110.00</td><td class="r">$110.00</td></tr>
+  <tr class="row"><td>Social Security 社保税</td><td class="r">$72.23</td><td class="r">$72.23</td></tr>
+  <tr class="row"><td>Medicare 医疗保险税</td><td class="r">$16.89</td><td class="r">$16.89</td></tr>
+  <tr class="row"><td>IL Income Tax 伊州所得税(4.95%)</td><td class="r">$54.45</td><td class="r">$54.45</td></tr>
+  <tr class="tot"><td>TOTAL</td><td colspan="2"></td><td class="r">$253.57</td><td class="r">$253.57</td></tr>
+
+  <tr class="sec"><td>DEDUCTIONS 员工代扣(福利 &amp; 扣发令)</td><td></td><td></td><td class="r">CURRENT</td><td class="r">YTD</td></tr>
+  <tr class="row"><td>Medical 医保保费(税前)</td><td colspan="2" rowspan="4" class="anno a"><span class="tag">🟠 自动扣 · 线下 / 第三方缴</span><br><span class="tx">如:医保 → 付保险公司;401k → 提供商划走</span></td><td class="r">$120.00</td><td class="r">$120.00</td></tr>
+  <tr class="row"><td>Dental 牙科(税前)</td><td class="r">$15.00</td><td class="r">$15.00</td></tr>
+  <tr class="row"><td>401k 退休金供款(税前 5%)</td><td class="r">$65.00</td><td class="r">$65.00</td></tr>
+  <tr class="row"><td>Child Support 抚养费扣发令</td><td class="r">$150.00</td><td class="r">$150.00</td></tr>
+  <tr class="tot"><td>TOTAL</td><td colspan="2"></td><td class="r">$350.00</td><td class="r">$350.00</td></tr>
+
+  <tr class="net"><td>NET PAY 实发到手</td><td></td><td></td><td class="r">$696.43</td><td class="r">$696.43</td></tr>
+
+  <tr class="sec"><td>COMPANY TAXES 雇主侧税(额外承担)</td><td></td><td></td><td class="r">CURRENT</td><td class="r">YTD</td></tr>
+  <tr class="row"><td>Social Security 社保税(雇主)</td><td colspan="2" rowspan="4" class="anno g"><span class="tag">✅ 自动扣 + 自动缴</span><br><span class="tx">缴给政府;SUTA 费率每年人工更新</span></td><td class="r">$72.23</td><td class="r">$72.23</td></tr>
+  <tr class="row"><td>Medicare 医疗保险税(雇主)</td><td class="r">$16.89</td><td class="r">$16.89</td></tr>
+  <tr class="row"><td>Federal Unemployment (FUTA) 联邦失业税</td><td class="r">$6.99</td><td class="r">$6.99</td></tr>
+  <tr class="row"><td>IL Unemployment Insurance 伊州失业保险(SUTA)</td><td class="r">$46.02</td><td class="r">$46.02</td></tr>
+  <tr class="tot"><td>TOTAL</td><td colspan="2"></td><td class="r">$142.13</td><td class="r">$142.13</td></tr>
+
+  <tr class="sec"><td>COMPANY CONTRIBUTIONS 雇主额外出(非税)</td><td></td><td></td><td class="r">CURRENT</td><td class="r">YTD</td></tr>
+  <tr class="row"><td>401k Match 401k 雇主匹配(3%)</td><td colspan="2" rowspan="3" class="anno a"><span class="tag">🟠 雇主额外出 · 非税</span><br><span class="tx">如:工伤险 → 通过 NEXT 按薪付费</span></td><td class="r">$39.00</td><td class="r">$39.00</td></tr>
+  <tr class="row"><td>Workers' Comp 工伤险(NEXT·按薪付费)</td><td class="r">$15.00</td><td class="r">$15.00</td></tr>
+  <tr class="row"><td>Employer Health 医保雇主部分</td><td class="r">$150.00</td><td class="r">$150.00</td></tr>
+  <tr class="tot"><td>TOTAL</td><td colspan="2"></td><td class="r">$204.00</td><td class="r">$204.00</td></tr>
+</table>
+</div>
+
 <!-- 6 版本规划 -->
 <h2><span class="num">6</span> 版本规划 Roadmap</h2>
 <style>
