@@ -1,0 +1,1054 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Salsa 文档中译 · Guides</title>
+<style>
+  :root{--ink:#1a1a1a;--sub:#6b6b6b;--line:#e6e9ee;--accent:#e11d6b;--slate:#334155;}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:#fff;color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;line-height:1.75;font-size:15.5px;}
+  .wrap{max-width:900px;margin:0 auto;padding:48px 26px 100px;}
+  header.top{margin-bottom:32px;}
+  header.top .kicker{font-size:12.5px;letter-spacing:.14em;color:var(--accent);font-weight:700;text-transform:uppercase;}
+  header.top h1{font-size:28px;margin:8px 0 6px;}
+  header.top p{color:var(--sub);font-size:14.5px;}
+  nav.toc{background:#fafbfc;border:1px solid var(--line);border-radius:12px;padding:18px 22px;margin:22px 0 40px;font-size:14px;}
+  nav.toc h4{font-size:12px;letter-spacing:.08em;color:var(--slate);text-transform:uppercase;margin:12px 0 6px;}
+  nav.toc h4:first-child{margin-top:0;}
+  nav.toc a{color:#1d4ed8;text-decoration:none;display:inline-block;margin:2px 14px 2px 0;}
+  nav.toc a:hover{text-decoration:underline;}
+  .grouphd{font-size:13px;letter-spacing:.1em;text-transform:uppercase;color:#fff;background:var(--slate);border-radius:8px;padding:8px 14px;margin:46px 0 6px;}
+  section{border-bottom:1px solid var(--line);padding:26px 0 8px;}
+  section h2{font-size:21px;margin:0 0 14px;letter-spacing:-.01em;}
+  section h3{font-size:16.5px;margin:22px 0 6px;color:var(--slate);}
+  section h4{font-size:14.5px;margin:16px 0 4px;color:#475569;}
+  section h5{font-size:13.5px;margin:12px 0 4px;color:#64748b;}
+  section p{margin:8px 0;}
+  section ul,section ol{margin:8px 0 8px 24px;}
+  section li{margin:4px 0;}
+  section blockquote{background:#fff7f9;border:1px solid #f6d0dd;border-radius:10px;padding:12px 16px;margin:12px 0;}
+  section table{border-collapse:collapse;width:100%;margin:14px 0;font-size:13.6px;}
+  section th,section td{border:1px solid var(--line);padding:8px 10px;text-align:left;vertical-align:top;}
+  section th{background:#f4f6f8;font-weight:700;}
+  section pre{background:#0f172a;color:#e2e8f0;border-radius:10px;padding:14px 16px;overflow-x:auto;margin:12px 0;font-size:12.8px;line-height:1.55;}
+  section code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;}
+  section p code,section li code,section td code{background:#f1f5f9;color:#b91c1c;border-radius:4px;padding:1px 5px;font-size:12.8px;}
+  section pre code{background:none;color:inherit;padding:0;}
+  a{color:#1d4ed8;}
+  .note{background:#fafbfc;border:1px solid var(--line);border-radius:10px;padding:12px 16px;margin:14px 0;font-size:14px;color:#444;}
+</style></head>
+<body>
+<div class="wrap">
+<header class="top">
+  <div class="kicker">Salsa Docs · 中文直译</div>
+  <h1>Salsa 文档中译 —— Guides 指南全文</h1>
+  <p>左侧边栏 Guides 各页正文的完整直译。代码、字段名、端点、事件名、产品名保留英文;叙述全部译成中文。术语首次出现给中英对照。</p>
+</header>
+
+<nav class="toc">
+  <h4>General 通用</h4>
+  <a href="#g1">用 Salsa Express 上线薪资</a><a href="#g2">Authorization 授权</a><a href="#g3">Build with Salsa</a><a href="#g4">API 频率限制</a>
+  <h4>Deep Dives 深入专题</h4>
+  <a href="#d1">雇主注册流程</a><a href="#d2">员工付款退回</a><a href="#d3">Salsa 发起的付款</a><a href="#d4">Payroll Elements 薪资要素</a><a href="#d5">风险洞察输入字段</a>
+  <h4>Concepts 概念</h4>
+  <a href="#c1">内嵌式薪资</a><a href="#c2">薪资基础</a><a href="#c3">雇主信息</a><a href="#c4">员工分类</a><a href="#c5">金额计算策略</a><a href="#c6">员工付款记录</a><a href="#c7">资金流转</a><a href="#c8">员工薪资组</a>
+  <h4>Use cases 使用场景</h4>
+  <a href="#u1">嵌入组件</a><a href="#u2">让雇主入驻</a><a href="#u3">让员工入驻</a><a href="#u4">Webhooks</a><a href="#u5">筛选与排序</a><a href="#u6">雇主就绪</a><a href="#u7">员工可发薪就绪</a><a href="#u8">提前支取工资</a><a href="#u9">雇主已验证银行账户</a><a href="#u10">加班</a><a href="#u11">计算用量</a><a href="#u12">历史员工</a><a href="#u13">Easyteam 考勤</a><a href="#u14">雇主风险指标</a><a href="#u15">外部 ID 映射</a><a href="#u16">身份验证保护</a><a href="#u17">会计集成</a><a href="#u18">审计数据</a><a href="#u19">Premium Pay</a><a href="#u20">Wage Parity</a><a href="#u21">雇主账户状态</a>
+  <h4>Tutorials 教程</h4>
+  <a href="#t1">Salsa Express 建应用</a><a href="#t2">Salsa Advanced 发薪</a>
+</nav>
+
+<div class="grouphd">General 通用</div>
+
+<section id="g1">
+<h2>Launching payroll with Salsa Express · 用 Salsa Express 上线薪资</h2>
+<p><em>本指南从宏观层面概述如何使用 Salsa Express 上线一个薪资产品。若需要更详细的分步教程,请访问 Build a Payroll App with Salsa Express 页面。</em></p>
+<p>Salsa Express 集成是把一个稳健、合规、设计精美的薪资产品嵌入你平台的最快路径。只需一名工程师、四周时间,你就能借助 Salsa 的可嵌入组件、灵活的 API 和实时 webhook,上线一套功能齐全、贴合你品牌调性的薪资体验。</p>
+<h3>🚀 从零到薪资的 3 个步骤</h3>
+<ol>
+<li>在你的应用内嵌入我们的组件</li>
+<li>与 Paystream API 集成以导入数据</li>
+<li>监听我们推荐的 webhook 事件</li>
+</ol>
+<blockquote>
+<p>👍 核心收益</p>
+<ul>
+<li><strong>速度</strong>:一名工程师,4 周内上线。</li>
+<li><strong>掌控力</strong>:把雇主数据和薪酬数据保留在你自己的平台内。</li>
+<li><strong>体验</strong>:用可嵌入的 UI 取悦用户,给他们原生般的感受。</li>
+<li><strong>合规</strong>:所有薪资、税务和申报的复杂性都由 Salsa 处理。</li>
+</ul>
+<p>Salsa 的 Paystream API 让你能导入你已经拥有的数据,而我们的可嵌入组件让你能提供世界级的薪资工作流,并具有高度可定制性——从样式到结构皆可定制。你可以调整它们以匹配你品牌的外观与感觉,并有选择地启用或禁用功能。此外,我们的 webhook 通知会在重要事件发生时告知你,让你用自己的通知系统来交付客户通知和薪资文档。</p>
+</blockquote>
+<h3>1. 在你的应用内嵌入我们的组件</h3>
+<p>为了嵌入我们的组件,你只需遵循 3 个简单步骤:</p>
+<h4>获取 API Token</h4>
+<p>要获取我们沙盒(sandbox)环境的 API token,你只需与我们联系,我们很快就会向你提供一个。</p>
+<ul>
+<li>Salsa 要求在所有发往我们 API 的请求的 <code>Authorization</code> 头中提供一个 OAuth 2.0 Bearer Token。</li>
+<li>User Token 让你能为某个用户临时授予访问权限,并用一个访问角色(access role)来指定其对你数据的访问级别。生成的 token 具有可配置的过期时间。</li>
+</ul>
+<h4>导入我们的 Salsa.js 库</h4>
+<p>加载并初始化 Salsa.js 库可简化为以下代码。为了把组件定制成你自己的品牌样式,你只需要一个 Client Key,我们会向你提供。</p>
+<pre><code>import { useScript } from './hooks/useScript';
+
+useScript('https://js.salsa.dev/v0');
+const [salsa, setSalsa] = useState();
+ if(window.Salsa &amp;&amp; !salsa) {
+    setSalsa(window.Salsa('my-public-client-key', {env: 'sandbox'}));
+ }</code></pre>
+<pre><code>// Load Salsa.js into your application
+&lt;script type="text/javascript" src="https://js.salsa.dev/v0" /&gt;
+
+// Create an instance of Salsa.js using your Client Key and specifying the environment
+const salsa = window.Salsa('my-public-client-key', {env: 'sandbox'});</code></pre>
+<h4>利用 Salsa.js 来嵌入我们的组件</h4>
+<p>你只需实现以下几个可嵌入组件,就能快速启动薪资功能,之后再通过实现更多组件来扩展:</p>
+<ul>
+<li>Employer Onboarding(雇主入职):把薪资所需的全部设置汇集在单一体验中。</li>
+<li>Employer Profile(雇主资料):用于查看和编辑雇主的设置信息。</li>
+<li>Employer Dashboard(雇主仪表盘):供雇主运行薪资的管理面板。</li>
+<li>Worker Profile(员工资料):用于管理员工的设置信息。</li>
+<li>Worker Payments List(员工付款列表):为员工提供其付款的列表。</li>
+</ul>
+<h4>为嵌入元素创建容器,并把元素挂载(mount)到容器中</h4>
+<pre><code>&lt;div id='salsa-container' /&gt;
+
+const salsaElement = salsa.elements.create('demo');
+salsa.elements.mount(salsaElement, '#salsa-container');</code></pre>
+<p>ℹ️ <em>我们还以托管体验(hosted experiences)的形式提供 Employer Onboarding 和 Worker Onboarding。可以通过 API 取得一个邀请 URL,并把它发送给雇主和/或员工,供他们访问这些体验。</em></p>
+<h3>2. 与 Paystream API 集成以导入数据</h3>
+<p>Paystream 是我们推荐用来把任何数据从你的平台导入 Salsa 的 API。它有多个端点,允许你导入雇主(employers)、员工(workers)或薪酬条目(pay entries)。</p>
+<h4>导入雇主(Importing Employers)</h4>
+<p>一旦某个雇主在你的平台上注册了薪资服务,你就可以使用 Paystream - Import Employers 端点把雇主数据导入 Salsa。</p>
+<pre><code>curl --location 'https://api.salsa.dev/api/rest/v1/paystream/employers' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer &lt;auth_token&gt;' \
+--data '{
+    "data": [
+        {
+            "type": "PaystreamEmployerUpsertInput",
+            "externalId": "myplatform_123",
+            "businessInfo": { "businessName": "Beauty Hair Salon" }
+        }
+    ]
+}'</code></pre>
+<h4>导入员工(Importing Workers)</h4>
+<p>如果你的平台拥有某个雇主旗下员工的数据,你可以使用批量导入端点 Paystream - Import Workers 来导入他们。</p>
+<pre><code>curl --location 'https://api.salsa.dev/api/rest/v1/paystream/workers' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer &lt;auth_token&gt;' \
+--data '{
+    "data": [
+        { "type": "PaystreamWorkerUpsertInput", "employerId": "&lt;example_employer_id&gt;", "firstName": "John", "lastName": "Doe" },
+        { "type": "PaystreamWorkerUpsertInput", "employerId": "&lt;example_employer_id&gt;", "firstName": "Mary", "lastName": "Smith" }
+    ]
+}'</code></pre>
+<h4>导入薪酬条目(Importing pay entries)</h4>
+<p>如果你的平台拥有员工薪酬数据(例如工作小时数或薪资费率),可以发送过来自动填充一份薪资单(payroll),为客户省下数小时手动录入。使用 Paystream - Import payroll elements。</p>
+<pre><code>curl --location 'https://api.salsa.dev/api/rest/v1/paystream' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer &lt;auth_token&gt;' \
+--data '{
+    "data": [
+        { "type": "PaystreamPayEntryUpsertInput", "workerId": "&lt;id_1&gt;", "payReferenceId": "ref:pay:saasexample:us:salary", "startDate": "2025-01-01", "endDate": "2025-01-31", "amount": "3000.00" },
+        { "type": "PaystreamPayEntryUpsertInput", "workerId": "&lt;id_2&gt;", "payReferenceId": "ref:pay:saasexample:us:hourly", "startDate": "2025-01-03", "endDate": "2025-01-03", "hours": "8", "rate": "25" }
+    ]
+}'</code></pre>
+<h3>3. 监听我们推荐的 webhook 事件</h3>
+<p>为了开始运行你的薪资应用,我们提供了一组 webhook 事件,它们可以在你的运营侧、或需要与 Salsa 同步数据时提供帮助。建议先从监听以下事件开始:</p>
+<ul>
+<li><code>PayrollRun.awaitingInput</code>:当某次薪资运行(payroll run)需要薪酬数据时触发。收到此事件时,你必须在所提供的时间区间内,通过 Paystream 把所列员工的全部薪酬条目(pay entry)数据发送过来。如果你的产品对于何时发送薪酬数据已有清晰流程,则此事件非必需。</li>
+<li><code>Worker.onboardingStatus</code>:每当某个员工被邀请入职、或已开始/完成入职时触发。</li>
+<li><code>Notification.employerPaydayReminder</code>:在雇主必须确认下一次已排期的薪资运行之前 2 天触发。</li>
+<li><code>Notification.employerPayrollRunConfirmation</code>:当某个雇主确认一次薪资运行时触发。</li>
+<li><code>Notification.workerPayday</code>:在员工被支付薪资的当天触发(当天 UTC 下午 1 点或晚上 11 点发送)。</li>
+</ul>
+<h3>建议的时间线 🛠️</h3>
+<table>
+<tr><th>阶段</th><th>任务</th><th>时长</th></tr>
+<tr><td rowspan="3">基础设施</td><td>在后端配置 Auth token 端点</td><td>4 小时</td></tr>
+<tr><td>User token 生成</td><td>2 天</td></tr>
+<tr><td>配置 webhook 端点 + 基础处理器</td><td>2 天</td></tr>
+<tr><td rowspan="4">同步雇主数据</td><td>集成 Salsa.js</td><td>2 小时</td></tr>
+<tr><td>集成 import employers 端点</td><td>2 天</td></tr>
+<tr><td>嵌入 Employer Profile</td><td>4 小时</td></tr>
+<tr><td>Employer Onboarding 工作流</td><td>2 天</td></tr>
+<tr><td rowspan="3">同步员工数据</td><td>集成 import workers 端点</td><td>3 天</td></tr>
+<tr><td>嵌入 Worker Profile</td><td>4 小时</td></tr>
+<tr><td>Worker onboarding 工作流</td><td>2 天</td></tr>
+<tr><td rowspan="3">启用薪资运行体验</td><td>集成 import pay entries</td><td>3 天</td></tr>
+<tr><td>嵌入 Employer Dashboard</td><td>6 小时</td></tr>
+<tr><td>嵌入 Worker payments list</td><td>4 小时</td></tr>
+<tr><td>总计</td><td>上线!</td><td>4 周</td></tr>
+</table>
+<h3>额外工作(非开发人员)</h3>
+<p>有些设置工作需要产品和/或设计协作:</p>
+<ul>
+<li>定义薪酬结构(Pay Structures)(通常由产品驱动),例如按小时计薪 vs 按薪资计薪、支付频率等。</li>
+<li>品牌定制(Branding Customization),定义颜色、字体等。</li>
+</ul>
+</section>
+
+<section id="g2">
+<h2>Authorization · 授权(鉴权)</h2>
+<p>安全地访问 Salsa 提供的所有数据和能力。</p>
+<p>对我们 API 发起的所有请求,Salsa 都要求在 <code>Authorization</code> header 中携带一个 OAuth 2.0 Bearer Token。支持两种 token 类型:<strong>API Tokens</strong> 和 <strong>User Tokens</strong>。</p>
+<h3>API Token</h3>
+<p>Salsa 提供两个 API Token 用于访问我们的 API:一个用于 Sandbox 环境,一个用于 Production 环境。这些 token 授予了很多权限,务必妥善保管,切勿公开使用或分享。</p>
+<p>向 Salsa API 发起请求时,请使用以下 base URL:</p>
+<ul><li>Sandbox: <code>api.sandbox.salsa.dev</code></li><li>Production: <code>api.salsa.dev</code></li></ul>
+<p><strong>找不到你的 API token?</strong> 如果弄丢了 token 或需要重新发送,请联系我们。</p>
+<h3>User Token</h3>
+<p>User Token 让你可以临时为某个用户开通访问权限。通过在创建时指定一个 <strong>access role</strong>(访问角色),你可以指定该用户对你数据的访问级别。</p>
+<p>要创建一个 User Token,向 Salsa 的 Credentials API 发送请求。下例演示在 sandbox 环境中,以 <code>EMPLOYER_ADMIN</code> 角色创建 User Token:</p>
+<pre><code>curl --request POST \
+     --url https://api.sandbox.salsa.dev/api/rest/v1/auth/token \
+     --header 'accept: application/json' \
+     --header 'authorization: Bearer ${YOUR_SANDBOX_API_TOKEN}' \
+     --header 'content-type: application/json' \
+     --data '{
+          "type": "CreateEmployerUserTokenInput",
+          "role": "EMPLOYER_ADMIN",
+          "employerIds": ["${SALSA_EMPLOYER_ID_1}", "${SALSA_EMPLOYER_ID_2}"]
+        }'</code></pre>
+<p>该例子中生成的 token 有效期为 <strong>1 小时</strong>,过期后需签发新 token。过期时间可配置。</p>
+<h4>Available Roles(可用角色)</h4>
+<p>角色分三个层级:<em>basic</em>、<em>admin</em> 和 <em>super-admin</em>。每一层级都授予其下一层级的所有权限,并追加更多权限。每个层级还有 <code>*_ONBOARDING_*</code> 变体,只拥有 UI Experiences 的 onboarding workflows 所必需的、经过缩减的权限。用户可被启用以临时提升(step up)到更高角色。</p>
+<table>
+<tr><th>Role</th><th>说明</th></tr>
+<tr><td><code>EMPLOYER_BASIC</code></td><td>一组基本权限。无法执行敏感操作(如添加银行账户)。</td></tr>
+<tr><td><code>EMPLOYER_ONBOARDING_BASIC</code></td><td>同 <code>EMPLOYER_BASIC</code>,但只拥有 onboarding workflows 所需权限。</td></tr>
+<tr><td><code>WORKER_BASIC</code></td><td>一组基本权限。无法执行敏感操作。</td></tr>
+<tr><td><code>WORKER_ONBOARDING_BASIC</code></td><td>同 <code>WORKER_BASIC</code>,但用于 onboarding workflows。</td></tr>
+<tr><td><code>EMPLOYER_ADMIN</code></td><td>查看和修改所有与 employer 关联的数据(workers、payroll runs 等)。</td></tr>
+<tr><td><code>EMPLOYER_ONBOARDING_ADMIN</code></td><td>同 <code>EMPLOYER_ADMIN</code>,但只限 onboarding。</td></tr>
+<tr><td><code>WORKER_ADMIN</code></td><td>查看和修改所有与 worker 关联的数据(个人信息、payment records 等)。</td></tr>
+<tr><td><code>WORKER_ONBOARDING_ADMIN</code></td><td>同 <code>WORKER_ADMIN</code>,但只限 onboarding。</td></tr>
+<tr><td><code>EMPLOYER_SUPER_ADMIN</code></td><td>同对应 admin,再加特权敏感操作,如解除掩码显示完整银行账号和政府证件号(SSN/TIN)。</td></tr>
+<tr><td><code>EMPLOYER_ONBOARDING_SUPER_ADMIN</code></td><td>同上,但只限 onboarding。</td></tr>
+<tr><td><code>WORKER_SUPER_ADMIN</code></td><td>同对应 admin,再加特权敏感操作(解除掩码显示 SSN/TIN 等)。</td></tr>
+<tr><td><code>WORKER_ONBOARDING_SUPER_ADMIN</code></td><td>同上,但只限 onboarding。</td></tr>
+</table>
+<h4>Sensitive and privileged actions(敏感操作与特权操作)</h4>
+<p>敏感操作按层级门禁。添加银行账户或编辑 worker 政府证件号的<strong>值</strong>需要 <em>admin</em>。解除掩码显示完整银行账号或政府证件号、移除 worker 银行账户、下载含政府证件号的 Worker Details 报表,都需要 <em>super-admin</em>。basic 角色都不能做。</p>
+<p>worker 政府证件号的<strong>要求</strong>(是 <code>MANDATORY</code> 强制,还是仍处于 <code>APPLIED_FOR</code> 已申请状态)属普通 worker 数据,非敏感数据,任何能编辑该 worker 的角色都可设置。</p>
+<p>这些限制在 API 层面强制,而非仅 UI。若想按需授予更高层级操作而不直接签发更高角色,请用 step-up(权限提升)流程。</p>
+<h4>Deprecated roles(已弃用角色)</h4>
+<table>
+<tr><th>Deprecated(已弃用)</th><th>Replacement(替换为)</th></tr>
+<tr><td><code>WORKER_USER</code></td><td><code>WORKER_ADMIN</code></td></tr>
+<tr><td><code>WORKER_ONBOARDING</code></td><td><code>WORKER_ONBOARDING_ADMIN</code></td></tr>
+<tr><td><code>EMPLOYER_ONBOARDING</code></td><td><code>EMPLOYER_ONBOARDING_ADMIN</code></td></tr>
+</table>
+</section>
+
+<section id="g3">
+<h2>Build with Salsa · 用 Salsa 来搭建</h2>
+<p>学习使用 Salsa 的 APIs、UI 组件和 Webhooks 来搭建薪酬(payroll)解决方案。</p>
+<p>我们的目标,是把薪酬的种种复杂之处简化,让你能专注于打造出色的产品。我们提供 APIs、可嵌入的 UI 组件,以及 Webhook 通知,让你快速部署自己的薪酬体验;与此同时,由我们的后台(back office)处理所有报税与缴税事务,把你从应对联邦、州和地方各级机构的种种难题中解放出来。</p>
+<h3>Typical flow of funds · 典型的资金流转</h3>
+<p>Salsa 配备了用于向工人(workers)和第三方发放资金的资金流转通道(money movement rails)。我们负责欺诈监控、了解你的业务(Know-Your-Business,KYB)流程,以及反洗钱(Anti-Money Laundering,AML)合规;你只需输入数据,即可完成对工人的付款。</p>
+<blockquote><p>📘 心里另有想法?</p><p>如果你有不同需求——比如使用你自己的资金流转通道或工资卡(pay cards)——请告诉我们。</p></blockquote>
+<h3>Different ways to build · 不同的搭建方式</h3>
+<p>我们提供多种与 Salsa 集成的方式,建议你从某个教程开始:</p>
+<ul>
+<li><strong>Salsa Express</strong>:使用可定制的 UI 组件,以极少的开发工作量,快速搭建并上线薪酬。</li>
+<li><strong>Salsa Advanced</strong>:创建自定义的薪酬体验,并用我们的 REST 和 GraphQL APIs 与你自己的数据同步。</li>
+</ul>
+</section>
+
+<section id="g4">
+<h2>API rate limits · API 调用频率限制</h2>
+<p>Salsa 会限制单个 IP 或单个 API token 可以发起的请求数量,以防止对我们平台的恶意或意外滥用。如果你的正当使用量开始接近这些限制,我们可以调整它们以适配你的需求。</p>
+<h3>IP rate limit · IP 频率限制</h3>
+<p>同一个 IP 地址每 <strong>5</strong> 分钟最多可发送 <strong>3000</strong> 个请求。</p>
+<h3>API Token rate limit · API Token 频率限制</h3>
+<p>拥有 API token 的用户每 <strong>5</strong> 分钟最多可发送 <strong>3000</strong> 个请求,无论 IP 地址是什么。</p>
+<h3>Rate limited Response · 被限流的响应</h3>
+<p>当达到或超过频率限制时,Salsa 返回 <code>429 - Too Many Requests</code> HTTP 状态码。</p>
+</section>
+
+<div class="grouphd">Deep Dives 深入专题</div>
+
+<section id="d1">
+<h2>Employer sign-up workflow · 雇主注册流程</h2>
+<p>了解并跟踪雇主 payroll 注册流程的每一个阶段。</p>
+<p>处理 payroll 意味着要和大量数据打交道,尤其是在雇主 onboarding 阶段。我们设计了一套高效的注册流程,把你的数据与 Salsa 无缝集成。本指南使用 Salsa Express 组件来展示这个注册流程。</p>
+<h3>Payroll setup · Payroll 设置</h3>
+<p>Salsa 通过收集关键数据、执行合规检查、以及从此前的服务商无缝迁移 payroll 总额,来简化给 worker 发薪。整个流程分三个核心阶段:onboarding(入驻)、implementation(实施)和 employer account verification(雇主账户验证)。</p>
+<ul>
+<li><strong>Onboarding(入驻)</strong>:初始阶段收集来自雇主的必要税务和财务信息,为第一次 payroll run 做准备。流程设计得直接,对大多数雇主都熟悉易懂。</li>
+<li><strong>Implementation(实施)</strong>:对于在同一财政年度内更换 payroll 服务商的雇主至关重要。它涉及导入此前的 payroll 总额,以确保税务记录和缴纳准确,并保持 worker 的年初至今(year-to-date)收入一致。</li>
+<li><strong>Employer Account Verification(雇主账户验证)</strong>:在美国和加拿大等地区,payroll 公司必须遵守特定合规标准。这涉及对雇主和 worker 进行强制筛查,以满足 KYB(了解你的业务)和 AML(反洗钱)法规。多数情况下检查会无缝执行。</li>
+</ul>
+<h3>Roles and responsibilities · 角色与职责</h3>
+<table>
+<tr><th>阶段</th><th>主要负责方</th><th>说明</th></tr>
+<tr><td>Onboarding</td><td><strong>你的组织</strong></td><td>使用 Salsa 基础设施,构建并定制体验,以收集必要的雇主和 worker 信息。</td></tr>
+<tr><td>Implementation</td><td><strong>Salsa</strong></td><td>我们为雇主提供上传此前 payroll 信息的体验;concierge 团队跟进导入。若你想自行管理此阶段,请联系我们。</td></tr>
+<tr><td>Employer account verification</td><td><strong>Salsa</strong></td><td>利用算法借助 payroll 数据洞察执行检查,并将任何危险信号(red flags)传达给你的客户支持团队。</td></tr>
+</table>
+<h3>Monitoring · 监控</h3>
+<p>注册过程中,监控 Employer Pay Worker Readiness(雇主给 worker 发薪的就绪度)和 Employer Account Status(雇主账户状态)很重要。前者确保雇主已提供发薪所需全部数据,后者确认雇主满足 KYB 和风险要求可在平台运营。两个字段都可通过 Dashboard 或 API 访问。</p>
+<p>二者独立,因为注册流程并不总是按顺序进行:</p>
+<ul>
+<li>Employer onboarding 和 implementation 是直接、连续的步骤,onboarding 只发生一次。</li>
+<li>Account verification 通常在 implementation 之前结束,运作更独立。若需延伸验证,你的客户支持团队会与 Salsa 协作获取额外细节。</li>
+</ul>
+<blockquote><p>📘 Continuous risk monitoring · 持续的风险监控</p><p>注册之后,雇主会被持续监控风险和 KYB,这可能改变其 Account Standing(账户信誉状况),且与其发薪数据要求相互独立。</p></blockquote>
+<h3>Common scenarios · 常见场景</h3>
+<table>
+<tr><th>场景</th><th>结果</th></tr>
+<tr><td>雇主想注册 payroll</td><td>被标记为 Salsa payroll 客户,雇主和 worker 数据通过 Paystream 同步。<strong>Account Standing Status</strong> 和 <strong>Employer Pay Worker Readiness</strong> 显示必要要求。</td></tr>
+<tr><td>已注册但未完成 onboarding</td><td>雇主完成 onboarding,Salsa 生成给 worker 的邀请。发送 Webhook 通知宣告完成,并通知邀请已可发送。</td></tr>
+<tr><td>已完成 onboarding,本财年未发过薪</td><td><strong>Employer Pay Worker Readiness</strong> 自动从 onboarding 推进到 ready to pay workers,跳过 implementation。</td></tr>
+<tr><td>已完成 onboarding,本财年已发过薪</td><td>Readiness 设为 <strong>Implementation</strong>。雇主可向客户支持提供此前 payroll 数据访问权,或通过 Employer Dashboard 上传所需数据;Salsa concierge 团队跟进导入。完成后 Readiness 转为 <strong>Ready</strong>,即可运行 payroll。</td></tr>
+<tr><td>雇主验证需要更多数据</td><td>Account Standing 设为 restricted(受限),客户支持联系收集额外数据;期间雇主无法发薪。</td></tr>
+<tr><td>雇主账户无法获批</td><td>基于风险和合规评估,Account Standing 设为 rejected(已拒绝),阻止该雇主在平台运营。</td></tr>
+</table>
+</section>
+
+<section id="d2">
+<h2>Worker payment returns · 员工付款退回</h2>
+<p>当一个薪资运行(payroll run)被确认后,Salsa 开始将计算出的应付金额从雇主银行账户转移到员工银行账户。这个资金流转包含两笔主要的 ACH 交易:</p>
+<ol>
+<li><strong>Employer Funding(ACH debit)</strong>——从雇主银行账户提取资金。</li>
+<li><strong>Payouts(ACH credits)</strong>——将资金推送到员工银行账户。</li>
+</ol>
+<p>ACH 交易处理通常有前置时间(lead time)。为确保及时向员工付款,payouts 会在 employer funding 完全处理完成之前的 2 到 4 个工作日就发起。</p>
+<h3>How it works · 运作方式</h3>
+<p>员工付款可能因各种原因失败,例如雇主账户资金不足,或银行账户被冻结。发生时,Salsa 用以下流程管理被退回的付款:</p>
+<ul>
+<li>自动将 employer payouts 及相关税款转账暂时置于保留(on hold),确保资金问题解决前不处理后续交易。</li>
+<li>尝试用 payment return codes 识别并归类失败根因,然后纠正情况并成功重新扣款(re-debit)雇主账户。</li>
+<li>向你注册的 webhook endpoint 发送实时 webhook 事件通知。把这些通知按 return code 映射到邮件模板,可自动向员工和雇主发送有针对性的邮件。</li>
+</ul>
+<h3>Payment return lifecycles · 付款退回的生命周期</h3>
+<h4>Option 1: Two day processing · 方案一:两天处理</h4>
+<p>雇主可在发薪日(payday)前两天发起 funding:</p>
+<ol>
+<li><strong>薪资运行确认</strong>:确认后资金转移开始。</li>
+<li><strong>发起 Employer Funding</strong>:发薪日前两天,从雇主账户提取资金。</li>
+<li><strong>发起 Payouts</strong>:发薪日前一天,将资金推送到员工账户。</li>
+<li><strong>Employer Funding Return(雇主付款退回)</strong>:遇失败的 funding 交易时,雇主账户自动置于 <code>RESTRICTED</code>,阻止发起额外薪资运行,直到问题解决。同时发送 <code>Notification.Payment.employerFundingFailed</code>。</li>
+<li><strong>Re-Debit Attempt(重新扣款尝试)</strong>:Salsa 发起重新扣款,同时发送 <code>Notification.Payment.employerFundingRescheduled</code>。
+<ol type="i"><li><strong>成功</strong>:发送 <code>Notification.Payment.employerFundingCleared</code>,账户恢复 <code>ACTIVE</code>,可恢复薪资运行。</li>
+<li><strong>失败</strong>:自动重试最多三次;若都未清算成功,建议立即让客户体验团队介入。视合同条款,由你的组织或 Salsa 的 Customer Success 团队联系雇主商讨还款计划。</li></ol></li>
+</ol>
+<h4>Option 2: Four day processing · 方案二:四天处理</h4>
+<p>雇主可在发薪日前四天发起 funding:发薪日前四天发起 Employer Funding;遇失败则账户置 <code>RESTRICTED</code> 并发 <code>employerFundingFailed</code>;发薪日前一天发起 Payouts(此时 funding 应已结算 settled),Salsa 发起重新扣款并发 <code>employerFundingRescheduled</code>。</p>
+<h3>Payment return codes · 付款退回代码</h3>
+<p>付款被退回时用以下代码归类原因。把 webhook 映射到对应邮件模板,可动态向雇主发送说明 funding 失败具体原因的个性化邮件。</p>
+<table>
+<tr><th>代码</th><th>说明</th></tr>
+<tr><td>R01</td><td>资金不足(Insufficient funds)</td></tr>
+<tr><td>R02*</td><td>账户已关闭</td></tr><tr><td>R03*</td><td>无此账户/无法定位账户</td></tr>
+<tr><td>R04*</td><td>无效的账号</td></tr><tr><td>R05*</td><td>用企业 SEC 代码对消费者账户的未授权扣款</td></tr>
+<tr><td>R06</td><td>应 ODFI 请求而退回</td></tr><tr><td>R07*</td><td>客户撤销授权</td></tr>
+<tr><td>R08</td><td>付款已被止付</td></tr><tr><td>R09*</td><td>未收妥资金</td></tr>
+<tr><td>R10*</td><td>客户告知未授权/不当/不合资格</td></tr><tr><td>R11</td><td>支票截留提前退回</td></tr>
+<tr><td>R12*</td><td>账户已售予另一家 DFI</td></tr><tr><td>R13*</td><td>无效的 ACH 路由号</td></tr>
+<tr><td>R14*</td><td>代收款人已故或无法继续</td></tr><tr><td>R15*</td><td>受益人或账户持有人已故</td></tr>
+<tr><td>R16*</td><td>账户被冻结/按 OFAC 指令退回</td></tr><tr><td>R17*</td><td>文件记录编辑标准错误</td></tr>
+<tr><td>R20*</td><td>非交易账户</td></tr><tr><td>R23*</td><td>收款方拒绝该笔贷记项目</td></tr>
+<tr><td>R24</td><td>重复的项目</td></tr><tr><td>R28*</td><td>路由号校验位错误</td></tr>
+<tr><td>R29*</td><td>企业客户告知未授权</td></tr><tr><td>R45</td><td>无效的个人/公司名称</td></tr>
+</table>
+<p>(*)这些代码不应向终端用户披露,以防欺诈者利用它们提取有价值信息。请在内部处理,并向用户显示通用错误消息(如 "Payroll run funding failed")。暴露确切代码可帮助攻击者验证银行详情、确认账户是否存在、或发起枚举攻击。</p>
+</section>
+
+<section id="d3">
+<h2>Salsa originated payments · 由 Salsa 发起的付款</h2>
+<p>对源自 Salsa 的银行交易所使用的模式与实践的说明。</p>
+<p>为确保由 Salsa 发起的付款保持一致且易于识别,我们对所有生成的银行交易应用一套简单模式。这带来可预测性,可帮助:入站客户支持咨询(识别付款及用途)、为雇主自动对账/生成分类账(ledger)。</p>
+<p>交易总体构成包含以下一个或多个组成部分:</p>
+<ul>
+<li><strong>Transaction Code(交易代码)</strong>——由 Salsa 定义、唯一标识某种付款类型(3 个字符)。</li>
+<li><strong>Partner Code(合作伙伴代码)</strong>——5 个字母的 slug,合作伙伴名称的简短缩写(最多 5 字符)。</li>
+<li><strong>Partner Name(合作伙伴名称)</strong>——合作伙伴名称(最多 16 字符)。</li>
+<li><strong>Employer Name(雇主名称)</strong>——雇主商业名称(最多 16 字符)。</li>
+</ul>
+<h3>Transaction Code Glossary · 交易代码术语表</h3>
+<table>
+<tr><th>代码</th><th>付款类型</th></tr>
+<tr><td>PRL</td><td><strong>Employer Payroll Funding</strong>——从雇主账户收取、用于为薪资运行提供资金的现金需求。</td></tr>
+<tr><td>PAYROLL</td><td><strong>Worker Payment Net</strong>——存入员工账户的净薪(net pay)。</td></tr>
+<tr><td>EPR</td><td><strong>Employer Payroll Refund</strong>——退还至雇主账户的薪资运行金额退款。</td></tr>
+<tr><td>WPR</td><td><strong>Worker Payment Refund</strong>——退还至雇主账户的员工付款金额退款。</td></tr>
+<tr><td>TXR</td><td><strong>Tax Refund</strong>——季末对账期间退还至雇主账户的税款。</td></tr>
+<tr><td>TXD</td><td><strong>Tax Debit</strong>——季末对账期间从雇主账户扣除的税款。</td></tr>
+<tr><td>PPT</td><td><strong>Prior Payroll Taxes</strong>——更换服务商时,从雇主账户扣除以覆盖未缴税款负债。</td></tr>
+<tr><td>SCR</td><td><strong>Service Cancellation Refund</strong>——终止服务后退还至雇主账户的未清负债退款。</td></tr>
+</table>
+<h3>ACH(自动清算所 · 美国)</h3>
+<p>美国雇主的电子付款与资金划转使用 ACH 网络。ACH 允许发送 Originating Party Name(发起方名称,限 16 字符)和 Statement Descriptor(对账单描述,限 10 字符)。多数付款类型:发起方=合作伙伴名称,对账单描述=交易代码+合作伙伴代码。例外是 Worker Payment Net:发起方=雇主名称,描述=<code>PAYROLL</code>。</p>
+<h3>EFT(电子资金划转 · 加拿大)</h3>
+<p>加拿大雇主使用 EFT,只允许发送 Statement Descriptor。多数付款类型显示交易代码+合作伙伴代码;例外 Worker Payment Net 用 <code>PAYROLL</code>。</p>
+</section>
+
+<section id="d4">
+<h2>Payroll Elements · 薪资要素</h2>
+<p>Salsa 在所有薪资要素(payroll elements)上采用一套统一模式,让你能轻松配置并完全掌控薪资处理方式。</p>
+<p><em>在 Salsa,我们通过三个各自独立又协同运作的概念来管理所有影响薪资运行的数据输入:"Types"(类型)、"Policies"(政策)和 "Entries"(条目)。这套模式在所有薪资要素上一致。</em></p>
+<h3>Payroll Elements(薪资要素)</h3>
+<p>薪资要素是指任何工人级别(worker-level)的数据输入,雇主把它带入一次薪资运行,经计算后最终在工人收入记录(earnings record)上生成一条 pay、deduction 和/或 contribution 条目。Salsa 支持:</p>
+<table>
+<tr><th>要素</th><th>说明</th></tr>
+<tr><td><strong>Pay</strong></td><td>工资与薪酬类型(hourly 时薪、salary、commission 提成、bonus 奖金、reimbursement 报销)</td></tr>
+<tr><td><strong>Benefits</strong></td><td>与福利计划相关的雇主缴款,和/或雇员发起的扣减(401k、health insurance、FSA)</td></tr>
+<tr><td><strong>Deductions</strong></td><td>从税前总薪酬(gross pay)中的扣减(loan repayments、cash advances、union dues)</td></tr>
+<tr><td><strong>Garnishments</strong></td><td>依法院命令或法律从工资中作出的扣减(child support、wage levies、tax liens)</td></tr>
+<tr><td><strong>Time Off</strong></td><td>已累积或可用的休假(PTO、vacation、sick time)</td></tr>
+<tr><td><strong>Premiums</strong></td><td>基于工作条件的特殊薪酬加项(split shift premium、spread of hours premium)</td></tr>
+<tr><td><strong>Workers Compensation Insurance</strong></td><td>用于雇主保险分类与参保管理的工伤赔偿跟踪</td></tr>
+</table>
+<p>每个要素会使用下述 Types、Policies、Entries 的某种组合。本指南示例聚焦 Pay,但概念适用所有要素。并非每个要素都用到每一层级。</p>
+<h3>Types(类型)</h3>
+<p>所有要素的 types 构建在 Jurisdictional Types(辖区类型)之上——由合规规则定义的类别,承载某辖区的税务处理(tax treatment)和监管规则。由 Salsa 管理、不可直接配置,是所有 partner/employer types 继承的基础。</p>
+<p>一名雇员在单个 pay period 内拥有多种 pay 类型很常见,如 Hourly Pay、Salary、Commission、Tips、Bonus。我们通过 Type 模型捕获,可在 Partner(合作方)层或 Employer(雇主)层收集。</p>
+<h4>Partner Types(合作方类型)</h4>
+<p>Salsa 允许你作为 partner 掌控哪些 types 可供 employers 使用。Partner types 是系统级配置。作为账户搭建的一部分,我们为你收集配置所需 types;配置后即可供你的 employers 使用。可添加数量不限、随时添加——新增一个 type 只需点击几下,所有 employers 自动获得使用权限。可通过 Retrieve all PartnerPayTypes API 查看。</p>
+<blockquote><p>📘 示例</p><p>你发现所有 employers 通常支付 "Hourly Pay" 和 "Tips",可在 partner 层配置好让所有 employers 立即可用。后续如需 "Cash Tips"(税务处理不同于 Tips)或 "Bonus",也可配置后立即启用。</p></blockquote>
+<h5>Reference Id(引用 Id)</h5>
+<p>每个 type 配置一个唯一 referenceId,在 Sandbox 和 Production 环境间保持一致,这样构建集成时可把 type 当作一个"概念"看待,不必关心每个环境的具体实例。</p>
+<h4>Employer Types(雇主类型)</h4>
+<p>另有一层<em>可选</em>自定义:每个 partner type 可进一步配置成针对每个 employer 需求的分支变体。可通过 Retrieve all EmployerPayTypes 管理。</p>
+<blockquote><p>📘 示例</p><p>你支持 "Hourly Pay",但 Employer A 想把工时分为 "Shop Hours" 和 "Storeroom Hours",分开显示、各配默认值。可基于 "Hourly Pay" partner type 配置成新的 employer pay types。</p></blockquote>
+<h3>Policies(政策)</h3>
+<p>types 搭建好后,让 employers 配置控制某要素如何为工人处理的循环值和输入,即 Employer Policies 和 Worker Policies。一个 policy 可引用 partner type 或 employer type。</p>
+<h4>Employer Policies(雇主政策)</h4>
+<p>让 employer 配置公司级默认值,搭建工人时可继承。通过 Employer profile UI 组件管理。</p>
+<blockquote><p>📘 示例</p><p>"Shop Hours" 下 till workers(收银)通常 $12.50/时,floor workers(卖场)$9/时。可配两个 Employer Pay Policy:显示名 "Till Workers" 默认 $12.50、"Floor Workers" 默认 $9,免去逐人设置。</p></blockquote>
+<h4>Worker Policies(工人政策)</h4>
+<p>把一名工人分配到某特定 type 的手段。创建后该 type 开始出现在该工人的薪资运行中。采用 <strong>read-through(读透)模式</strong>:工人未覆盖某字段时,值从 employer policy 继承。通过 Worker profile UI 组件管理。</p>
+<blockquote><p>📘 示例</p><p>Worker A 是 "Till Worker" 但实际 $14/时。可基于 "Till Worker" employer policy 为其创建 worker policy(把 A 附加到 "Shop Hours" 上),再把默认 $12.50 覆盖为 $14,只影响 A。</p></blockquote>
+<h3>Worker Entries(工人条目)</h3>
+<p>代表某 type 的一个具体实例——工人已挣得的那一笔。通过 Paystream 捕获(如需)。</p>
+<blockquote><p>📘 示例</p><p>你的系统管理 "Hourly Pay"。账户搭建时禁用该 pay type 使其不再对 employers 可用(你的系统是事实来源 source of truth)。Worker A 于 2024-01-01 以 $14/时工作 8 小时,你通过 Paystream 把它作为 Worker Pay Entry 发来,存入 Salsa 并出现在薪资运行和收入记录上。</p></blockquote>
+<blockquote><p>❗️ 注意</p><p>Worker Entries 优先级高于 Worker Policies。若你既有 "Hourly Pay" worker policy 又发来 "Hourly Pay" worker entry,则薪资运行中只处理这个 entry。</p></blockquote>
+</section>
+
+<section id="d5">
+<h2>Risk Insights Input Fields · 风险洞察输入字段</h2>
+<p>关于 Salsa 用于风险洞察指标的字段的说明。描述在 <code>POST /api/rest/v1/paystream/risk-insight-inputs</code> 端点的请求负载上传递的字段,用于将风险洞察指标(Risk Insight Metrics)从雇主发送给 Salsa。</p>
+<table>
+<tr><th>字段</th><th>说明</th><th>类型</th></tr>
+<tr><td>type(必填)</td><td>固定值 <code>PaystreamEmployerRiskMetricsOnPartnerPlatformUpsertInput</code></td><td>string</td></tr>
+<tr><td>employerId(必填)</td><td>Salsa 提供的雇主标识符(如 <code>er_309...</code>)</td><td>string</td></tr>
+<tr><td>revenueInfo.averageMonthlyRevenue</td><td>平均月收入,字符串,如 <code>"1000.00"</code></td><td>string, decimal</td></tr>
+<tr><td>payingUserInfo.totalPaymentsCount</td><td>付费用户向你平台的总付款次数</td><td>integer ≥0</td></tr>
+<tr><td>payingUserInfo.subscriptionStatus</td><td><code>FREE_ACCOUNT</code>/<code>FREE_TRIAL</code>/<code>PAYING_USER</code>/<code>PAYING_USER_DELINQUENT</code>(逾期)/<code>BLOCKED</code>(封禁)/<code>CANCELED</code></td><td>enum</td></tr>
+<tr><td>riskAssessment.riskClassification</td><td><code>LOW_RISK</code>/<code>MEDIUM_RISK</code>/<code>HIGH_RISK</code>/<code>NOT_EVALUATED</code></td><td>enum</td></tr>
+<tr><td>signUpDate</td><td>用户在你平台注册的日期</td><td>date ISO-8601</td></tr>
+<tr><td>activeFeatures[].name</td><td><code>PAYMENT_PROCESSING</code>/<code>TIME_TRACKING</code>/<code>SCHEDULING</code>/<code>ACCOUNTING</code></td><td>enum</td></tr>
+<tr><td>activeFeatures[].activeSince</td><td>开始使用此功能的日期</td><td>date ISO-8601</td></tr>
+<tr><td>activeFeatures[].paymentsProcessedAmount</td><td>若为 <code>PAYMENT_PROCESSING</code>,已处理付款总额</td><td>string, decimal</td></tr>
+<tr><td>activeFeatures[].lastSchedulingDate</td><td>若为 <code>SCHEDULING</code>,最后一次使用排班的日期</td><td>date ISO-8601</td></tr>
+<tr><td>acquisitionChannel</td><td>获客渠道:<code>INBOUND_SALES</code>/<code>OUTBOUND_SALES</code>/<code>REFERRAL</code>/<code>WEB</code>/<code>OTHER</code></td><td>enum</td></tr>
+<tr><td>businessWebsite</td><td>雇主的商业网站</td><td>string</td></tr>
+</table>
+<p class="note">除非标记必填,所有字段均可选;有什么就发什么。省略未知字段(不要发送 null 值)。</p>
+</section>
+
+<div class="grouphd">Concepts 概念</div>
+
+<section id="c1">
+<h2>Embedded Payroll · 内嵌式薪资</h2>
+<h3>什么是 embedded payroll?</h3>
+<p>构建、提供并支持一款合规的 payroll 产品很复杂。Embedded payroll 通过提供所需基础设施,让在既有产品内部推出并提供 payroll 变得简单得多。通过处理税务、资金流转、合规等复杂细节,embedded payroll 提供方使产品公司能向客户提供 payroll 服务。但并非所有提供方都一样。</p>
+<h3>为什么选择 Salsa?</h3>
+<p>Salsa 提供市场上最现代化的 payroll 基础设施。我们借助数十年 payroll 专业经验,从零重新构想 payroll,而非复制已有的东西。我们的产品设置更快、维护更容易、更灵活、更可扩展、更不易出错,让各类组织能更快推出 payroll,把精力集中在以毫不费力的体验取悦客户上。</p>
+</section>
+
+<section id="c2">
+<h2>Payroll Fundamentals · 薪资基础</h2>
+<p>确立 Salsa 美国薪资基础的通用术语与定义。本章节描述与美国境内员工薪酬和税款的计算、处理及管理相关的基础概念与实践。</p>
+<p class="note">该父页仅含上述引言;实质内容在其下的 7 个子页(内嵌式薪资、雇主信息、员工分类、金额计算策略、员工付款记录、资金流转、员工薪资组)。</p>
+</section>
+
+<section id="c3">
+<h2>Employer Information · 雇主信息</h2>
+<p>为了准确计算和管理 payroll,Salsa 需要某些雇主信息。一个 Employer 代表雇用并支付 Worker 报酬的法律实体,必须向税务机构登记注册,授权 payroll 服务商代表其申报和缴税,并遵守严格的 KYB 合规要求。</p>
+<h3>Employer name · 雇主名称</h3><p>雇主的法定名称,出现在官方文件和申报材料上,应与 IRS 存档名称完全一致。</p>
+<h3>Work location · 工作地点</h3><p>worker 被要求履行职责的实际物理地址,用于准确计算和申报税款;一个雇主列出多个 work location 很常见。</p>
+<h3>Mailing address · 邮寄地址</h3><p>必需,因为某些州立法规定它必须显示在 worker 付款记录文件上。可与某个 work location 或 filing address 相同,也可单独。</p>
+<h3>Filing address · 申报地址</h3><p>也称 legal address(法定地址),是主要营业地点,应与 IRS 存档地址一致;Salsa 代表 Employer 申报税款时使用。</p>
+<h3>Bank account information · 银行账户信息</h3><p>必须提供以完成 payroll 付款,含 account name、routing number、account number,并确保账户有效且活动。</p>
+<h3>IRS Federal EIN · 联邦 EIN</h3><p>通常称 FEIN,IRS 分配的 9 位数字 ID,使 Salsa 能准确申报缴纳联邦税,应与官方文件一致。</p>
+<h3>State EIN · 州 EIN</h3><p>也称 state account ID,由对应州级机构分配,使 Salsa 能准确申报缴纳州税;格式因 tax agency 而异,常见于机构直邮件上。</p>
+<h3>Deposit frequency · 缴款频率</h3><p>也称 deposit schedule,由对应州税务机构分配,决定税款到期缴纳频率,常见 semiweekly(每半周)、monthly、quarterly、annual。</p>
+<h3>Tax rate · 税率</h3><p>由对应 tax agency 分配,决定雇主需代表 worker 缴税的百分比。</p>
+</section>
+
+<section id="c4">
+<h2>Worker Classification · 员工分类</h2>
+<p>一个 Worker 会被分类为两种之一:"employee"(员工,<em>用 W-2 表格申报</em>)或 "independent contractor"(独立承包商,<em>用 1099-NEC 表格申报</em>)。</p>
+<blockquote><p>🚧 <strong>错误分类可能导致罚款</strong></p><p>正确分类 Worker 很重要,这样才能收集正确的设置信息、准确计算税务缴款,并避免因分类错误产生的罚款。</p></blockquote>
+<h3>Employee · 员工</h3>
+<p>有时称 W-2 worker,是为雇主提供服务、且雇主能控制"做什么"和"怎么做"的劳动者。支付给 employee 的款项在到手工资(net pay 净工资)之前需先扣缴税款和各项 deductions。分两类:</p>
+<ul>
+<li><strong>Exempt(豁免)</strong>:无权获得加班费,通常是行政管理类、事务管理类、专业技术类及外勤销售类员工。</li>
+<li><strong>Non-exempt(非豁免)</strong>:依《公平劳动标准法》(FLSA)享有最低工资和加班费等权利与保护。</li>
+</ul>
+<h3>Independent contractor · 独立承包商</h3>
+<p>也称 1099 worker,付款方只有权控制或指导工作"结果",无权控制"做什么/怎么做"。通常不从报酬预扣所得税,每年收到 1099-NEC 表格申报所收报酬,其收入需缴 self-employment tax(自雇税)。</p>
+</section>
+
+<section id="c5">
+<h2>Amount strategies · 金额计算策略</h2>
+<p>雇主可用几种不同方法计算员工收入。在 Salsa 我们称之为 amount strategies,包括 "fixed amount"(固定金额)、"percentage"(百分比)和 "rate based"(基于费率)。每种都提供一种按每个 pay period 计算收入的方式。</p>
+<h3>Fixed amount · 固定金额</h3><p>基于单个 pay period 内设定好的固定美元金额计算报酬,与工时、销售额无关。常见于 tips 小费、bonuses 奖金、flat commissions 固定佣金、salaries 薪水。</p>
+<h3>Percentage · 百分比</h3><p>基于某个总额(gross amount)的一个百分比计算报酬。典型例子是佣金(commission):按某总额(如达成销售额)的百分比算。</p>
+<h3>Rate based · 基于费率</h3><p>基于每个时间段设定好的 pay rate 计算报酬。最常见是"每小时费率"(按小时计薪),也有"每周费率""每月费率"。</p>
+<blockquote><p>📘 示例</p><p>某员工 $10/时,一周工作 30 小时,总收入 $300($10 × 30)。</p></blockquote>
+<p class="note">此 Concepts 页只用叙述性名称(Fixed amount / Percentage / Rate based),API 层可能对应 <code>FIXED</code>/<code>RATE_BASED</code> 等枚举字段名。</p>
+</section>
+
+<section id="c6">
+<h2>Worker payment records · 员工付款记录</h2>
+<p>提供关于员工每个发薪周期收入、员工代扣项、雇主缴款以及净得工资的重要信息。也常称 "payslip"(工资单)、"paystub"(工资条)或 "paycheck"(薪水支票)。</p>
+<blockquote><p>趣味事实:向员工提供付款记录其实并非联邦法律强制要求,但很多州都有强制规定。</p></blockquote>
+<h3>Gross wages · 税前总工资</h3><p>员工在任何税款、福利或其他扣款从工资中扣除之前的收入总额。</p>
+<h3>Deductions · 扣款</h3>
+<h4>Pre-tax deductions · 税前扣款</h4><p>在税款代扣<em>之前</em>从 gross wages 中减去,会降低整体税务负担。常见:401(k)、Medical benefits、Group term life insurance。</p>
+<h4>Post-tax deductions · 税后扣款</h4><p>在税款代扣<em>之后</em>从 gross wages 中减去,不降低税务负担。常见:Roth IRA、Union dues(工会会费)、Wage garnishments(工资扣发)。</p>
+<h3>Employer contributions · 雇主缴款</h3><p>雇主为雇主发起的计划(如 health insurance 或 401(k))所做的财务缴款,不影响 gross wages 总额。</p>
+<h3>Reimbursements · 报销</h3><p>偿付员工自付支出,通常包含在 payroll 中,是不计税的(non-taxable)。</p>
+<h3>Tax withholdings · 税款代扣</h3>
+<p>员工和雇主都需就收入缴税。IRS 和各税务机构要求特定代扣,含失业税和所得税。</p>
+<p><strong>Employee taxes 员工税</strong>:Federal income tax、Social security、Medicare、State income tax(适用时)等。</p>
+<p><strong>Employer taxes 雇主税</strong>:Social security、Medicare、Federal Unemployment、State Unemployment 等。</p>
+<h3>Net pay · 净得工资</h3><p>员工到手工资(take home pay),即所有税款和扣款扣除后的金额。</p>
+<pre><code>Net Pay = Gross wages − Employee taxes − Employee deductions</code></pre>
+<h3>Total payroll cost · 薪资发放总成本</h3><p>每次处理 payroll 都伴随薪资成本,是一项雇主成本。</p>
+<pre><code>Total employer cost = Gross wages + Employer taxes + Employer contributions + Reimbursements</code></pre>
+</section>
+
+<section id="c7">
+<h2>Money Movement · 资金流转</h2>
+<p>处理 payroll 时有若干步骤需要资金流转,包括 employer debits(雇主扣款)、worker payments(员工付款)、tax payments(税款缴纳)等。</p>
+<h3>Employer debits · 雇主账户扣款</h3>
+<p>代表为覆盖员工付款、税款缴纳及报销而需从雇主账户提取的总金额。</p>
+<blockquote><p>🤖 <strong>Total employer debit(雇主账户扣款总额)</strong></p><p>Gross wages(税前工资总额)+ Employer taxes(雇主税)+ Reimbursements(报销)</p></blockquote>
+<blockquote><p>🚧 Employer contributions 目前不含在 employer debit 内</p><p>目前雇主向公司发起的计划所做缴款会在 Salsa 中被追踪,但需在系统之外与相应 providers 对账核销。</p></blockquote>
+<h3>Worker payments · 员工付款</h3>
+<p>代表员工应收到的已挣得薪酬,通常以 direct deposit(直接存款)、paper check(纸质支票),有时以 cash(现金)发放,由雇主决定方式。</p>
+<ul>
+<li><strong>Direct deposit</strong>——从雇主银行账户自动划转直接进入员工银行账户。</li>
+<li><strong>Paper check</strong>——用以支付已挣工资的实体纸质支票。</li>
+<li><strong>Cash</strong>——用以支付已挣工资的现金付款。</li>
+</ul>
+<h3>Tax payments · 税款缴纳</h3>
+<p>代表必须缴纳的各类税款(federal/state/local income tax、social security and Medicare taxes 等)。缴税与报税可能复杂难懂,Salsa 会代表雇主 withholding(代扣)并 submitting(提交)所有 payroll tax payments,确保始终合规。</p>
+</section>
+
+<section id="c8">
+<h2>Worker pay groups · 员工薪资组</h2>
+<p>一个 worker pay group 是把具有共同特征的员工归为一组的便捷方式,通过满足共同处理要求(pay schedule 发薪日程、worker classification 员工分类、所支付薪酬类型等)来简化 payroll 处理。把一个雇主下的一组员工合并,可高效地用于填充(populate)payroll run(发薪批次)。</p>
+<h3>Pay Schedule · 发薪日程</h3>
+<p>最常用的 pay group 是那些同时定义了 schedule 的——常直接称 "pay schedules"。雇主可配置 frequency(发薪频率)及每周/每月具体日期,由此决定 pay period(发薪周期)和 pay date(发薪日)。基于 schedule,pay group 会有一组已知 pay period,便于按循环日程给这组员工发薪。</p>
+</section>
+
+<div class="grouphd">Use cases 使用场景</div>
+
+<section id="u1">
+<h2>Embed a component · 嵌入一个组件</h2>
+<p>使用 Salsa.js 轻松地将预构建的 UI 元素集成到你的应用程序中。Salsa.js 是浏览器端 JavaScript 库,让你在 payroll 应用中嵌入 Salsa 预构建的 UI 元素。本指南教你设置 Salsa.js、创建并挂载一个 element。</p>
+<h3>加载并初始化 Salsa.js</h3>
+<p>第一步是把 Salsa.js 加载进应用:</p>
+<pre><code>&lt;script type="text/javascript" src="https://js.salsa.dev/v0" /&gt;</code></pre>
+<blockquote><p>📘 异步加载:用 <code>async</code> 或 <code>defer</code> 属性异步加载该脚本。</p></blockquote>
+<p>接着,用你的 Client Key 并指定环境,创建 Salsa.js 实例:</p>
+<pre><code>const salsa = window.Salsa('my-public-client-key', {env: 'sandbox'});</code></pre>
+<h3>插入一个 UI element</h3>
+<p>在目标视图创建一个 element 实例并指定其 name:</p>
+<pre><code>const demoElement = salsa.elements.create('demo');</code></pre>
+<blockquote><p>📘 授权:生产环境里很多 element 需要 user token 才能授权。</p></blockquote>
+<p>创建一个空 div 作为容器,再把 element 挂载进去:</p>
+<pre><code>&lt;div id='salsa-container' /&gt;
+salsa.elements.mount(demoElement, '#salsa-container');</code></pre>
+<p>视图加载时,你应看到 demo element 嵌入在应用中。</p>
+<h3>Cleanup · 清理</h3>
+<p>卸载含 Salsa UI element 的视图时,务必调用 <code>destroy</code> 清理已打开的项目:</p>
+<pre><code>salsa.elements.destroy(demoElement);</code></pre>
+</section>
+
+<section id="u2">
+<h2>Onboard an employer · 让雇主入驻</h2>
+<p>了解如何通过托管 UI 体验(hosted UI experience)把雇主入驻到 Salsa。只需几步就能让一个新业务(employer)通过托管 UI 完成入驻。下面你将创建并入驻一个新雇主,并全程监控状态。</p>
+<h3>Create an Employer · 创建雇主</h3>
+<p>用 Create Employer 操作创建 Employer,指定业务名称和所在国家。</p>
+<pre><code>curl --location 'https://api.sandbox.salsa.dev/api/rest/v1/employers' \
+--header 'Content-Type: application/json' --header 'Accept: application/json' \
+--header 'Authorization: Bearer ${YOUR_API_TOKEN}' \
+--data '{ "businessName": "Shack 22", "country": "USA" }'</code></pre>
+<p>返回里含 <code>id</code>(如 <code>er_a5127cc7-...</code>),保存好下一步用。</p>
+<h3>Start onboarding · 开始入驻</h3>
+<p>用 Create Hosted Employer Onboarding 操作创建托管工作流,把上一步的 <code>id</code> 传入。该对象会开通访问权限、给出一个入驻 URL、并提供当前入驻状态。返回含 <code>status</code>(如 <code>INVITED</code>)和 <code>inviteUrl</code>。</p>
+<h3>Share the onboarding URL · 分享入驻 URL</h3>
+<p>把 <code>inviteUrl</code> 通过邮件、短信或直接在应用中分享给雇主。默认有效期 30 天。</p>
+<blockquote><p>🚧 该 URL 无需额外身份验证即可访问该体验,务必只分享给预期接收者。</p></blockquote>
+<h3>Monitor onboarding status · 监控入驻状态</h3>
+<p>可用 <code>GET</code> 直接拉取 Hosted Employer Onboarding 对象,或用 Webhooks 监听更新。要用 Webhooks 就必须配置 Webhook 端点(见 Webhooks 页)。入驻 <code>status</code> 变化时会发送 <code>Employer.onboardingStatus</code> 事件。</p>
+<h3>Onboarding Status Messages · 入驻状态消息</h3>
+<ul>
+<li><strong>INVITED</strong>:已生成入驻链接,邀请雇主自助入驻。</li>
+<li><strong>STARTED</strong>:雇主已开始入驻。</li>
+<li><strong>INVALIDATED</strong>:已开始新的入驻,或现有链接已过期。</li>
+<li><strong>COMPLETED</strong>:雇主已完成入驻。</li>
+</ul>
+<blockquote><p>📘 <code>Employer.PayWorkersReadiness.statusChanged</code> 事件追踪雇主入驻的完整生命周期,详见 Employer Readiness。</p></blockquote>
+</section>
+
+<section id="u3">
+<h2>Onboard workers · 让员工入驻</h2>
+<p>了解如何通过托管 UI 体验把员工入驻到 Salsa。把员工加入 payroll 需在有限时间内收集大量敏感信息。本指南假设你已完成雇主入驻并拿到 employer ID。</p>
+<h3>Create a Worker · 创建员工</h3>
+<p>用 Create Worker 操作创建 Worker,传入 <code>employerId</code>,指定名和姓。</p>
+<pre><code>curl --location 'https://api.sandbox.salsa.dev/api/rest/v1/employers/${employerId}/workers' \
+--header 'Content-Type: application/json' --header 'Authorization: Bearer ${YOUR_API_TOKEN}' \
+--data '{ "firstName": "Olivia", "lastName": "Johnson" }'</code></pre>
+<p>返回含 <code>id</code>(如 <code>wr_...</code>)和默认 <code>classification: "EMPLOYEE"</code>。</p>
+<h3>Create a Worker Contract · 创建员工合同</h3>
+<p>用 Create WorkerContract 操作,传入 <code>employerId</code>、<code>workerId</code>,并指定分类(classification)及加班资格(overtime eligibility)。</p>
+<pre><code>--data '{ "classification": "EMPLOYEE", "overtimeEligible": "true" }'</code></pre>
+<h3>Start onboarding · 开始入驻</h3>
+<p>为该员工创建 Hosted Worker Onboarding 实例(传入 <code>employerId</code> 和 <code>workerId</code>)。返回含 <code>status</code> 和 <code>inviteUrl</code>。</p>
+<h3>Share the onboarding URL · 分享入驻链接</h3>
+<p>把 <code>inviteUrl</code> 通过邮件/短信/应用内分享给员工(Salsa 提供邮件模板示例)。默认给员工 30 天设置其信息。</p>
+<blockquote><p>🚧 该 URL 无需额外验证即可访问,务必只分享给本人。</p></blockquote>
+<h3>Monitor onboarding status · 监控入驻状态</h3>
+<p>可用 <code>GET</code> 直接拉取,或用 Webhooks 监听。入驻 <code>status</code> 变化时发送 <code>Worker.onboardingStatus</code> 事件。</p>
+<h3>Onboarding Status Messages · 入驻状态消息</h3>
+<ul><li><strong>INVITED</strong> / <strong>STARTED</strong> / <strong>INVALIDATED</strong> / <strong>COMPLETED</strong>(含义同雇主入驻)。</li></ul>
+</section>
+
+<section id="u4">
+<h2>Webhooks · 事件回调</h2>
+<p>用 Salsa 的 REST API 测试和管理你的 Webhook 端点。Salsa 用 Webhooks 通知你账户中发生的变化。</p>
+<h3>创建一个 Webhook 端点</h3>
+<p>向 <code>webhook-endpoints</code> 发 <code>POST</code> 请求。<code>endpointUrl</code> 是 Salsa 发送事件的目标地址。</p>
+<pre><code>curl --request POST --url https://api.sandbox.salsa.dev/api/rest/v1/webhook-endpoints \
+  --header 'authorization: Bearer [your-auth-token]' \
+  --data '{ "description": "...", "endpointUrl": "https://my-webhook-url.com/path" }'</code></pre>
+<p>创建时 status 默认 <code>ENABLED</code>,响应含 <code>signatureSecret</code>(签名密钥)。</p>
+<h3>更新一个 Webhook 端点</h3>
+<p>向 <code>webhook-endpoints/{id}</code> 发 <code>PUT</code>,可改 <code>endpointUrl</code>、<code>description</code>、<code>status</code>。禁用后 Salsa 不再向其发事件。</p>
+<h3>保护你的 Webhook</h3>
+<p>每次调用含三个 header:</p>
+<ul>
+<li><code>Webhook-Id</code>:消息唯一标识(重发时用同一 ID)。</li>
+<li><code>Webhook-Timestamp</code>:自纪元起的秒数时间戳。</li>
+<li><code>Webhook-Signature</code>:空格分隔、Base64 编码的签名列表。</li>
+</ul>
+<p>对内容签名:用 <code>.</code> 拼接 Webhook ID、timestamp、body:<code>signed_content = "${webhook_id}.${webhook_timestamp}.${body}"</code>。验证前不要改动 body。</p>
+<p>Salsa 用 HMAC + SHA-256 签名。用签名密钥中 <code>whsec_</code> 之后的 base64 部分对 <code>signed_content</code> 做 HMAC,结果应与 <code>Webhook-Signature</code> 之一匹配。验证前移除版本前缀(如 <code>v1,</code>)。</p>
+<blockquote><p>🚧 比较签名时用常数时间字符串比较(constant-time),防时序攻击。</p></blockquote>
+<p>验证时间戳:把 <code>Webhook-Timestamp</code> 与你系统时间比较,建议容忍 10 分钟窗口。</p>
+<h3>Webhook 事件</h3>
+<p>常见触发动作:Employer/Worker 被创建或更新;onboarding 状态变化;雇主被提醒跑 payroll;Payroll Run 等待输入;Payroll Run 被确认;worker 被发薪。Sandbox 与生产行为一致。</p>
+<blockquote><p>🚧 对 Direct Deposit 发薪的 worker,<code>Notification.workerPayday</code> 不在 Sandbox 发送;可用 Paper Check 方式测试。</p></blockquote>
+<h3>重试计划(指数退避)</h3>
+<p>失败后按:立即 → 5 秒 → 5 分钟 → 30 分钟 → 2 小时 → 5 小时 → 10 小时 → 再加 10 小时。端点被禁用则投递也被禁用。</p>
+</section>
+
+<section id="u5">
+<h2>Filtering and sorting · 筛选与排序</h2>
+<p>Salsa 让你轻松对请求筛选、对响应排序。通过 <code>filter</code> 参数应用,需提供 <code>fieldName</code> 和值。</p>
+<h3>按单个值筛选</h3>
+<pre><code>GET /api/endpoint?filter[stringField]=value</code></pre>
+<h3>按多个值筛选(数组)</h3>
+<pre><code>GET /api/endpoint?filter[stringField]=[value1, value2]</code></pre>
+<h3>按日期筛选</h3>
+<ul>
+<li><code>onOrBefore(date)</code>:该日期当天或之前。</li>
+<li><code>onOrAfter(date)</code>:该日期当天或之后。</li>
+<li><code>onOrBetween(startDate, endDate)</code>:落在区间内。</li>
+</ul>
+<p>日期区间字段(含 startDate/endDate)用 <code>contains(date)</code>。</p>
+<h3>应用多个筛选器</h3>
+<pre><code>GET /api/endpoint?filter[field1]=value1&filter[field2]=value2</code></pre>
+<h3>排序</h3>
+<p>指定字段名 + 方向。字段名前加 <code>-</code> 表降序,否则升序。示例:<code>sort=-payDate</code>。支持多字段排序。未指定排序时列表顺序不保证。</p>
+<h3>字段名规范</h3>
+<ul>
+<li>与 REST 响应对象字段名对应;区分大小写。</li>
+<li>嵌套字段用点号,如 <code>payPeriod.payDate</code>。</li>
+</ul>
+</section>
+
+<section id="u6">
+<h2>Employer Readiness · 雇主就绪状态</h2>
+<p>了解如何跟踪雇主向员工和承包商发薪的就绪状态。雇主能发薪前必须过两道相互独立的关卡:</p>
+<table>
+<tr><th>关卡</th><th>它回答的问题</th></tr>
+<tr><td><strong>Employer and Pay Worker Readiness</strong></td><td>Salsa 是否已拥有计算薪资所需的一切?</td></tr>
+<tr><td><strong>Employer Account Standing</strong></td><td>该雇主是否合法合规、已通过审查可运营?</td></tr>
+</table>
+<p>二者独立:readiness 为 <code>READY</code> 但 standing 为 <code>RESTRICTED</code> 仍不能跑薪,反之亦然。本页讲 Pay Worker Readiness;合规关卡见 Employer Account Standing。</p>
+<h3>如何跟踪</h3>
+<p>可从 Salsa Dashboard、Employer Capabilities API、或 webhook 事件 <code>Employer.PayWorkersReadiness.statusChanged</code> 获取。</p>
+<h3>Statuses · 状态</h3>
+<table>
+<tr><th>Status</th><th>说明</th></tr>
+<tr><td><code>ONBOARDING</code></td><td>雇主创建后的初始状态,用托管/嵌入式入驻收集雇主信息并邀请工人;完成后评估是否需 implementation。</td></tr>
+<tr><td><code>IMPLEMENTATION</code></td><td>完成入驻并申报此前薪资总额后进入;Salsa 主动对接协助导入。Sandbox 会自动跳过直接到 READY。</td></tr>
+<tr><td><code>READY</code></td><td>所有要求满足,可跑薪。</td></tr>
+<tr><td><code>PARTIALLY_READY</code></td><td>因配置变化不再满足全部就绪要求(如用工类型改变需带排期的 pay group,或税务设置不完整);可进行有限操作,补齐后回到 READY。</td></tr>
+</table>
+</section>
+
+<section id="u7">
+<h2>Worker Payment Readiness · 员工可发薪就绪状态</h2>
+<p>了解如何追踪一名员工从雇主处接收薪资的就绪程度。发薪前必须先完成员工 onboarding(收集个人和雇佣信息)。可通过 Worker Payments Readiness 字段监控。</p>
+<h3>如何追踪</h3>
+<p>从 Salsa Dashboard、Worker Capabilities API、或 webhook 事件 <code>Worker.PaymentReadiness.statusChanged</code> 获取。</p>
+<h3>States · 状态</h3>
+<ul>
+<li><code>ONBOARDING</code>:员工创建后的初始状态,直到满足至少一个辖区的付款要求。雇主须填雇佣数据(含 classification 和加班资格),税务/银行等可由雇主录入或由员工自助入驻收集。</li>
+<li><code>READY</code>:在所分配工作地点付款所需数据齐全,可通过 run payroll 获薪。</li>
+<li><code>NOT_READY</code>:此前已入驻的员工因辖区要求变化需补新数据(不常见),补齐后回到 READY。</li>
+<li><code>PARTIALLY_READY</code>:在至少一个辖区可付、其他辖区尚不可(多地点分配时),小型企业中较罕见。</li>
+</ul>
+</section>
+
+<section id="u8">
+<h2>Early wage access · 提前支取工资</h2>
+<p>用 Paystream 和 Worker Payment API 高效管理按需支付和提前支付给工人的工资。Salsa 允许在 payroll run 之外随时向工人发薪。本指南教你创建 payment、在轮班结束时发薪(提前支取)、确认已支付、并获取支付历史。假设你已设好 employer 和 workers。</p>
+<h3>Create a worker payment · 创建一笔 worker payment</h3>
+<p>为特定工人创建 worker payment,提供 pay period 和常规 pay date。Salsa 用该工人的 pay schedule(此例为 weekly)计算税款。</p>
+<pre><code>curl --location 'https://api.sandbox.salsa.dev/api/rest/v1/employers/${employerId}/workers/${workerId}/worker-payments' \
+--header 'Authorization: Bearer ${YOUR_API_TOKEN}' \
+--data '{ "payPeriod": { "startDate": "2023-05-01", "endDate": "2023-05-07", "payDate": "2023-05-07" } }'</code></pre>
+<p>返回一个 <code>status: "PENDING"</code> 的 worker payment,含 <code>id</code>、初始为 0 的 <code>grossPay</code>/<code>netPay</code>、以及预置的 <code>taxDeductions</code> 和 <code>taxContributions</code> 列表(Social Security、Medicare、Federal Income Tax、CA SDI、CA PIT、FUTA、CA SUTA 等)。</p>
+<h3>Add compensations · 添加报酬</h3>
+<p>工人轮班结束后,把当天报酬通过 Paystream 发给 Salsa。Salsa 自动调整上一步的 worker payment 并计算 net pay。</p>
+<pre><code>curl --request POST --url 'https://api.sandbox.salsa.dev/api/rest/v1/paystream' \
+--header 'X-Salsa-Organization-Id: :partnerId' --header 'Authorization: Bearer ${YOUR_API_TOKEN}' \
+--data-raw '{ "data": [ { "compensationReferenceId": "ref:comp:partnername:hourly",
+  "startDate": "2023-07-07", "endDate": "2023-07-07", "type": "PaystreamCompensationItemInput",
+  "workerId": ":workerId", "hours": "20", "rate": "50", "unit": "HOURS" } ] }'</code></pre>
+<p>随后可 <code>GET</code> worker payment,看到本轮班算出的 net pay(例:grossPay 1000.00、netPay 914.50)。</p>
+<h3>Record the advanced payment · 记录已提前支付的款项</h3>
+<p>向工人发款后记录这笔提前支付,它会在 pay period 结束时从 net pay 扣除。调 <code>.../advance-payment</code>。</p>
+<blockquote><p>📘 Salsa 假定未结清 net pay 已付给工人,并创建一笔 post-tax deduction 表示已发总额。</p></blockquote>
+<h3>Confirm the payment · 确认支付</h3>
+<p>pay period 结束时确认工人已被发薪:调 <code>.../confirm</code>,返回 <code>status: "CONFIRMED"</code>。</p>
+<h3>Retrieve payment records · 获取支付记录</h3>
+<p>可获取该周期的 worker payment records,含 compensations、deductions、tax contributions 和 totals(调 <code>.../worker-payment-record</code>)。</p>
+<p class="note">说明:本页含多段结构相近的示例 JSON 响应(worker payment 对象),此处保留关键字段说明,完整逐条 JSON 见 Salsa 原文档 Early wage access 页。</p>
+</section>
+
+<section id="u9">
+<h2>Employer verified bank accounts · 雇主已验证的银行账户</h2>
+<p>集成你现有的银行账户验证流程,简化雇主 payroll 入驻。若你的应用已在收集并验证雇主银行账户,可通过 Paystream API 同时同步和验证,避免让雇主重复提供信息。</p>
+<h3>工作原理</h3>
+<ul>
+<li><strong>Payment authorization(支付授权)</strong>:雇主授权 Salsa 从其账户扣款(debit)。默认在 onboarding 中收集。</li>
+<li><strong>Account verification(账户验证)</strong>:Salsa 发起两笔小额存款(micro-deposits),雇主 1-2 天后在 Salsa 输入确切金额以"激活"账户;金额匹配即完成。默认由 Salsa 管理。</li>
+</ul>
+<blockquote><p>🚧 本指南面向已有验证系统的组织。若没有,可用 onboarding 组件收集、验证并授权银行账户。</p></blockquote>
+<h3>步骤</h3>
+<p><strong>1. 内嵌雇主支付授权</strong>:用 Paystream API upsert 雇主记录,复用现有授权。</p>
+<pre><code>{ "data": [ { "type": "PaystreamEmployerUpsertInput", "id": "er_12345",
+  "bankAccount": { "id": "erbank_124345", "paymentAuthorization": { "acceptedAt": "2023-10-16T14:05:22Z" } } } ] }</code></pre>
+<p><strong>2. 内嵌雇主银行账户验证</strong>:同样 upsert,复用现有验证(需联系 Salsa 启用"绕过银行账户验证")。</p>
+<pre><code>"bankAccount": { "id": "erbank_124345", "verification": { "organizationVerifiedAt": "2023-10-16T14:05:22Z" } }</code></pre>
+<p><strong>3.(可选)一次请求同时内嵌授权 + 验证</strong>,把 <code>paymentAuthorization</code> 和 <code>verification</code> 一起传。</p>
+<blockquote><p>📘 使用此功能时,可考虑在雇主资料和 onboarding 元素中隐藏银行账户卡片。Salsa 可能要求你提供授权/验证的记录。</p></blockquote>
+</section>
+
+<section id="u10">
+<h2>Set up and pay Overtime · 设置并发放加班费</h2>
+<p>Overtime(加班)指员工在常规工时之外额外工作的时长,通常在一个 workweek 内,往往按更高费率支付。</p>
+<h3>谁有资格?</h3>
+<p>一般 non-exempt(非豁免)员工有资格;exempt(豁免,通常为满足 FLSA 条件的 salaried 岗位)无权获加班费。具体岗位、雇佣协议、州法规都可能影响。</p>
+<h3>如何计算?</h3>
+<p>按员工在某 workweek 内、单个 workday 内或连续工作日的工时计算,规则取决于工作地点所在州。通常一周超 40 小时产生 overtime。标准加班费率通常是常规时薪的 1.5 倍;有些州不同,如 California 有 1.5 倍 Overtime 和 2 倍 Double Overtime。</p>
+<h3>如何设置自动加班计算?</h3>
+<p>取决于:</p>
+<p>1)该 worker 的 WorkerContract 为 <code>EMPLOYEE</code> 分类且 <code>overtimeEligible: true</code>。</p>
+<p>2)把<strong>按天拆分</strong>的 hours 通过 Paystream Payroll Elements 端点发来。</p>
+<blockquote><p>🚧 Salsa 计算 overtime 要求粒度必须逐日(day by day);若某 worker 存在跨越多天的 pay entry,则不为其算 overtime。</p></blockquote>
+<pre><code>--data-raw '{ "data": { "type": "PaystreamPayrollElementPeriodReplacementInput",
+  "workers": [ { "pay": [
+    { "hours": 20, "startDate": "2024-01-01", "endDate": "2024-01-01", "rate": "15.00", "payReferenceId": "${HOURLY_REF_ID}" },
+    { "hours": 8,  "startDate": "2024-01-02", "endDate": "2024-01-02", "rate": "15.00", "payReferenceId": "${HOURLY_REF_ID}" }
+  ], "workerId": "${WORKER_ID}" } ],
+  "periodStartDate": "2024-01-07", "periodEndDate": "2024-01-01" } }'</code></pre>
+<p>3)该 worker 须在某 workweek/单日/连续日工作达到一定小时数(取决于州规则)。</p>
+<blockquote><p>📘 California 示例:一周超 40 小时按 1.5×;单日 8–12 小时按 1.5×、超 12 小时按 2×;一周第 7 个连续工作日前 8 小时 1.5×、超出部分 2×。</p></blockquote>
+<p>4)完成后,每次 Payroll Run 期间自动在后台计算 overtime,并显示在工资单上;两种加班金额都可在 Payroll Run 中手动覆盖。</p>
+<blockquote><p>📘 示例:CA 员工、逐日 Hourly、周排班,周一 13 小时、周二 6、周三 6,时薪 $3,共 25 小时 → 20 小时 Hourly($3)、4 小时 Overtime($4.5)、1 小时 Double Overtime($6)。</p></blockquote>
+<blockquote><p>🚧 若你希望 Salsa 不自动算 overtime,可启用 Overtime pay types,由你直接发金额。</p></blockquote>
+</section>
+
+<section id="u11">
+<h2>Calculating usage for your customers · 为你的客户计算用量</h2>
+<p>用 Usage API 检索 Salsa 平台上各 employer 的用量指标(usage metrics),帮助你向客户计费。可按日期范围检索某个或所有 employer 的指标。</p>
+<table>
+<tr><th>指标</th><th>说明</th></tr>
+<tr><td><code>PAYROLL_RUN</code></td><td>已确认的 payroll run 数量。</td></tr>
+<tr><td><code>WORKER_PAYMENT</code></td><td>已完成的 worker payment 数量。</td></tr>
+<tr><td><code>WORKER_PAID</code></td><td>获支付的 worker 去重数量。</td></tr>
+<tr><td><code>WORKER_ANNUAL_TAX_FILING_SENT</code></td><td>已发送的 worker 税务申报数量。</td></tr>
+<tr><td><code>EMPLOYER_FUNDING_RETURN</code></td><td>被退回的 employer funding debit 数量。</td></tr>
+<tr><td><code>EMPLOYER_SUBSCRIBER</code></td><td>该期内雇主是否有有效订阅(true=1,false=0)。</td></tr>
+</table>
+<h3>REST API 端点</h3>
+<p>每个端点需日期范围,起止日期均含当天(inclusive)。单日则起止设同一天。提供两个端点:检索某个 employer 的指标、检索所有 employer 的指标(后者分页返回)。</p>
+</section>
+
+<section id="u12">
+<h2>Historical Workers Workflow · 历史员工数据流程(合作方集成指南)</h2>
+<p>客户从此前服务商迁移时,须一并纳入历史员工(在迁移前已被终止或非活跃的员工),以保证数据完整和 payroll 记录准确。</p>
+<h3>什么是历史员工?</h3>
+<p>出现在客户历史 payroll 数据(过往 pay run 或税务文件)中、但接入 Salsa 时已不在职的员工。常见缺失原因:注册前已终止;或角色超出你平台业务范围(如发廊的维修承包商)。因此他们可能不在你的员工目录中、缺 <code>externalId</code>、遗漏 W2/1099 等文件。</p>
+<h3>Salsa 的处理方式</h3>
+<p>为新雇主 onboarding 时,Salsa 实施专员可能手动创建历史员工以回填 payroll 历史。创建时触发常规 <code>Worker.created</code> webhook,但注意:<code>terminationDate</code>、<code>terminationCategory: HISTORICAL</code>、且 <code>workerExternalId</code> 应不存在(表明在 Salsa 内部创建)。</p>
+<h3>集成建议</h3>
+<p>合作方须监听 <code>Worker.created</code> 并:1)检测历史员工场景(<code>externalId</code> 为 null,且有 <code>terminationDate</code>/<code>terminationCategory</code>);2)在你平台创建后,用 webhook 中的 <code>workerId</code> 把 <code>externalId</code> 回写 Salsa(用 Update worker 端点,或 Paystream Import worker 配合 <code>UPSERT</code>)。</p>
+</section>
+
+<section id="u13">
+<h2>Embedded workforce management with Easyteam · 用 Easyteam 做内嵌的考勤/排班管理</h2>
+<h3>用劳动力数据驱动薪酬</h3>
+<p>薪酬基础设施负责"从税前到税后"计算、合规和付款,但它依赖准确的输入:工作时长、加班、休假、审批。没有劳动力管理层,平台只能靠手动导出或第三方,易出错。</p>
+<h3>用 Easyteam 增加劳动力管理</h3>
+<p>Easyteam 提供一层内嵌的劳动力管理层,与 Salsa 内嵌薪酬互补。平台嵌入 Easyteam 组件捕获日常运营数据(打卡、排班、PTO 审批),数据顺畅流入 Salsa。</p>
+<h3>核心功能</h3>
+<ul>
+<li><strong>Time & Attendance(考勤)</strong>:打卡上下班、记录休息、强制加班规则。</li>
+<li><strong>Schedules(排班)</strong>:构建发布班次、追踪可用性、发通知。</li>
+<li><strong>PTO</strong>:员工申请、管理者审批、余额自动同步进薪酬。</li>
+</ul>
+<p>移动端就绪,为多门店团队设计,适配零售、餐饮、健身。更多组件:Timesheets(批准后锁定)、Break Management(法定用餐/休息强制追踪)、Availability(可用/不可用时间)、Notifications(班次/漏打卡/待审批提醒)。</p>
+<h3>对平台的即时价值</h3>
+<ul>
+<li>日常粘性、薪酬准确性、更快采用、统一体验(一次集成、一份合同)。</li>
+</ul>
+</section>
+
+<section id="u14">
+<h2>Providing Employer Risk Metrics · 提供雇主风险指标</h2>
+<p>了解如何为 Salsa 提供风险指标,帮助识别潜在欺诈。发送 Risk Insight Metrics 会提升 Salsa 检测欺诈和信用风险的能力。</p>
+<h3>何时发送?</h3>
+<p>可在雇主入驻期间任何时候主动发送;也期望在收到 <code>Employer.awaitingRiskInsights</code> 事件 webhook 时尽快发送,以保持指标最新。</p>
+<h3>Risk Insights Webhook</h3>
+<p>监听 <code>data.type</code> 等于 <code>Employer.awaitingRiskInsights</code> 的事件,载荷含 <code>employerId</code>、<code>employerExternalId</code>、<code>externalId</code> 等。如端点不可用或返回 ≥400,Salsa 会指数退避重试;请按 Salsa webhook 签名文档验证。</p>
+<h3>如何发送?</h3>
+<p>收到 webhook 后向 <code>POST /api/rest/v1/paystream/risk-insight-inputs</code> 发送你知道的指标:</p>
+<pre><code>{ "data": [ { "type": "PaystreamEmployerRiskMetricsOnPartnerPlatformUpsertInput",
+  "employerId": "er_309…",
+  "revenueInfo": { "averageMonthlyRevenue": "1000.00" },
+  "payingUserInfo": { "totalPaymentsCount": 1, "subscriptionStatus": "PAYING_USER" },
+  "riskAssessment": { "riskClassification": "LOW_RISK" },
+  "signUpDate": "2025-08-01",
+  "activeFeatures": [ { "name": "PAYMENT_PROCESSING", "activeSince": "2025-09-01", "paymentsProcessedAmount": "500.00" } ],
+  "acquisitionChannel": "REFERRAL", "businessWebsite": "https://docs.salsa.dev" } ] }</code></pre>
+<p>成功返回 <code>201 Created</code>。字段详解见"Risk Insights Input Fields"页。</p>
+</section>
+
+<section id="u15">
+<h2>External IDs &amp; Mapping to Salsa · 外部 ID 与到 Salsa 的映射</h2>
+<p>用 External ID(外部 ID)在你系统与 Salsa 之间可靠映射和同步实体,实现持久引用、幂等创建、更简便的 webhook 处理。</p>
+<h3>什么是外部 ID?</h3>
+<p>特定 Salsa 实体(Employer、Worker、Address、Bank Account 等)上的一个字符串字段,特点:可选(默认空)、在该实体类型命名空间内唯一、由你(合作方)提供并拥有、在 API/webhook/工作流中被当作持久的一等公民数据。</p>
+<h3>为什么用?</h3>
+<ul>
+<li>可靠的实体映射:把你系统标识符直接嵌入 Salsa。</li>
+<li>更好的同步与 webhook 处理:外部 ID 出现在响应和 webhook 载荷中。</li>
+<li>幂等创建与防重复:创建时传外部 ID,若已存在返回唯一性约束错误,防重复。</li>
+</ul>
+<h3>命名空间与唯一性</h3>
+<p>唯一性<strong>按实体类型</strong>全局强制。即使两个 Worker 属于不同 Employer,其 <code>externalId</code> 也须在所有 Worker 中唯一。若你的 ID 仅局部唯一(如作用域在某 Employer 内的 Worker ID),可构造复合 ID 保证全局唯一,如 <code>acct_123:17</code>;也可哈希或生成稳定 GUID。</p>
+<h3>最佳实践</h3>
+<ul>
+<li>对任何想与 Salsa 保持稳定 1:1 映射的实体都用外部 ID。</li>
+<li>用于 webhook 路由和同步时的幂等创建。</li>
+<li>不要当元数据用——应保持为稳定标识符。</li>
+</ul>
+<h3>集成流程示例</h3>
+<p>创建 Employer 时指定 <code>externalId</code>(如 <code>acct_123</code>);同时把 Salsa 返回的 Employer ID 也存进你的库。处理 <code>PayrollRun.awaitingInput</code> 等 webhook 时,事件含 <code>employerExternalId</code>,可仅凭它路由,无需额外查找。</p>
+</section>
+
+<section id="u16">
+<h2>Protecting sensitive actions with identity verification · 用身份验证保护敏感操作</h2>
+<p>在用户于 Salsa 嵌入式 UI 执行敏感操作前,要求一次额外身份检查(如 2FA/MFA)。若你已有身份验证系统,可与 Salsa 嵌入式 UI 集成。典型例子:取消对银行账号或政府证件号的掩码显示(unmasking)。</p>
+<h3>工作原理</h3>
+<p>用户尝试其当前角色未被授予的操作时,Salsa 显示验证提示并发出 <code>request-privileged-access</code> 事件(载荷含 <code>action</code>、<code>recommendedRole</code>、<code>possibleRoles</code>)。你的应用跑自己的验证流程,按推荐角色创建 token 交回,Salsa 随即恢复操作。</p>
+<h3>角色与提权阶梯</h3>
+<p>提权阶梯:<strong>basic → admin → super-admin</strong>,每层含下层全部权限再加更多。示例(雇主通道):add-employer/worker-bank-account、update-worker-government-id、download-document 需 admin;unmask 各类(银行账号、政府证件)、delete-worker-bank-account、下载含政府证件的报表需 super-admin。</p>
+<p>设置政府证件号是否<em>必填</em>(<code>MANDATORY</code>/<code>APPLIED_FOR</code>)不属特权操作,不触发提权。</p>
+<h3>实现步骤</h3>
+<p>1)创建带初始角色层级的 user token(嵌入式建议从 admin 起步)。2)创建 element 时设 <code>allowRequestForPrivilegedAccess: true</code>。3)监听 <code>request-privileged-access</code>,跑验证后按 <code>event.recommendedRole</code> 建 token 并 <code>element.replaceUserToken(token)</code>。4)短时间(建议 5–15 分钟)后主动降级到更低角色。</p>
+<pre><code>element.on("request-privileged-access", async (event) => {
+  const verified = await runYourVerificationFlow();
+  if (!verified) { element.cancelRequestForPrivilegedAccess(); return; }
+  const token = await createToken({ role: event.recommendedRole });
+  element.replaceUserToken(token);
+});</code></pre>
+<p><code>recommendedRole</code>/<code>possibleRoles</code> 均可选;用户无提权路径时 Salsa 会省略,建 token 前须检查其是否存在。</p>
+<blockquote><p>🚧 禁用的控件仅用于显示,限制在 API 层强制:缺少所需角色的请求总会被拒绝。设 <code>allowRequestForPrivilegedAccess: false</code> 则无任何提权路径(默认)。</p></blockquote>
+</section>
+
+<section id="u17">
+<h2>Set up accounting integration · 设置会计(记账)集成</h2>
+<p>从 Salsa 拉取工资单会计凭证(payroll journal entries)并导出到你的会计系统。跑完薪资后:1)拉取凭证(借/贷金额);2)在你系统创建凭证;3)标记为已导出。</p>
+<h3>第 1 步:为雇主启用会计</h3>
+<pre><code>mutation CreateAccountingConfiguration {
+  createAccountingConfiguration(input: {
+    employerId: "emp_abc123", provider: MANUAL, workerPaymentExportTrigger: ON_CLEARANCE
+  }) { accountingConfiguration { id provider workerPaymentExportTrigger } }
+}</code></pre>
+<p>导出触发:<code>ON_CLEARANCE</code>(推荐,款项清算后才就绪,更准)/<code>ON_CONFIRM</code>(确认时立即就绪,更快但可能时间错位)。</p>
+<h3>第 2 步:设置科目映射</h3>
+<p>把工资单要素映射到你的会计科目表。先查询发现需映射项及 <code>mappingId</code>,再配置科目(用 <code>externalId</code> 存你的科目编码)。科目类型:<code>ASSET</code>(银行/清算账户)、<code>EXPENSE</code>(工资/报销/雇主税缴纳)、<code>LIABILITY</code>(税款代扣/应付扣款)。映射策略:<code>defaultAccounts</code>(全用同一科目)、<code>byPayrollElementType</code>(按要素类型)、<code>byTax</code>(按税种)。</p>
+<h3>第 3 步:接收并导出凭证</h3>
+<p>Webhook 事件:<code>Transmission.processing</code>/<code>Transmission.completed</code>/<code>Transmission.failed</code>。收到 completed 后用 <code>transmissionId</code> 拉取凭证(GraphQL),含 <code>journalEntry</code>(transactionDate、totalDebit/Credit、lines)。明细行类别:<code>BANK_ACCOUNT</code>/<code>WAGE</code>/<code>REIMBURSEMENT</code>/<code>TAX_CONTRIBUTION</code>/<code>NON_TAX_DEDUCTION</code>/<code>NON_TAX_CONTRIBUTION</code>。记账方向 <code>DEBIT</code>/<code>CREDIT</code>。导出后调 <code>markTransmissionCompleted</code>。失败可查询 <code>FAILED_TO_TRANSMIT</code> 的需求项并用 <code>createTransmissionForRequirements</code> 重试。</p>
+<h3>CSV 导出</h3>
+<p>每份凭证也含 CSV 下载(<code>csvDocument.links.url</code>,有 <code>expiresAt</code> 过期时间)。CSV 字段(RFC 4180):Transaction Date、Account Id/Name/External Id、Category、Posting Type、Amount。</p>
+<p class="note">说明:本页含多段 GraphQL mutation/query 示例(建配置、查/配映射、拉凭证、重试),此处保留流程与字段说明;完整 GraphQL 代码见 Salsa 原文档 accounting integration 页。</p>
+</section>
+
+<section id="u18">
+<h2>Accessing Audit Data · 获取审计数据</h2>
+<p>审计条目(audit entries)记录 Salsa 平台内各实体的变更:是谁、变更了什么、何时。用途:合规(防篡改的变更历史)、变更追踪、调试。</p>
+<h3>查询审计条目</h3>
+<p>通过 <code>auditEntries</code> GraphQL 查询访问,分页,默认按时间戳升序。也可在某实体(如 Worker/Employer)上用 <code>auditEntries</code> 字段查限定条目。</p>
+<h3>分页</h3>
+<p>基于页码:<code>page</code>(默认 0)、<code>size</code>(默认 500,最大 500)。响应含 <code>totalPages</code>。持续递增 page 直到 <code>totalPages - 1</code>。</p>
+<h3>过滤器(filterBy)</h3>
+<ul>
+<li><code>entityType</code>:按实体类型(如 <code>"WorkerContract"</code>)。</li>
+<li><code>workerId</code>:某特定 worker。</li>
+<li><code>auditTimestamp</code>:日期范围(<code>start</code>/<code>end</code>,均含)。</li>
+</ul>
+<h3>排序</h3>
+<p>默认按 <code>AUDIT_TIMESTAMP</code> 升序,可改 <code>orderBy: { field: AUDIT_TIMESTAMP, sort: DESCENDING }</code>。</p>
+<h3>可用字段</h3>
+<p><code>id</code>、<code>auditTimestamp</code>(UTC)、<code>entityId</code>、<code>entityType</code>、<code>action</code>(CREATE/UPDATE/DELETE)、<code>event</code>(人类可读描述)、<code>entity</code>(变更后状态的 JSON)、<code>actor</code>(执行者:AuditUser/AuditApiClient/AuditSystem)、<code>employer</code>、<code>worker</code>。</p>
+<h3>审计覆盖</h3>
+<p>涵盖资金流转(银行账户、资金流转策略、薪资分配)、档案(税务设置、地址、合同、工作地点、姓名)、薪酬(payroll run 运行/确认/取消/删除、纳入排除工人、薪资要素、合作方薪酬设置)、会计(合作方会计设置)的创建/更新/删除等动作。</p>
+<h3>理解变更</h3>
+<p><code>entity</code> 是变更<strong>之后</strong>的 JSON 快照(不存 diff、不存旧状态)。要看变更,对同一 <code>entityId</code> 的连续条目快照做比较。<code>event</code> 提供人类可读摘要,便于直接在 UI 展示。</p>
+</section>
+
+<section id="u19">
+<h2>Premium Pay · 加成工资</h2>
+<p>Premium pay 指满足某些条件时,Salsa 在员工基础工资之上计算并叠加的额外报酬,由各辖区劳动法驱动。当前支持(均限 New York):Split Shifts、Spread of Hours(按天计)、Wage Parity(按小时报酬计)。</p>
+<h3>Split Shifts &amp; Spread of Hours</h3>
+<p>New York 工资令下的 premium pay 要求:满足条件时须保证当天总报酬达最低门槛,不足则补差(top-up)。</p>
+<ul>
+<li><strong>Split Shift(分段班)</strong>:同一工作日内两段或更多分开时段、中间休息<strong>超过一小时</strong>。下限=最低工资×工作小时数+1 小时最低工资;实际不足则补差。</li>
+<li><strong>Spread of Hours(工时跨度)</strong>:从当日第一个班次开始到最后一个结束的总跨度(含休息/间隔)超过<strong>10 小时</strong>时,适用同样下限。</li>
+</ul>
+<p>不支付的情况:收入已超下限;员工为豁免或承包商;班次分处不同州。<strong>每日只算一次规则</strong>:同一天同时触发两者,只付导致下限更高的那一项(但两者各自计入 YTD)。</p>
+<h3>如何通过 Paystream 发送</h3>
+<p><code>pay</code> 和 <code>timeWorked</code> 条目接受可选 <code>premiumEligibility</code> 对象(<code>splitShift</code>、<code>spreadOfHours</code> 布尔,默认 false)。标志只是让 Salsa <strong>评估</strong>,不保证一定付。仅支持基于班次(有 <code>startDateTime</code>/<code>endDateTime</code>)的条目;pay 条目须基于费率(rate-based)。工作地点须在 New York,否则返回 HTTP 400。</p>
+<pre><code>"premiumEligibility": { "splitShift": true, "spreadOfHours": true }</code></pre>
+<p>加成会作为独立收入行加入收入记录,不增加已工作小时数、不影响加班计算,计入 YTD。</p>
+<h3>Wage Parity</h3>
+<p>New York 法规下确保某些居家护理员工获得的最低总时薪(基础工资+补贴)高于标准最低工资。费率由 NY 卫生部按地区发布,Salsa 保持最新,合作方无需管理。支持地区:New York City;Long Island & Westchester。按班次评估。履行策略(每名员工须配 Worker Premium Policy):<strong>Pay</strong>(补贴以现金加在基础收入上,计入 gross/taxable)或 <strong>Benefits</strong>(雇主按固定每小时金额缴至指定福利,记为非税公司缴纳)。政策在 Salsa 雇主门户按生效日期管理。</p>
+</section>
+
+<section id="u20">
+<h2>Set up Wage Parity Integration · 设置工资平价(Wage Parity)集成</h2>
+<p>通过 Paystream API 发送符合 wage parity 资格的班次并管理工作地点。概念见 Premium Pay 页。</p>
+<h3>概览</h3>
+<p>要让 Salsa 评估某班次的 wage parity,须在每条符合资格的 <code>pay</code> 或 <code>timeWorked</code> 条目上发送两样:1)<code>premiumEligibility.wageParity: true</code>;2)一个 <code>workLocationId</code> 标识班次执行地点。该地点须引用一个能解析到受支持 NY 地区的 <code>EmployerExternalWorkSite</code>(或 <code>EmployerAddress</code>)。</p>
+<pre><code>"premiumEligibility": { "wageParity": true }
+"workLocationId": "worksite-456"</code></pre>
+<blockquote><p>📘 在 pay 条目发 wage parity 时,所引用的 pay type 必须被配置为计入 time worked,否则不计算津贴。提示:无需为每个病人地址建工作地点,费率按地区定,每座城市一个工作地点即可复用。</p></blockquote>
+<h3>Employer External Work Sites · 雇主外部工作地点</h3>
+<p>表示工人执行工作但不归雇主所有的地点(如家庭护理病人的家)。接受<strong>部分地址</strong>(街道级可选),足够 Salsa 确定 wage parity 地区。通过 Paystream employer upsert 创建/更新。必填字段:<code>city</code>、<code>state</code>(小写,目前仅 <code>ny</code>)、<code>postalCode</code>、<code>countryISO</code>;可选:<code>id</code>、<code>externalId</code>、<code>name</code>、<code>addressLine1/2</code>。</p>
+<h3>发送 Wage Parity 班次</h3>
+<p>可在一个请求中同时建工作地点并发班次(<code>POST /api/rest/v1/paystream?synchronous=true</code>,data 数组按顺序处理),或分两个请求(先 upsert 工作地点到 <code>/paystream/employers</code>,再发班次到 <code>/paystream/payroll-elements</code>)。</p>
+<h3>校验规则(违规返回 HTTP 400)</h3>
+<ul>
+<li><code>wageParity: true</code> 时 <code>workLocationId</code> 必填;反之带 <code>workLocationId</code> 但无 <code>wageParity</code> 也被拒。</li>
+<li><code>workLocationId</code> 必须能解析到唯一一个已存在实体;解析到多个则被拒(用 Salsa ID 或给 external ID 加命名空间)。</li>
+<li>地点须在 New York;条目须基于班次;pay 条目须基于费率。</li>
+</ul>
+</section>
+
+<section id="u21">
+<h2>Employer Account Standing · 雇主账户状态</h2>
+<p>了解 Salsa 如何在雇主运营前对其筛查和验证。Employer Account Standing 是雇主要在 Salsa 运营必须通过的合规与风险关卡,反映 KYB/AML 筛查、制裁名单核查和持续风险审查的结果。</p>
+<p>它与 Readiness 并行:Readiness 问"是否有计算薪资所需数据",Account Standing 问"是否被允许运营"。两者独立且都须通过才能跑薪;readiness 为 <code>READY</code> 但 standing 为 <code>RESTRICTED</code> 仍不能发薪。</p>
+<h3>如何追踪</h3>
+<p>从 Salsa Dashboard 或 webhook 事件 <code>Employer.AccountStanding.statusChanged</code> 获取。</p>
+<h3>Statuses · 七种状态</h3>
+<table>
+<tr><th>Status</th><th>说明</th></tr>
+<tr><td><code>NEW_ACCOUNT</code></td><td>创建时初始状态,直到 KYB/AML 要求完成。</td></tr>
+<tr><td><code>IN_REVIEW</code></td><td>满足新账户要求后进入;雇主与工人都接受筛查。</td></tr>
+<tr><td><code>ACTIVE</code></td><td>已获批、无未完成要求,可不受限运营。</td></tr>
+<tr><td><code>CONDITIONAL</code></td><td>有条件批准;Salsa 执行额外尽职调查,可能有未完成要求。</td></tr>
+<tr><td><code>RESTRICTED</code></td><td>有未完成要求导致无法发薪;可能涉及信息补充请求(Request for Information)。</td></tr>
+<tr><td><code>REJECTED</code></td><td>高风险账户,或行业为 Salsa 无法服务的行业。</td></tr>
+<tr><td><code>CANCELLED</code></td><td>因雇主订阅取消而进入。</td></tr>
+</table>
+<p>典型流程:<code>NEW_ACCOUNT</code> → <code>IN_REVIEW</code> → 导向 ACTIVE/CONDITIONAL/RESTRICTED/REJECTED;可基于持续风险评估在非终态间转移。</p>
+</section>
+
+<div class="grouphd">Tutorials 教程</div>
+
+<section id="t1">
+<h2>Build a Payroll App with Salsa Express · 用 Salsa Express 构建薪资应用(教程)</h2>
+<p>用预制可嵌入 UI 元素和易用 API 快速上线薪资。本教程用 Salsa Express 构建示例应用,学会:在应用嵌入 UI 元素、设置一个 Employer 和多个 Workers、把薪酬数据发给 Salsa。完成后可跑薪并查看 payroll runs 和每个 Worker 的付款记录。</p>
+<blockquote><p>📘 完成版代码在 <a href="https://github.com/salsa-payroll/Example-Frontend-App-Integration/tree/completed-tutorial">GitHub</a>。</p></blockquote>
+<h3>第 1 步:获取 API Token</h3>
+<p>注册后会收到两个 key(生产 + 沙盒)。本教程用 <strong>Sandbox API Token</strong>。详见 Authorization。</p>
+<h3>第 2 步:下载示例应用并创建 UI 元素</h3>
+<p>UI 元素通过浏览器库 Salsa.js 添加,在 iframe 中渲染、可自定义。</p>
+<p>运行示例应用:<code>git clone</code> 示例仓库 → <code>npm install</code> → <code>npm start</code> → 访问 <code>https://localhost:3000/</code>。可见带 <code>Payroll</code> 标签页的基础 Web 应用。</p>
+<p>在 <code>App.js</code> 引入并初始化 Salsa.js(教程里 'my-public-client-key' 保持原样,控制台会打印可忽略的警告),再把 <code>salsa</code> 传入 <code>&lt;Router salsa={salsa}/&gt;</code>。</p>
+<p>在 <code>components/Payroll.js</code> 创建并挂载元素:</p>
+<pre><code>const salsaElement = salsa.elements.create('demo');
+salsa.elements.mount(salsaElement, '#salsa-container');</code></pre>
+<p>视图卸载时调 <code>salsa.elements.destroy(salsaElement)</code> 清理。</p>
+<h3>第 3 步:设置 Employer 和 Workers</h3>
+<p>用 <code>paystream</code> API 创建 Employer(业务名、地址、银行信息),保存返回 <code>id</code>。用 <code>mock-onboard</code> 端点模拟雇主入驻(返回 readiness workerPayment status = READY)。再用 <code>paystream/workers</code> 创建 Worker(含 contract classification、personalInfo),保存 worker <code>id</code>,并用 <code>workers/mock-onboard</code> 模拟员工入驻。</p>
+<h3>第 4 步:向 Salsa 发送薪酬数据</h3>
+<p>Pay types 已在你 Salsa 账户预配。用 Retrieve all PartnerPayTypes 查看,保存 <code>referenceId</code>。</p>
+<blockquote><p>📘 发 <code>payReferenceId</code> 时可用 id 或 referenceId,建议用 referenceId(跨环境一致)。</p></blockquote>
+<p>用 <code>POST /paystream</code> 创建 worker pay entries(如固定额 salary + 逐日 hourly)。pay entry 只有生效区间与某 Payroll Run 的 pay period 重叠时才被拾取。</p>
+<pre><code>--data-raw '{ "data": [ { "type": "PaystreamPayrollElementPeriodReplacementInput",
+  "periodStartDate": "2024-01-01", "periodEndDate": "2024-01-07",
+  "workers": [ { "pay": [
+    { "payReferenceId": "${FIXED_REF}", "startDate": "2024-01-01", "endDate": "2024-01-07", "amount": "1500" },
+    { "payReferenceId": "${HOURLY_REF}", "startDate": "2024-01-01", "endDate": "2024-01-01", "rate": "17.50", "hours": "8" }
+  ], "workerId": "${WORKER_ID}" } ] } ] }'</code></pre>
+<h3>第 5 步:嵌入 Employer Dashboard 元素</h3>
+<p>创建 <code>EMPLOYER_ADMIN</code> 角色的 User Token(<code>POST /auth/token</code>,传 employerIds),返回 <code>token</code> 和 <code>expiration</code>。在 <code>App.js</code> 把 <code>demo</code> 组件换成 <code>employer-dashboard</code>,传入 userToken 和 employerId:</p>
+<pre><code>const salsaElement = salsa.elements.create('employer-dashboard', {userToken: ${USER_TOKEN}, employerId: ${SALSA_EMPLOYER_ID}});</code></pre>
+<p>即可看到 employer dashboard 嵌入应用中。</p>
+</section>
+
+<section id="t2">
+<h2>Pay Workers with Salsa Advanced · 用 Salsa Advanced 给员工发薪(教程)</h2>
+<p>通过 Salsa 的 REST API 跑薪资。本教程构建端到端发薪工作流,学会:设置 Employer、设置 Workers、把薪酬数据发给 Salsa、处理薪资并向员工交付付款记录。</p>
+<h3>第 1 步:获取 API Token</h3>
+<p>用 <strong>Sandbox API Token</strong>。详见 Authorization。</p>
+<h3>第 2 步:设置一个 Employer</h3>
+<p>Employer 代表雇用并支付 Workers 的法律实体。跑薪要求:隶属你的组织并有业务名;至少一个作工作地点和邮寄地址的地址;至少一个 pay group;已提供业务及员工所在地税务信息。</p>
+<p>用 <code>paystream/employers</code> 创建 Employer(业务名、地址、银行信息),保存 <code>id</code>。用 <code>mock-onboard</code> 模拟入驻(readiness workerPayment = READY)。</p>
+<blockquote><p>📘 <code>externalId</code> 用于把 Salsa 实体与你系统标识符关联;本教程为 null,生产中常用(如发 Webhook 时)。</p></blockquote>
+<h3>第 3 步:设置 Workers</h3>
+<p>设置两名 worker:一名 employee、一名 independent contractor(创建工作流相同,但数据采集和付款处理不同)。跑薪要求 worker 有:名和姓;正确分类(<code>EMPLOYEE</code> 或 <code>CONTRACTOR</code>);家庭住址;税务信息。</p>
+<p>用 <code>paystream/workers</code> 一次创建两名(含 contract.classification、personalInfo),再用 <code>workers/mock-onboard</code> 一次传多个 workerIds 模拟入驻。</p>
+<h3>第 4 步:给 Workers 发薪</h3>
+<p>用 Retrieve all OrganizationCompensationPolicies 获取预配的 compensation policies(含 <code>referenceId</code>、<code>calculationMethod</code> 如 FIXED_AMOUNT / HOURLY_BASED_AMOUNT)。</p>
+<p>用 <code>POST /paystream</code> 创建 worker pay entries(结构同 Express 教程:固定额 + 逐日 hourly)。</p>
+<p><strong>处理薪资(跑 payroll run)</strong>:<code>POST /employers/${employerId}/payroll-runs</code>,传 payPeriod(startDate/endDate/payDate)、workerIds、<code>type: "PayrollRunCalculateFromWorkerListInput"</code>。返回含 <code>status: "PENDING"</code>、totals、workerPayments(含 grossPay/netPay、compensations、taxDeductions、taxContributions)。保存 payroll run <code>id</code>。</p>
+<p><strong>确认 payroll run</strong>:<code>POST .../payroll-runs/${payrollRunId}/confirm</code>,返回 <code>status: "CONFIRMED"</code>。资金流转细节见 Money movement。</p>
+<h3>第 5 步:向 Workers 交付付款记录</h3>
+<p>付款记录(earning statements / paystubs)是 payroll run 的产出。用 <code>GET .../payroll-runs/${payrollRunId}/worker-payment-records</code> 获取,含所赚金额、预扣税、扣款、totals、YTD 等,并含一个 <code>document</code> ID。</p>
+<p>用该 <code>document</code> ID 调 <code>POST /documents/${documentId}/link</code> 生成 PDF 的 Document Link(返回 <code>url</code> 和 <code>expiresAt</code>),可直接交付给 Workers。</p>
+<blockquote><p>🚧 该 URL 无需额外授权即可访问,务必只分享给预期接收者。</p></blockquote>
+<p class="note">说明:本教程原文含多段完整示例 JSON(payroll run、worker payment record 等),此处保留流程、端点与关键字段;逐字段完整 JSON 见 Salsa 原文档 Pay Workers with Salsa Advanced 页。</p>
+</section>
+
+</div>
+</body></html>
