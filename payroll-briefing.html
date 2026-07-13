@@ -163,43 +163,36 @@
   .ded td:nth-child(4),.ded td:nth-child(5){text-align:center;}
   .catT{color:#334155;} .catB{color:#0f766e;} .catO{color:#6d28d9;} .catI{color:#1d4ed8;}
 </style>
-<div class="ded-legend">
-  <span class="ded-badge ded-m">强制</span>
-  <span class="ded-badge ded-c">非强制·餐厅常见</span>
-  <span class="ded-badge ded-o">非强制</span>
-  <span>— 不适用</span>
-</div>
 <table class="ded">
-  <tr><th>项目</th><th>类别</th><th>州覆盖</th><th>小时工</th><th>经理(固定薪)</th><th>在 Salsa 如何设置</th><th>解释</th></tr>
-  <tr><td>联邦所得税 FIT</td><td class="catT">税</td><td>全美</td><td><span class="ded-badge ded-m">强制</span></td><td><span class="ded-badge ded-m">强制</span></td><td>无需设置,系统自动算</td><td>按 W-4 预扣的联邦收入税</td></tr>
-  <tr><td>Social Security</td><td class="catT">税</td><td>全美</td><td><span class="ded-badge ded-m">强制</span></td><td><span class="ded-badge ded-m">强制</span></td><td>无需设置,系统自动算</td><td>社保税,员工 6.2%(有年度工资上限)</td></tr>
-  <tr><td>Medicare</td><td class="catT">税</td><td>全美</td><td><span class="ded-badge ded-m">强制</span></td><td><span class="ded-badge ded-m">强制</span></td><td>无需设置,系统自动算</td><td>医保税,员工 1.45%</td></tr>
-  <tr><td>州所得税</td><td class="catT">税</td><td>部分州</td><td><span class="ded-badge ded-m">强制</span></td><td><span class="ded-badge ded-m">强制</span></td><td>无需设置,系统自动算</td><td>约 43 州有;TX/FL/WA 等无州所得税</td></tr>
-  <tr><td>地方所得税</td><td class="catT">税</td><td>部分州</td><td><span class="ded-badge ded-m">强制</span></td><td><span class="ded-badge ded-m">强制</span></td><td>无需设置,系统自动算</td><td>某些市/县另收(如 NYC)</td></tr>
-  <tr><td>小费计税</td><td class="catT">税</td><td>全美</td><td><span class="ded-badge ded-m">强制</span></td><td><span class="ded-n">—</span></td><td>随小费录入自动计税</td><td>现金+刷卡小费算应税收入,按它预扣;经理通常无小费</td></tr>
-  <tr><td>州残障险 SDI</td><td class="catI">保险供款</td><td>部分州</td><td><span class="ded-badge ded-m">强制</span></td><td><span class="ded-badge ded-m">强制</span></td><td>无需设置,系统自动算</td><td>CA/NY/NJ/RI/HI 等;员工承担或分担</td></tr>
-  <tr><td>州带薪家庭假 PFML</td><td class="catI">保险供款</td><td>部分州</td><td><span class="ded-badge ded-m">强制</span></td><td><span class="ded-badge ded-m">强制</span></td><td>无需设置,系统自动算</td><td>部分州员工分担一小部分保费</td></tr>
-  <tr><td>医保保费</td><td class="catB">福利</td><td>全美·可选</td><td><span class="ded-badge ded-o">非强制</span></td><td><span class="ded-badge ded-c">常见</span></td><td>雇主建项(Health)+ 员工选择</td><td>员工那份保费,税前;小时工少参加、经理常参加</td></tr>
-  <tr><td>牙科 / 视力</td><td class="catB">福利</td><td>全美·可选</td><td><span class="ded-badge ded-o">非强制</span></td><td><span class="ded-badge ded-c">常见</span></td><td>雇主建项(Health)+ 员工选择</td><td>通常随医保打包(Dental / Vision)</td></tr>
-  <tr><td>HSA</td><td class="catB">福利</td><td>全美·可选</td><td><span class="ded-badge ded-o">非强制</span></td><td><span class="ded-badge ded-o">非强制</span></td><td>雇主建项(Health)+ 员工选择</td><td>健康储蓄账户(HSA);⚠️ Salsa 无 FSA</td></tr>
-  <tr><td>401k 供款</td><td class="catB">福利</td><td>全美·可选</td><td><span class="ded-badge ded-o">非强制</span></td><td><span class="ded-badge ded-c">常见</span></td><td>雇主建项(Retirement)+ 员工选择;上线接 Human Interest</td><td>退休金供款(税前);Salsa 扣对金额、留在雇主账户,由 401k 提供商直接划扣(非 Salsa 代付)</td></tr>
-  <tr><td>Roth IRA</td><td class="catB">福利</td><td>全美·可选</td><td><span class="ded-badge ded-o">非强制</span></td><td><span class="ded-badge ded-o">非强制</span></td><td>雇主建项(Retirement)+ 员工选择</td><td>税后退休储蓄;Salsa 退休福利里除 401k 外的选项</td></tr>
-  <tr><td>扣发令 Garnishment*</td><td class="catO">其他</td><td>全美</td><td><span class="ded-badge ded-m">强制*</span></td><td><span class="ded-badge ded-m">强制*</span></td><td>Garnishments 模块录入法院令</td><td>抚养费/欠税/欠债,收到法院令时强制扣转</td></tr>
-  <tr><td>工服 / 工作餐</td><td class="catO">其他</td><td>—</td><td><span class="ded-badge ded-c">部分餐厅</span></td><td><span class="ded-badge ded-o">非强制</span></td><td>Miscellaneous / Post-Tax Deduction</td><td>有些餐厅扣;⚠️ 不能扣到低于最低工资</td></tr>
+  <tr><th>项目</th><th>类别</th><th>州覆盖</th><th>是否强制</th><th>是否代缴</th><th>在 Salsa 如何设置</th></tr>
+  <tr><td>联邦所得税 FIT</td><td class="catT">税</td><td>全美</td><td><b style="color:#b91c1c">强制</b></td><td><b style="color:#b91c1c">代扣代缴</b></td><td>无需设置,系统自动算</td></tr>
+  <tr><td>Social Security</td><td class="catT">税</td><td>全美</td><td><b style="color:#b91c1c">强制</b></td><td><b style="color:#b91c1c">代扣代缴</b></td><td>无需设置,系统自动算</td></tr>
+  <tr><td>Medicare</td><td class="catT">税</td><td>全美</td><td><b style="color:#b91c1c">强制</b></td><td><b style="color:#b91c1c">代扣代缴</b></td><td>无需设置,系统自动算</td></tr>
+  <tr><td>州所得税</td><td class="catT">税</td><td>部分州</td><td><b style="color:#b91c1c">强制</b></td><td><b style="color:#b91c1c">代扣代缴</b></td><td>无需设置,系统自动算</td></tr>
+  <tr><td>地方所得税</td><td class="catT">税</td><td>部分州</td><td><b style="color:#b91c1c">强制</b></td><td><b style="color:#b91c1c">代扣代缴</b></td><td>无需设置,系统自动算</td></tr>
+  <tr><td>小费计税</td><td class="catT">税</td><td>全美</td><td><b style="color:#b91c1c">强制</b></td><td><b style="color:#b91c1c">代扣代缴</b></td><td>随小费录入,系统自动计算</td></tr>
+  <tr><td>州残障险 SDI</td><td class="catI">保险供款</td><td>部分州</td><td><b style="color:#b91c1c">强制</b></td><td><b style="color:#b91c1c">代扣代缴</b></td><td>无需设置,系统自动算</td></tr>
+  <tr><td>州带薪家庭假 PFML</td><td class="catI">保险供款</td><td>部分州</td><td><b style="color:#b91c1c">强制</b></td><td><b style="color:#b91c1c">代扣代缴</b></td><td>无需设置,系统自动算</td></tr>
+  <tr><td>医保保费</td><td class="catB">福利</td><td>全美·可选</td><td><span style="color:#94a3b8">非强制</span></td><td><b style="color:#b45309">仅扣除</b></td><td style="background:#eef4ff">Employer Profile 中设置</td></tr>
+  <tr><td>牙科 / 视力</td><td class="catB">福利</td><td>全美·可选</td><td><span style="color:#94a3b8">非强制</span></td><td><b style="color:#b45309">仅扣除</b></td><td style="background:#eef4ff">Employer Profile 中设置</td></tr>
+  <tr><td>HSA</td><td class="catB">福利</td><td>全美·可选</td><td><span style="color:#94a3b8">非强制</span></td><td><b style="color:#b45309">仅扣除</b></td><td style="background:#eef4ff">Employer Profile 中设置</td></tr>
+  <tr><td>401k 供款</td><td class="catB">福利</td><td>全美·可选</td><td><span style="color:#94a3b8">非强制</span></td><td><b style="color:#b45309">指定供应商可代缴</b></td><td style="background:#eef4ff">Employer Profile 中设置</td></tr>
+  <tr><td>Roth IRA</td><td class="catB">福利</td><td>全美·可选</td><td><span style="color:#94a3b8">非强制</span></td><td><b style="color:#b45309">指定供应商可代缴</b></td><td style="background:#eef4ff">Employer Profile 中设置</td></tr>
+  <tr><td>扣发令 Garnishment*</td><td class="catO">其他</td><td>全美</td><td><b style="color:#b91c1c">强制</b></td><td><b style="color:#b45309">仅扣除</b></td><td style="background:#eef4ff">Employer Profile 中设置</td></tr>
 </table>
-<div class="note">注:本表为「<b>从员工工资里扣</b>」的项目。雇主另外还要承担一批税费(<b>不从员工扣</b>)——见下表。* 扣发令在收到法院/政府令时强制。</div>
+<div class="note">💡 上述仅针对 W-2 雇员,餐厅员工不走 1099。如果是 1099 合同工,税和保险都需要员工自行缴纳,每季度缴纳一次。</div>
 
 <h3 style="font-size:15.5px;margin:24px 0 6px">雇主承担的税费(不从员工工资扣)</h3>
 <table>
-  <tr><th>税</th><th>说明</th><th>谁独担</th><th>缴纳周期 / 方式</th><th>从雇主账户扣?</th><th>是否自动算</th></tr>
-  <tr><td>雇主 Social Security</td><td>员工工资扣 6.2% 交社保,公司再掏同样的 6.2%(有年度封顶)</td><td>雇主(与员工各一份)</td><td>缴钱:按 IRS 定的节奏(小公司每月一次、大公司约每周两次);申报:每季度交一次 941 表</td><td>✅ 发薪时随款扣走,Salsa 按计划缴</td><td>✅ 自动</td></tr>
-  <tr><td>雇主 Medicare</td><td>员工扣 1.45%,公司再掏同样的 1.45%(不封顶)</td><td>雇主(与员工各一份)</td><td>同 Social Security(一起打包进 941 缴报)</td><td>✅ 同上</td><td>✅ 自动</td></tr>
-  <tr><td>FUTA(联邦失业税)</td><td>每个员工前 $7,000 工资才交;按时交了州失业税可抵扣,实际只约 0.6%</td><td>雇主独担(员工不出)</td><td>缴钱:每季一次(攒够 $500 才缴);申报:每年交一次 940 表</td><td>✅</td><td>✅ 自动</td></tr>
-  <tr><td>SUTA / SUI(州失业税)</td><td>州收的失业税,费率由州按你店情况核定,在州规定的工资额度内交</td><td>雇主独担(个别州如 CA/NJ 员工也出一点)</td><td><b>季度</b>报缴给州</td><td>✅</td><td>⚠️ 自动算,但<b>经验费率需人工每年更新</b>,否则算错</td></tr>
-  <tr><td>州特有雇主税(如 CA ETT)</td><td>有些州额外的小税,如加州就业培训税(ETT),或某些州带薪家庭假里雇主要出的部分</td><td>雇主</td><td>多为<b>季度</b>随州申报缴</td><td>✅</td><td>✅ 自动(该州登记后)</td></tr>
-  <tr><td>工伤险 Workers' Comp</td><td>工伤保险保费,按工种风险定价;<b>通过 NEXT 内嵌</b>(NEXT 既承保又经纪,覆盖广)</td><td>雇主</td><td><b>按薪付费(pay-as-you-go)</b>:每期按实发工资算、当期交(不用年初垫大笔)</td><td>✅ 发薪时随款扣</td><td>✅ 自动(NEXT 内嵌;配置预计为独立组件,位置待确认)</td></tr>
+  <tr><th>税</th><th>说明</th><th>谁担</th><th>缴纳周期 / 方式</th><th>如何扣除</th><th>是否自动算</th></tr>
+  <tr><td>雇主 Social Security</td><td>工资 6.2%(有年度上限)</td><td>双方各一份</td><td>按 IRS 存款计划(月/半周)缴、每季度报 941</td><td>✅ 发薪时随款扣</td><td>✅ 自动</td></tr>
+  <tr><td>雇主 Medicare</td><td>工资 1.45%(无上限)</td><td>双方各一份</td><td>按 IRS 存款计划(月/半周)缴、每季度报 941</td><td>✅ 发薪时随款扣</td><td>✅ 自动</td></tr>
+  <tr><td>FUTA(联邦失业税)</td><td>前 $7000 约 6%,抵州信用后通常实际 0.6%</td><td>雇主独担</td><td>每季度攒够 $500 就缴纳,不够则顺延,每年度报 940</td><td>✅ 发薪时随款扣</td><td>✅ 自动</td></tr>
+  <tr><td>SUTA / SUI(州失业税)</td><td>按各州费率 + 你店经验评级,在州工资基数上算</td><td>雇主独担(个别州员工也出)</td><td>季度报缴给州</td><td>✅ 发薪时随款扣</td><td>⚠️ 自动算<br>具体费率每年人工更新</td></tr>
+  <tr><td>州特有雇主税(如 CA ETT)</td><td>就业培训税、部分州带薪家庭假的雇主部分</td><td>雇主</td><td>多为季度随州申报缴</td><td>✅ 发薪时随款扣</td><td>✅ 自动</td></tr>
+  <tr><td>工伤险 Workers' Comp</td><td>工伤保险保费,按工种分类算(是保险,非税)</td><td>雇主</td><td>传统年度保单;或按薪付费每期算</td><td>✅ 发薪时随款扣</td><td>✅ 自动</td></tr>
 </table>
-<div class="note">这些由 Salsa(payroll-of-record)自动申报缴纳;钱通常<b>在每次发薪时就从雇主账户扣走</b>(现金需求 debit 的一部分),Salsa 持有后按各自周期缴给政府。<b>唯一需人工:SUTA 经验费率每年更新。</b>(工伤险已确认:通过 NEXT 内嵌、按薪付费。)</div>
+<div class="note">💡 以上仅针对 W-2 雇员。针对 1099 合同工,雇主只需要支付报酬,不需要承担任何其他费用。</div>
 
 <h3 style="font-size:15.5px;margin:26px 0 6px">实战:一张示例工资单(所有扣费怎么走)</h3>
 <div class="note" style="margin-bottom:12px">以 Chicago 一名餐厅员工、<b>周结</b>、时薪 $20 为例(虚构数据、逻辑自洽,加班超 40h/周按 1.5 倍)。看颜色即可:<b style="color:#0f766e">绿=自动扣+自动缴给政府</b>;<b style="color:#b45309">琥珀=自动扣、线下/第三方缴</b>。</div>
