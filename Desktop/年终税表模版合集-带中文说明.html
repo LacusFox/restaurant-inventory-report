@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>年终税表模版合集(带中文说明)</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:#f4f6f8;font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;color:#1a1a1a;padding:30px 20px;line-height:1.6;}
+  .page{max-width:1000px;margin:0 auto;}
+  h1{font-size:24px;margin-bottom:4px;}
+  .sub{color:#6b6b6b;font-size:14px;margin-bottom:18px;}
+  nav{background:#fff;border:1px solid #e6e9ee;border-radius:10px;padding:12px 16px;margin-bottom:22px;font-size:14px;}
+  nav a{color:#1d4ed8;text-decoration:none;margin:2px 14px 2px 0;display:inline-block;}
+  nav a:hover{text-decoration:underline;}
+  .card{background:#fff;border:2px solid #1a1a1a;border-radius:6px;overflow:hidden;margin-bottom:30px;}
+  .hd{background:#1f2937;color:#fff;padding:12px 16px;}
+  .hd h2{font-size:18px;margin:0;}
+  .hd .meta{font-size:12.5px;color:#cbd5e1;margin-top:4px;}
+  .body{padding:4px 0 0;}
+  .grid{display:grid;grid-template-columns:1fr 1fr;}
+  .grid3{display:grid;grid-template-columns:1fr 1fr 1fr;}
+  .cell{border:0.5px solid #b0b8c4;padding:8px 11px;min-height:54px;}
+  .cell .bx{font-size:11px;color:#334155;font-weight:700;}
+  .cell .val{font-size:16px;font-weight:800;margin-top:3px;color:#0f172a;font-family:ui-monospace,Menlo,monospace;}
+  .cell .val.sm{font-size:13px;}
+  .cell .cn{font-size:11.5px;color:#b45309;margin-top:3px;line-height:1.45;}
+  .bignum{font-size:11px;font-weight:800;color:#e11d6b;margin-right:4px;}
+  .tip{background:#fafbfc;border-top:1px solid #e6e9ee;padding:11px 16px;font-size:12.5px;color:#555;line-height:1.7;}
+  .tip b{color:#334155;}
+  .statecard .hd{background:#0f766e;}
+  @media(max-width:720px){.grid,.grid3{grid-template-columns:1fr}}
+</style></head>
+<body>
+<div class="page">
+<h1>年终税表模版合集(带中文说明)</h1>
+<div class="sub">示例雇主:Fuman Restaurant LLC(旧金山,加州)· 数字为教学示例 · 这些表由 Salsa 作为 payroll-of-record 年底自动生成并申报</div>
+
+<nav>
+  <b>跳转:</b>
+  <a href="#w2">W-2 员工工资税单</a>
+  <a href="#f1099">1099-NEC 承包商报酬</a>
+  <a href="#w3">W-3(W-2 汇总)</a>
+  <a href="#f1096">1096(1099 汇总)</a>
+  <a href="#f941">941 季度联邦税</a>
+  <a href="#f940">940 年度失业税</a>
+  <a href="#state">州 W-2 申报</a>
+</nav>
+
+<!-- W-2 -->
+<div class="card" id="w2">
+  <div class="hd"><h2>Form W-2 · Wage and Tax Statement(员工年终工资与税单)</h2>
+    <div class="meta">给谁:每个 W-2 员工 · 何时:年底 · 作用:全年工资与各项代扣税汇总,员工据此报个人税 · 示例:加州餐厅服务员(有小费+401k)</div></div>
+  <div class="body">
+    <div class="grid">
+      <div class="cell"><span class="bx">a · Employee's SSN</span><div class="val">XXX-XX-1234</div><div class="cn">员工社会安全号,报税身份</div></div>
+      <div class="cell"><span class="bx">b · Employer ID number (EIN)</span><div class="val">12-3456789</div><div class="cn">雇主联邦税号</div></div>
+    </div>
+    <div class="grid">
+      <div class="cell"><span class="bx">c · Employer's name & address</span><div class="val sm">Fuman Restaurant LLC<br>123 Main St, San Francisco, CA 94107</div><div class="cn">雇主(餐厅)名称地址</div></div>
+      <div class="cell"><span class="bx">e/f · Employee's name & address</span><div class="val sm">Mei Chen<br>456 Oak Ave, San Francisco, CA 94110</div><div class="cn">员工姓名与住址(决定按哪个州/市征税)</div></div>
+    </div>
+    <div class="grid">
+      <div class="cell"><span class="bx"><span class="bignum">1</span>Wages, tips, other comp.</span><div class="val">25,300.00</div><div class="cn">联邦应税工资(已减税前 401k+医保),报联邦所得税的基数</div></div>
+      <div class="cell"><span class="bx"><span class="bignum">2</span>Federal income tax withheld</span><div class="val">1,900.00</div><div class="cn">全年已预扣的联邦所得税</div></div>
+    </div>
+    <div class="grid">
+      <div class="cell"><span class="bx"><span class="bignum">3</span>Social security wages</span><div class="val">18,800.00</div><div class="cn">社保税基数(不含小费、不含税前医保)</div></div>
+      <div class="cell"><span class="bx"><span class="bignum">4</span>Social security tax withheld</span><div class="val">1,661.60</div><div class="cn">= (格3+格7)26,800 × 6.2%</div></div>
+    </div>
+    <div class="grid">
+      <div class="cell"><span class="bx"><span class="bignum">5</span>Medicare wages and tips</span><div class="val">26,800.00</div><div class="cn">医保税基数(含小费)</div></div>
+      <div class="cell"><span class="bx"><span class="bignum">6</span>Medicare tax withheld</span><div class="val">388.60</div><div class="cn">= 26,800 × 1.45%</div></div>
+    </div>
+    <div class="grid">
+      <div class="cell"><span class="bx"><span class="bignum">7</span>Social security tips</span><div class="val">8,000.00</div><div class="cn">单独列示的小费(计入社保)</div></div>
+      <div class="cell"><span class="bx"><span class="bignum">8</span>Allocated tips</span><div class="val">—</div><div class="cn">分配小费(大餐厅才用,一般空)</div></div>
+    </div>
+    <div class="grid">
+      <div class="cell"><span class="bx"><span class="bignum">12a</span>Code</span><div class="val">D 1,500.00</div><div class="cn">代码 <b>D</b> = 401k 税前供款</div></div>
+      <div class="cell"><span class="bx"><span class="bignum">12b</span>Code</span><div class="val">DD 4,800.00</div><div class="cn">代码 <b>DD</b> = 雇主医保成本(仅告知,不计税)</div></div>
+    </div>
+    <div class="grid">
+      <div class="cell"><span class="bx"><span class="bignum">12c</span>Code</span><div class="val">TP 8,000.00</div><div class="cn">代码 <b>TP</b> = 合格小费(No Tax on Tips;Salsa 自动填)</div></div>
+      <div class="cell"><span class="bx"><span class="bignum">13</span>Checkboxes</span><div class="val sm">☑ Retirement plan</div><div class="cn">此人存了 401k → 勾"退休计划"(另有"法定雇员""第三方病假工资"两项)</div></div>
+    </div>
+    <div class="grid">
+      <div class="cell"><span class="bx"><span class="bignum">14</span>Other</span><div class="val sm">CA SDI 320.00</div><div class="cn">其他;加州常把州残障险 SDI 放这</div></div>
+      <div class="cell"><span class="bx"><span class="bignum">10 / 11</span>Dependent care / Nonqualified</span><div class="val">—</div><div class="cn">受抚养人照护福利 / 非合格退休计划(一般空)</div></div>
+    </div>
+    <div class="grid3">
+      <div class="cell"><span class="bx"><span class="bignum">15</span>State / state ID</span><div class="val sm">CA · 123-4567</div><div class="cn">州 + 州税号</div></div>
+      <div class="cell"><span class="bx"><span class="bignum">16</span>State wages, tips</span><div class="val">25,300.00</div><div class="cn">州应税工资(加州对小费全额征,不跟随联邦 No Tax on Tips)</div></div>
+      <div class="cell"><span class="bx"><span class="bignum">17</span>State income tax</span><div class="val">900.00</div><div class="cn">已预扣的州所得税</div></div>
+    </div>
+    <div class="grid3">
+      <div class="cell"><span class="bx"><span class="bignum">18</span>Local wages</span><div class="val">—</div><div class="cn">地方应税工资;加州无,空</div></div>
+      <div class="cell"><span class="bx"><span class="bignum">19</span>Local income tax</span><div class="val">—</div><div class="cn">地方所得税;无则空</div></div>
+      <div class="cell"><span class="bx"><span class="bignum">20</span>Locality name</span><div class="val">—</div><div class="cn">地方名称;无则空</div></div>
+    </div>
+  </div>
+  <div class="tip">📌 <b>怎么读:</b>格 1/3/5 是三个"工资基数"(分别给<b>联邦所得税/社保税/医保税</b>用,数字常不同,因为税前 401k、医保对每种税的减免规则不同);格 2/4/6/17 是全年已预扣的税,员工报税时对账多退少补;格 12 用代码记特殊项(<b>D</b>=401k、<b>DD</b>=雇主医保、<b>TP</b>=合格小费)。整张表由 Salsa 年底自动生成。</div>
+</div>
+
+<!-- 1099-NEC -->
+<div class="card" id="f1099">
+  <div class="hd"><h2>Form 1099-NEC · Nonemployee Compensation(非雇员报酬)</h2>
+    <div class="meta">给谁:每个全年拿 ≥ $600 的 1099 独立承包商 · 何时:年底 · 作用:报告"付给非雇员多少钱"(无代扣)</div></div>
+  <div class="body">
+    <div class="grid">
+      <div class="cell"><span class="bx">PAYER 付款方(餐厅)名称/地址 · TIN</span><div class="val sm">Fuman Restaurant LLC<br>123 Main St, San Francisco, CA 94107 · EIN 12-3456789</div><div class="cn">谁付的钱(餐厅)+ 餐厅税号</div></div>
+      <div class="cell"><span class="bx">RECIPIENT 收款方(承包商)名称/地址 · TIN</span><div class="val sm">Night Owl Jazz Trio<br>789 Pine St, Oakland, CA 94601 · TIN XX-XXX1234</div><div class="cn">谁收的钱(承包商)+ 其税号(来自 W-9)</div></div>
+    </div>
+    <div class="grid">
+      <div class="cell"><span class="bx"><span class="bignum">1</span>Nonemployee compensation</span><div class="val">800.00</div><div class="cn">全年付给这个承包商的总报酬(如乐队演出费)</div></div>
+      <div class="cell"><span class="bx"><span class="bignum">4</span>Federal income tax withheld</span><div class="val">0.00</div><div class="cn">联邦预扣;正常是 0(承包商自己缴)。只有"没给有效 TIN"触发 backup withholding 时才不为 0</div></div>
+    </div>
+    <div class="grid3">
+      <div class="cell"><span class="bx"><span class="bignum">5</span>State tax withheld</span><div class="val">0.00</div><div class="cn">州预扣;正常 0</div></div>
+      <div class="cell"><span class="bx"><span class="bignum">6</span>State / Payer's state no.</span><div class="val sm">CA · 123-4567</div><div class="cn">州 + 州税号</div></div>
+      <div class="cell"><span class="bx"><span class="bignum">7</span>State income</span><div class="val">800.00</div><div class="cn">归属该州的报酬额</div></div>
+    </div>
+  </div>
+  <div class="tip">📌 <b>和 W-2 的根本区别:</b>1099-NEC 上<b>没有各种代扣税的格子</b>(没有社保/医保/所得税预扣明细)——因为承包商拿全额、税自己缴。这张表只回答一句:"这一年付了你多少钱"。&lt; $600 则雇主可不出此表,但承包商仍要自行申报纳税。</div>
+</div>
+
+<!-- W-3 -->
+<div class="card" id="w3">
+  <div class="hd"><h2>Form W-3 · Transmittal of Wage and Tax Statements(W-2 汇总/转递表)</h2>
+    <div class="meta">给谁:社保局(SSA) · 何时:年底随全体 W-2 一起交 · 作用:把全公司所有 W-2 加总成一张"封面汇总表"</div></div>
+  <div class="body">
+    <div class="grid">
+      <div class="cell"><span class="bx">Employer 雇主 EIN / 名称 / 地址</span><div class="val sm">EIN 12-3456789 · Fuman Restaurant LLC<br>123 Main St, San Francisco, CA 94107</div><div class="cn">雇主信息</div></div>
+      <div class="cell"><span class="bx">Total number of Forms W-2</span><div class="val">8</div><div class="cn">本次一共交了多少张 W-2(=员工数)</div></div>
+    </div>
+    <div class="grid">
+      <div class="cell"><span class="bx"><span class="bignum">1</span>Wages, tips, other comp.(全员合计)</span><div class="val">210,000.00</div><div class="cn">所有员工格1之和</div></div>
+      <div class="cell"><span class="bx"><span class="bignum">2</span>Federal income tax withheld(合计)</span><div class="val">18,000.00</div><div class="cn">所有员工格2之和</div></div>
+    </div>
+    <div class="grid">
+      <div class="cell"><span class="bx"><span class="bignum">3</span>Social security wages(合计)</span><div class="val">175,000.00</div><div class="cn">全员社保工资(不含小费)</div></div>
+      <div class="cell"><span class="bx"><span class="bignum">4</span>Social security tax withheld(合计)</span><div class="val">14,260.00</div><div class="cn">= (格3+格7)230,000 × 6.2%</div></div>
+    </div>
+    <div class="grid">
+      <div class="cell"><span class="bx"><span class="bignum">5</span>Medicare wages and tips(合计)</span><div class="val">230,000.00</div><div class="cn">全员医保工资(含小费)</div></div>
+      <div class="cell"><span class="bx"><span class="bignum">6</span>Medicare tax withheld(合计)</span><div class="val">3,335.00</div><div class="cn">= 230,000 × 1.45%</div></div>
+    </div>
+    <div class="grid">
+      <div class="cell"><span class="bx"><span class="bignum">7</span>Social security tips(合计)</span><div class="val">55,000.00</div><div class="cn">全员小费之和</div></div>
+      <div class="cell"><span class="bx">Kind of Payer / Employer</span><div class="val sm">941 · None apply</div><div class="cn">勾选雇主类型(按 941 报税的普通雇主)</div></div>
+    </div>
+  </div>
+  <div class="tip">📌 <b>一句话:</b>W-3 就是"所有 W-2 的封面加总表",数字应等于全体 W-2 对应格子的合计;它和全体 W-2 一起交给 <b>SSA</b>(不是 IRS)。员工不会看到 W-3。</div>
+</div>
+
+<!-- 1096 -->
+<div class="card" id="f1096">
+  <div class="hd"><h2>Form 1096 · Annual Summary and Transmittal(1099 汇总/转递表)</h2>
+    <div class="meta">给谁:IRS · 何时:年底随纸质 1099 一起交(电子申报通常免此表)· 作用:把所有 1099 加总成一张封面表</div></div>
+  <div class="body">
+    <div class="grid">
+      <div class="cell"><span class="bx">Filer 申报方名称 / 地址 / TIN</span><div class="val sm">Fuman Restaurant LLC · EIN 12-3456789<br>123 Main St, San Francisco, CA 94107</div><div class="cn">谁在申报(餐厅)</div></div>
+      <div class="cell"><span class="bx">Form type being transmitted</span><div class="val sm">☑ 1099-NEC</div><div class="cn">这张 1096 汇总的是哪种表(此处=1099-NEC)</div></div>
+    </div>
+    <div class="grid">
+      <div class="cell"><span class="bx"><span class="bignum">3</span>Total number of forms</span><div class="val">3</div><div class="cn">一共交了几张 1099-NEC(=承包商数)</div></div>
+      <div class="cell"><span class="bx"><span class="bignum">5</span>Total amount reported</span><div class="val">6,400.00</div><div class="cn">所有 1099-NEC 金额之和</div></div>
+    </div>
+  </div>
+  <div class="tip">📌 <b>一句话:</b>1096 之于 1099,等于 W-3 之于 W-2——都是"封面加总表"。区别:1096 交给 <b>IRS</b>、汇总的是 1099;<b>电子申报时通常不需要 1096</b>(系统直接批量报)。</div>
+</div>
+
+<!-- 941 -->
+<div class="card" id="f941">
+  <div class="hd"><h2>Form 941 · Employer's QUARTERLY Federal Tax Return(雇主季度联邦税表)· 简化版关键行</h2>
+    <div class="meta">给谁:IRS · 何时:<b>每季度一次</b>(不是年终;Q4 那张次年 1 月报)· 作用:季度申报工资、代扣所得税、社保医保税</div></div>
+  <div class="body">
+    <div class="grid">
+      <div class="cell"><span class="bx"><span class="bignum">1</span>Number of employees</span><div class="val">8</div><div class="cn">本季支付的员工数</div></div>
+      <div class="cell"><span class="bx"><span class="bignum">2</span>Wages, tips, and other compensation</span><div class="val">52,500.00</div><div class="cn">本季应税工资总额</div></div>
+    </div>
+    <div class="grid">
+      <div class="cell"><span class="bx"><span class="bignum">3</span>Federal income tax withheld</span><div class="val">4,500.00</div><div class="cn">本季代扣的联邦所得税</div></div>
+      <div class="cell"><span class="bx"><span class="bignum">5a</span>Taxable SS wages × 12.4%</span><div class="val">5,425.00</div><div class="cn">社保工资 43,750 × 12.4%(员工+雇主两半)</div></div>
+    </div>
+    <div class="grid">
+      <div class="cell"><span class="bx"><span class="bignum">5b</span>Taxable SS tips × 12.4%</span><div class="val">1,705.00</div><div class="cn">小费 13,750 × 12.4%</div></div>
+      <div class="cell"><span class="bx"><span class="bignum">5c</span>Taxable Medicare wages & tips × 2.9%</span><div class="val">1,667.50</div><div class="cn">57,500 × 2.9%(员工+雇主两半)</div></div>
+    </div>
+    <div class="grid">
+      <div class="cell"><span class="bx"><span class="bignum">5e</span>Total SS + Medicare taxes</span><div class="val">8,797.50</div><div class="cn">= 5a+5b+5c</div></div>
+      <div class="cell"><span class="bx"><span class="bignum">6</span>Total taxes before adjustments</span><div class="val">13,297.50</div><div class="cn">= 格3 + 格5e(本季该缴联邦税合计)</div></div>
+    </div>
+  </div>
+  <div class="tip">📌 <b>注意:</b>941 是<b>季度表、不是年终表</b>——一年报四次;但 <b>Q4 那张在次年 1 月交</b>,所以常和年终一起处理。社保/医保用 12.4% / 2.9% 是因为把"员工那半 + 雇主那半"一起缴报。</div>
+</div>
+
+<!-- 940 -->
+<div class="card" id="f940">
+  <div class="hd"><h2>Form 940 · Employer's ANNUAL Federal Unemployment (FUTA) Tax Return(雇主年度联邦失业税表)· 简化版关键行</h2>
+    <div class="meta">给谁:IRS · 何时:<b>每年一次</b>(次年 1 月)· 作用:申报并结清全年联邦失业税(FUTA)· 仅雇主承担</div></div>
+  <div class="body">
+    <div class="grid">
+      <div class="cell"><span class="bx"><span class="bignum">3</span>Total payments to all employees</span><div class="val">210,000.00</div><div class="cn">全年付给所有员工的工资总额</div></div>
+      <div class="cell"><span class="bx"><span class="bignum">5</span>Payments over $7,000(超出部分)</span><div class="val">154,000.00</div><div class="cn">每人超过 $7,000 的部分不计 FUTA</div></div>
+    </div>
+    <div class="grid">
+      <div class="cell"><span class="bx"><span class="bignum">7</span>Total taxable FUTA wages</span><div class="val">56,000.00</div><div class="cn">= 每人前 $7,000 × 8 人(FUTA 计税基数)</div></div>
+      <div class="cell"><span class="bx"><span class="bignum">8</span>FUTA tax(= 7 × 0.6%)</span><div class="val">336.00</div><div class="cn">56,000 × 0.6%(按时交州失业税后的实际低税率)</div></div>
+    </div>
+  </div>
+  <div class="tip">📌 <b>一句话:</b>940 是<b>年度</b>表,专算联邦失业税(FUTA),<b>只由雇主承担、员工不出</b>。基数只算每人前 $7,000;按时交了州失业税(SUTA)可抵扣,实际税率通常降到约 0.6%。</div>
+</div>
+
+<!-- 州 W-2 申报 -->
+<div class="card statecard" id="state">
+  <div class="hd"><h2>州 W-2 申报(State W-2 Filing)· 说明卡</h2>
+    <div class="meta">给谁:州税局 · 何时:年底 · 说明:没有统一的联邦格式,各州自定;这里讲清"是什么"</div></div>
+  <div class="body" style="padding:14px 16px">
+    <p style="margin:6px 0"><b>交什么:</b>把<b>全体员工的 W-2 数据(通常是电子批量文件)+ 一张州级年度对账表</b>报给州税局。</p>
+    <p style="margin:6px 0"><b>为什么:</b>让州核对——你平时每期报缴的<b>州所得税预扣</b>,和年底所有 W-2 上州所得税(格17)加起来对不对得上。</p>
+    <p style="margin:6px 0"><b>谁要交:</b>只有<b>有州所得税的州</b>才要(德州、佛州等无州所得税的州没有这项)。</p>
+    <p style="margin:6px 0"><b>和联邦的区别:</b>联邦那份 W-2 交给 <b>SSA</b>;州这份是<b>额外再报一次给州税局</b>,格式、截止日各州不同。</p>
+  </div>
+  <div class="tip">📌 <b>对照记:</b>员工拿各自 W-2;联邦(SSA)拿"全体 W-2 + W-3 汇总";<b>州税局拿"全体 W-2 + 州级对账表"</b>——最后这项就是"州 W-2 申报"。全部由 Salsa 替雇主自动报。</div>
+</div>
+
+<div class="tip" style="border:1px solid #e6e9ee;border-radius:10px;background:#fff;">
+🗂 <b>全景对照:年底谁拿什么表</b><br>
+• <b>W-2</b> → 每个员工(本合集第一张)　• <b>1099-NEC</b> → 每个承包商<br>
+• <b>W-3</b> → SSA(W-2 封面汇总)　• <b>1096</b> → IRS(1099 封面汇总,电子申报常免)<br>
+• <b>941</b> → IRS(季度,工资+代扣+社保医保)　• <b>940</b> → IRS(年度,联邦失业税)<br>
+• <b>州 W-2 申报 + 州季度失业税/预扣/对账</b> → 州税局<br>
+<b>这些全部由 Salsa(payroll-of-record)自动生成并申报,雇主和 Chowbus 都不用填。唯一人工:SUTA 费率每年更新。</b>
+</div>
+
+</div>
+</body></html>
