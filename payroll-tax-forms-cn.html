@@ -37,6 +37,7 @@
 <nav>
   <b>跳转:</b>
   <a href="#w4">W-4 入职预扣表</a>
+  <a href="#w9">W-9 承包商入职表</a>
   <a href="#w2">W-2 员工工资税单</a>
   <a href="#f1099">1099-NEC 承包商报酬</a>
   <a href="#w3">W-3(W-2 汇总)</a>
@@ -73,6 +74,27 @@
     </div>
   </div>
   <div class="tip">📌 <b>怎么理解:</b>W-4 是"调预扣"的表,不是"交税"的表——<b>只有 Step 1(身份)+ Step 5(签名)必填,其余是让预扣更准的可选项</b>,填得准年底就少退少补。<b>交雇主留存、不寄 IRS。</b>Salsa 不叫它"W-4",而是拆进 <b>onboarding 的 "Tax info" 步骤</b>,字段旁标了 <code>Line X on Form W-4</code>;有州税的州会自动多出州预扣表。所以这块 Salsa 已覆盖,Chowbus 只需引导员工走完 onboarding。</div>
+</div>
+
+<!-- W-9 (承包商入职端) -->
+<div class="card" id="w9">
+  <div class="hd"><h2>Form W-9 · Request for Taxpayer ID &amp; Certification(承包商入职信息表)</h2>
+    <div class="meta">给谁:1099 <b>承包商</b>合作开始/首次付款前自己填 · 作用:提供税号(TIN)供年底开 1099-NEC · 相当于"承包商版的 W-4"(非年终表)</div></div>
+  <div class="body">
+    <div class="grid">
+      <div class="cell"><span class="bx">Name / Business name</span><div class="val sm">Night Owl Jazz Trio</div><div class="cn">承包商姓名 /(如有)企业名</div></div>
+      <div class="cell"><span class="bx">Federal tax classification</span><div class="val sm">Individual / LLC / S corp …</div><div class="cn">税务身份:个人、独资、LLC、公司、合伙等(勾一个)</div></div>
+    </div>
+    <div class="grid">
+      <div class="cell"><span class="bx">Address</span><div class="val sm">789 Pine St, Oakland, CA 94601</div><div class="cn">地址(用于寄 1099-NEC)</div></div>
+      <div class="cell"><span class="bx">TIN(SSN 或 EIN)</span><div class="val sm">XX-XXX1234</div><div class="cn">纳税人识别号——个人给 SSN,企业型给 EIN。<b>这是 W-9 的核心</b></div></div>
+    </div>
+    <div class="grid">
+      <div class="cell"><span class="bx">Certification / Signature</span><div class="val sm">签名 + 日期</div><div class="cn">承包商签字确认信息真实、TIN 正确</div></div>
+      <div class="cell"><span class="bx">Backup withholding?</span><div class="val sm">正常:否</div><div class="cn">若没给有效 TIN,付款方须做 backup withholding(备用预扣)</div></div>
+    </div>
+  </div>
+  <div class="tip">📌 <b>怎么理解:</b>W-9 是承包商的"入职税务身份表"——<b>承包商填、交付款方(餐厅)留存、不寄 IRS</b>。它只提供税号和身份,<b>没有任何代扣项</b>(承包商税自己缴)。餐厅拿到 W-9,年底才能据此开 <b>1099-NEC</b>。<b>对照:W-9 之于 1099 承包商 = W-4 之于 W-2 员工。</b>在 Salsa 里选 CONTRACTOR 后,onboarding 收集的就是这套(W-9 信息),而不是 W-4。</div>
 </div>
 
 <!-- W-2 -->
@@ -254,8 +276,9 @@
 </div>
 
 <div class="tip" style="border:1px solid #e6e9ee;border-radius:10px;background:#fff;">
-🗂 <b>全景对照:年底谁拿什么表</b><br>
-• <b>W-2</b> → 每个员工(本合集第一张)　• <b>1099-NEC</b> → 每个承包商<br>
+🗂 <b>全景对照:谁在什么时候拿/填什么表</b><br>
+• <b>入职本人填</b>:<b>W-4</b>(员工,联邦预扣)/ <b>W-9</b>(承包商,提供税号)<br>
+• <b>年终发给本人</b>:<b>W-2</b> → 每个员工　/　<b>1099-NEC</b> → 每个承包商<br>
 • <b>W-3</b> → SSA(W-2 封面汇总)　• <b>1096</b> → IRS(1099 封面汇总,电子申报常免)<br>
 • <b>941</b> → IRS(季度,工资+代扣+社保医保)　• <b>940</b> → IRS(年度,联邦失业税)<br>
 • <b>州 W-2 申报 + 州季度失业税/预扣/对账</b> → 州税局<br>
