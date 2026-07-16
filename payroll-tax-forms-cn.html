@@ -32,10 +32,11 @@
 <body>
 <div class="page">
 <h1>年终税表模版合集(带中文说明)</h1>
-<div class="sub">示例雇主:Fuman Restaurant LLC(旧金山,加州)· 数字为教学示例 · 这些表由 Salsa 作为 payroll-of-record 年底自动生成并申报</div>
+<div class="sub">示例雇主:Fuman Restaurant LLC(旧金山,加州)· 数字为教学示例 · 含入职表(W-4)与年终表;年终表由 Salsa 作为 payroll-of-record 自动生成并申报</div>
 
 <nav>
   <b>跳转:</b>
+  <a href="#w4">W-4 入职预扣表</a>
   <a href="#w2">W-2 员工工资税单</a>
   <a href="#f1099">1099-NEC 承包商报酬</a>
   <a href="#w3">W-3(W-2 汇总)</a>
@@ -44,6 +45,35 @@
   <a href="#f940">940 年度失业税</a>
   <a href="#state">州 W-2 申报</a>
 </nav>
+
+<!-- W-4 (入职端) -->
+<div class="card" id="w4">
+  <div class="hd"><h2>Form W-4 · Employee's Withholding Certificate(员工入职预扣税表)</h2>
+    <div class="meta">给谁:员工<b>入职时自己填</b> · 何时:入职 · 作用:告诉雇主该给自己扣多少<b>联邦所得税</b> · 在 Salsa 里 = worker onboarding 的 "Tax info" 步骤(非年终表)</div></div>
+  <div class="body">
+    <div class="grid">
+      <div class="cell"><span class="bx">Step 1 · Personal info(必填)</span><div class="val sm">姓名 / SSN / 家庭住址</div><div class="cn">身份抬头,在 Salsa 的 "Personal info" 步收集</div></div>
+      <div class="cell"><span class="bx">Filing status</span><div class="val sm">Single or MFS(示例)</div><div class="cn">报税身份 · W-4 <b>Line 1c</b></div></div>
+    </div>
+    <div class="grid">
+      <div class="cell"><span class="bx">Two jobs only</span><div class="val">☐</div><div class="cn">有两份工作/配偶也上班才勾 · W-4 <b>Line 2c</b></div></div>
+      <div class="cell"><span class="bx">Dependents total</span><div class="val">$2,000</div><div class="cn">受抚养人合计(子女×$2000+其他×$500)· W-4 <b>Line 3</b>,会减少预扣</div></div>
+    </div>
+    <div class="grid">
+      <div class="cell"><span class="bx">Other income</span><div class="val">—</div><div class="cn">工资外收入 · W-4 <b>Line 4a</b></div></div>
+      <div class="cell"><span class="bx">Deductions</span><div class="val">—</div><div class="cn">逐项扣除 · W-4 <b>Line 4b</b></div></div>
+    </div>
+    <div class="grid">
+      <div class="cell"><span class="bx">Extra withholding</span><div class="val">$0</div><div class="cn">每期额外多扣 · W-4 <b>Line 4c</b></div></div>
+      <div class="cell"><span class="bx">Exemption from withholding</span><div class="val">☐</div><div class="cn">勾了=完全不扣联邦所得税(少见,慎勾)</div></div>
+    </div>
+    <div class="grid">
+      <div class="cell"><span class="bx">Step 5 · Sign(必填)</span><div class="val sm">员工签名 + 日期</div><div class="cn">签了才生效</div></div>
+      <div class="cell"><span class="bx">州预扣表(如适用)</span><div class="val sm">CA DE 4 / IL-W-4 …</div><div class="cn">有州所得税的州另有州版预扣表,Salsa 联邦+州一起收</div></div>
+    </div>
+  </div>
+  <div class="tip">📌 <b>怎么理解:</b>W-4 是"调预扣"的表,不是"交税"的表——<b>只有 Step 1(身份)+ Step 5(签名)必填,其余是让预扣更准的可选项</b>,填得准年底就少退少补。<b>交雇主留存、不寄 IRS。</b>Salsa 不叫它"W-4",而是拆进 <b>onboarding 的 "Tax info" 步骤</b>,字段旁标了 <code>Line X on Form W-4</code>;有州税的州会自动多出州预扣表。所以这块 Salsa 已覆盖,Chowbus 只需引导员工走完 onboarding。</div>
+</div>
 
 <!-- W-2 -->
 <div class="card" id="w2">
