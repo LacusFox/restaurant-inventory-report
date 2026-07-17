@@ -36,7 +36,8 @@
 
 <nav>
   <b>跳转:</b>
-  <a href="#w4">W-4 入职预扣表</a>
+  <a href="#w4">W-4 入职预扣表(联邦)</a>
+  <a href="#stw4">州预扣表(州版 W-4)</a>
   <a href="#w9">W-9 承包商入职表</a>
   <a href="#w2">W-2 员工工资税单</a>
   <a href="#f1099">1099-NEC 承包商报酬</a>
@@ -74,6 +75,27 @@
     </div>
   </div>
   <div class="tip">📌 <b>怎么理解:</b>W-4 是"调预扣"的表,不是"交税"的表——<b>只有 Step 1(身份)+ Step 5(签名)必填,其余是让预扣更准的可选项</b>,填得准年底就少退少补。<b>交雇主留存、不寄 IRS。</b>Salsa 不叫它"W-4",而是拆进 <b>onboarding 的 "Tax info" 步骤</b>,字段旁标了 <code>Line X on Form W-4</code>;有州税的州会自动多出州预扣表。所以这块 Salsa 已覆盖,Chowbus 只需引导员工走完 onboarding。</div>
+</div>
+
+<!-- 州预扣表 (员工入职端) -->
+<div class="card" id="stw4">
+  <div class="hd"><h2>State Withholding Certificate · 州预扣表(州版 W-4)</h2>
+    <div class="meta">给谁:W-2 <b>员工</b>入职时填 · 作用:<b>州</b>所得税预扣申报(联邦 W-4 只管联邦,这张管州)· 表名因州而异 · 示例:伊利诺伊 IL-W-4</div></div>
+  <div class="body">
+    <div class="grid">
+      <div class="cell"><span class="bx">这张表叫什么(因州而异)</span><div class="val sm">CA = DE 4 · IL = IL-W-4 · NY = IT-2104 …</div><div class="cn">每个州名字不同;部分州直接沿用联邦 W-4;无州所得税的州(TX/FL/WA…)免填</div></div>
+      <div class="cell"><span class="bx">Basic allowances</span><div class="val">0</div><div class="cn">基础免税额度(示例:IL-W-4 Line 1)</div></div>
+    </div>
+    <div class="grid">
+      <div class="cell"><span class="bx">Additional allowances</span><div class="val">0</div><div class="cn">附加免税额度(IL-W-4 Line 2)</div></div>
+      <div class="cell"><span class="bx">Additional withholding</span><div class="val">$0</div><div class="cn">每期额外多扣的州所得税(IL-W-4 Line 3)</div></div>
+    </div>
+    <div class="grid">
+      <div class="cell"><span class="bx">Exemption from withholding</span><div class="val">☐</div><div class="cn">勾了=不扣州所得税(少见,慎勾)</div></div>
+      <div class="cell"><span class="bx">Tax exemptions(税种豁免)</span><div class="val sm">FUTA / SS+Medicare / 州失业税</div><div class="cn">少见;满足条件才勾,需会计确认</div></div>
+    </div>
+  </div>
+  <div class="tip">📌 <b>怎么理解:</b>联邦 W-4 只管联邦所得税;<b>有州所得税的州,员工还要填一张"州版 W-4"</b>管州所得税——加州叫 <b>DE 4</b>、伊州叫 <b>IL-W-4</b>、纽约叫 <b>IT-2104</b>。在 Salsa 里,它就在 onboarding 的 <b>"Tax info" 步骤里、联邦 W-4 下方的"[州] tax info"那块,联邦+州一起收</b>,字段旁标 <code>Line X on Form [州]-W-4</code>。<b>无州所得税的州(如德州)这张不用填。</b></div>
 </div>
 
 <!-- W-9 (承包商入职端) -->
@@ -277,7 +299,7 @@
 
 <div class="tip" style="border:1px solid #e6e9ee;border-radius:10px;background:#fff;">
 🗂 <b>全景对照:谁在什么时候拿/填什么表</b><br>
-• <b>入职本人填</b>:<b>W-4</b>(员工,联邦预扣)/ <b>W-9</b>(承包商,提供税号)<br>
+• <b>入职本人填</b>:<b>W-4</b>(员工,联邦预扣)+ <b>州预扣表</b>(员工,有州税的州,如 DE 4/IL-W-4)/ <b>W-9</b>(承包商,提供税号)<br>
 • <b>年终发给本人</b>:<b>W-2</b> → 每个员工　/　<b>1099-NEC</b> → 每个承包商<br>
 • <b>W-3</b> → SSA(W-2 封面汇总)　• <b>1096</b> → IRS(1099 封面汇总,电子申报常免)<br>
 • <b>941</b> → IRS(季度,工资+代扣+社保医保)　• <b>940</b> → IRS(年度,联邦失业税)<br>
