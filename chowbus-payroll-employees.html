@@ -142,8 +142,8 @@
     <div class="notice" id="notice">
       <span class="n-ic">🔔</span>
       <div class="n-body">
-        <span class="zh">您新增了 2 名员工，请在「管理员工」中设置他们是否需要使用薪酬功能。</span>
-        <span class="en">You've added 2 new employees. Please set whether they should use payroll under "Manage Employees".</span>
+        <span class="zh">您新增了 <span id="ncZh">2</span> 名员工，请在「管理员工」中设置是否需要使用薪酬功能。</span>
+        <span class="en">You've added <span id="ncEn">2</span> new <span id="nnEn">employees</span>. Please set payroll participation under "Manage Employees".</span>
       </div>
       <span class="n-close" onclick="document.getElementById('notice').style.display='none'">&times;</span>
     </div>
@@ -221,6 +221,16 @@
 <script>
   function toggleLanguage(){const en=!document.body.classList.contains('lang-en');document.body.classList.toggle('lang-en',en);document.body.classList.toggle('lang-zh',!en);try{localStorage.setItem('cbLang',en?'en':'zh');}catch(e){}}
   (function(){try{if(localStorage.getItem('cbLang')==='en'){document.body.classList.remove('lang-zh');document.body.classList.add('lang-en');}}catch(e){}})();
+
+  // 新增员工提醒:数量 + 英文单复数(1 与 >1 通用),0 则隐藏提示条
+  const NEW_COUNT = 2;
+  (function(){
+    const n = NEW_COUNT;
+    if(n < 1){ const el=document.getElementById('notice'); if(el) el.style.display='none'; return; }
+    document.getElementById('ncZh').textContent = n;
+    document.getElementById('ncEn').textContent = n;
+    document.getElementById('nnEn').textContent = (n===1 ? 'employee' : 'employees');
+  })();
   // 若从选择页带 ?added=1 跳转过来,弹出成功 Toast
   if(new URLSearchParams(location.search).get('added')){
     const t=document.getElementById('toast');
