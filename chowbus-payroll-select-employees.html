@@ -53,6 +53,10 @@
   .role-pill.sec{background:#F1F3F5;color:#7A8494;}
   .role-pill::before{content:"👤";font-size:11px;opacity:.65;} .role-pill.sec::before{content:"";}
   input[type=checkbox]{width:18px;height:18px;accent-color:var(--primary);cursor:pointer;}
+  .stat{display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:600;padding:5px 12px;border-radius:7px;}
+  .stat i{width:7px;height:7px;border-radius:50%;display:inline-block;}
+  .stat.active{color:#12905a;background:#EAF7F0;} .stat.active i{background:#22A353;}
+  .stat.inactive{color:#6b7280;background:#F1F2F4;} .stat.inactive i{background:#9aa0aa;}
 
   .footer-bar{margin-top:22px;background:#fff;border:1px solid var(--border);border-radius:12px;padding:14px 22px;display:flex;justify-content:space-between;align-items:center;box-shadow:0 2px 12px rgba(0,0,0,.04);}
   .sel-count{font-size:14px;color:#444;} .sel-count b{color:var(--primary);}
@@ -127,15 +131,16 @@
             <th class="col-check"><input type="checkbox" id="checkAll" onclick="toggleAll(this)"></th>
             <th><span class="zh">姓名</span><span class="en">Name</span></th>
             <th><span class="zh">角色</span><span class="en">Role</span></th>
+            <th><span class="zh">在职状态</span><span class="en">Status</span></th>
           </tr>
         </thead>
         <tbody id="rows">
-          <tr><td class="col-check"><input type="checkbox" class="rowcheck" onchange="updateCount()"></td><td class="name">Dan Boyle</td><td><div class="roles"><span class="role-pill">Super Admin</span></div></td></tr>
-          <tr><td class="col-check"><input type="checkbox" class="rowcheck" onchange="updateCount()"></td><td class="name">Test Parse</td><td><div class="roles"><span class="role-pill">Restaurant Owner</span></div></td></tr>
-          <tr><td class="col-check"><input type="checkbox" class="rowcheck" onchange="updateCount()"></td><td class="name">Test Parse</td><td><div class="roles"><span class="role-pill">Manager</span><span class="role-pill sec">Waiter</span></div></td></tr>
-          <tr><td class="col-check"><input type="checkbox" class="rowcheck" onchange="updateCount()"></td><td class="name">Maria Lopez</td><td><div class="roles"><span class="role-pill">Server</span></div></td></tr>
-          <tr><td class="col-check"><input type="checkbox" class="rowcheck" onchange="updateCount()"></td><td class="name">Chen Wei</td><td><div class="roles"><span class="role-pill">Cook</span></div></td></tr>
-          <tr><td class="col-check"><input type="checkbox" class="rowcheck" onchange="updateCount()"></td><td class="name">James Park</td><td><div class="roles"><span class="role-pill">Cashier</span><span class="role-pill sec">Host</span></div></td></tr>
+          <tr><td class="col-check"><input type="checkbox" class="rowcheck" onchange="updateCount()"></td><td class="name">Dan Boyle</td><td><div class="roles"><span class="role-pill">Super Admin</span></div></td><td><span class="stat active"><i></i><span class="zh">在职</span><span class="en">Active</span></span></td></tr>
+          <tr><td class="col-check"><input type="checkbox" class="rowcheck" onchange="updateCount()"></td><td class="name">Test Parse</td><td><div class="roles"><span class="role-pill">Restaurant Owner</span></div></td><td><span class="stat active"><i></i><span class="zh">在职</span><span class="en">Active</span></span></td></tr>
+          <tr><td class="col-check"><input type="checkbox" class="rowcheck" onchange="updateCount()"></td><td class="name">Test Parse</td><td><div class="roles"><span class="role-pill">Manager</span><span class="role-pill sec">Waiter</span></div></td><td><span class="stat active"><i></i><span class="zh">在职</span><span class="en">Active</span></span></td></tr>
+          <tr><td class="col-check"><input type="checkbox" class="rowcheck" onchange="updateCount()"></td><td class="name">Maria Lopez</td><td><div class="roles"><span class="role-pill">Server</span></div></td><td><span class="stat active"><i></i><span class="zh">在职</span><span class="en">Active</span></span></td></tr>
+          <tr><td class="col-check"><input type="checkbox" class="rowcheck" onchange="updateCount()"></td><td class="name">Chen Wei</td><td><div class="roles"><span class="role-pill">Cook</span></div></td><td><span class="stat active"><i></i><span class="zh">在职</span><span class="en">Active</span></span></td></tr>
+          <tr><td class="col-check"><input type="checkbox" class="rowcheck" onchange="updateCount()"></td><td class="name">James Park</td><td><div class="roles"><span class="role-pill">Cashier</span><span class="role-pill sec">Host</span></div></td><td><span class="stat inactive"><i></i><span class="zh">离职</span><span class="en">Archived</span></span></td></tr>
         </tbody>
       </table>
     </div>
