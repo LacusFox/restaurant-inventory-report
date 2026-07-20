@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chowbus Payroll · 员工薪酬管理</title>
+<style>
+  :root{--primary:#CC1C4C;--primary-hover:#A6123B;--bg:#F7F8FA;--border:#EDEEF1;--ink:#1F1F1F;--muted:#6B7280;--sidebar-w:250px;}
+  *{box-sizing:border-box;margin:0;padding:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"PingFang SC","Microsoft YaHei",Arial,sans-serif;}
+  body{display:flex;background:var(--bg);color:var(--ink);min-height:100vh;overflow-x:hidden;}
+  body.lang-zh .en{display:none!important;} body.lang-en .zh{display:none!important;}
+
+  aside.sidebar{width:var(--sidebar-w);background:#fff;border-right:1px solid var(--border);position:fixed;height:100vh;overflow-y:auto;z-index:100;}
+  .logo-area{padding:18px 22px;display:flex;align-items:center;gap:8px;border-bottom:1px solid var(--border);}
+  .logo-area .ic{font-size:22px;} .logo-area .tx{font-weight:900;font-size:19px;color:var(--primary);}
+  .menu-list{list-style:none;padding:10px 0;}
+  .menu-item{padding:11px 22px;display:flex;align-items:center;color:#374151;font-size:14px;cursor:pointer;transition:.15s;}
+  .menu-item:hover{background:#FDF2F4;color:var(--primary);}
+  .menu-icon{margin-right:12px;width:18px;text-align:center;opacity:.75;}
+  .caret{margin-left:auto;font-size:11px;color:#c4c8cf;}
+  .menu-group.open>.menu-item{color:var(--primary);font-weight:600;}
+  .submenu-list{list-style:none;padding:2px 0 6px;}
+  .submenu-item{padding:10px 22px 10px 50px;font-size:13.5px;color:var(--muted);cursor:pointer;transition:.15s;}
+  .submenu-item:hover{color:var(--primary);}
+  .submenu-item.active{color:var(--primary);font-weight:700;background:#FFF0F2;border-left:3px solid var(--primary);padding-left:47px;}
+
+  main{margin-left:var(--sidebar-w);flex:1;min-height:100vh;display:flex;flex-direction:column;}
+  header.top{height:58px;background:#fff;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;padding:0 28px;position:sticky;top:0;z-index:99;}
+  .hleft{display:flex;align-items:center;gap:16px;font-size:14px;color:#333;}
+  .collapse{font-size:18px;color:#888;cursor:pointer;}
+  .store{font-weight:600;cursor:pointer;} .store .ca{color:#aaa;font-size:11px;margin-left:4px;}
+  .usa{background:#EEE;padding:2px 8px;border-radius:4px;font-size:11px;color:#555;}
+  .hright{display:flex;align-items:center;gap:22px;font-size:13.5px;color:var(--muted);}
+  .langpill{display:inline-flex;border:1px solid #E3B8C4;border-radius:999px;overflow:hidden;cursor:pointer;font-size:12.5px;font-weight:600;}
+  .langpill span{padding:5px 15px;transition:.15s;}
+  body.lang-zh .langpill .lz, body.lang-en .langpill .le{background:var(--primary);color:#fff;}
+  body.lang-zh .langpill .le, body.lang-en .langpill .lz{background:#fff;color:#666;}
+
+  .content{padding:26px 34px;flex:1;max-width:1120px;}
+  .crumb{font-size:12.5px;color:#9aa0aa;margin-bottom:10px;cursor:pointer;}
+  .crumb:hover{color:var(--primary);}
+  .page-title{font-size:23px;font-weight:800;margin-bottom:4px;}
+  .page-hint{font-size:13px;color:var(--muted);margin-bottom:20px;display:flex;align-items:center;gap:7px;}
+  .autosave{display:inline-flex;align-items:center;gap:5px;font-size:12px;color:#12905a;background:#EAF7F0;border:1px solid #CBEBD9;padding:3px 10px;border-radius:999px;}
+
+  /* Tabs */
+  .tabs{display:flex;gap:26px;border-bottom:1px solid var(--border);margin-bottom:0;}
+  .tab{padding:12px 2px;font-size:14.5px;font-weight:600;color:var(--muted);cursor:pointer;border-bottom:2.5px solid transparent;margin-bottom:-1px;transition:.15s;display:flex;align-items:center;gap:8px;}
+  .tab:hover{color:#333;}
+  .tab.active{color:var(--primary);border-bottom-color:var(--primary);}
+  .tab .cnt{font-size:12px;font-weight:700;background:#EEF0F3;color:#6b7280;border-radius:999px;padding:1px 9px;}
+  .tab.active .cnt{background:#FCE4EB;color:var(--primary);}
+
+  .card{background:#fff;border:1px solid var(--border);border-top:none;border-radius:0 0 12px 12px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,.03);}
+  table{width:100%;border-collapse:collapse;}
+  thead th{text-align:left;font-size:12.5px;font-weight:700;color:#8a8f9a;letter-spacing:.02em;padding:14px 20px;border-bottom:1px solid var(--border);background:#FCFCFD;}
+  tbody td{padding:16px 20px;border-bottom:1px solid #F1F2F4;font-size:14px;vertical-align:middle;color:#374151;}
+  tbody tr:last-child td{border-bottom:none;}
+  tbody tr:hover{background:#FCFAFB;}
+  .name{font-weight:600;color:#1a1a1a;}
+  .roles{display:flex;gap:8px;flex-wrap:wrap;}
+  .role-pill{display:inline-flex;align-items:center;gap:5px;font-size:13px;font-weight:600;padding:4px 12px;border-radius:7px;background:#EEF0FE;color:#6D5AE6;}
+  .role-pill.sec{background:#F1F3F5;color:#7A8494;}
+  .role-pill::before{content:"👤";font-size:11px;opacity:.65;} .role-pill.sec::before{content:"";}
+  .contact{color:#4b5563;font-variant-numeric:tabular-nums;}
+  .col-act{text-align:right;padding-right:24px;width:180px;}
+
+  .btn-enable{background:var(--primary);color:#fff;border:none;border-radius:8px;padding:8px 16px;font-size:13px;font-weight:700;cursor:pointer;transition:.15s;}
+  .btn-enable:hover{background:var(--primary-hover);}
+  .btn-disable{background:#fff;color:#B4283F;border:1px solid #F0C7CF;border-radius:8px;padding:8px 16px;font-size:13px;font-weight:600;cursor:pointer;transition:.15s;}
+  .btn-disable:hover{background:#FDF2F4;border-color:#E7A9B5;}
+
+  .empty{padding:56px 20px;text-align:center;color:#9aa0aa;font-size:14px;}
+  .empty .ei{font-size:34px;display:block;margin-bottom:10px;opacity:.5;}
+
+  /* Toast(带撤销) */
+  .toast{position:fixed;left:50%;bottom:32px;transform:translateX(-50%) translateY(24px);opacity:0;pointer-events:none;
+    background:#1f2430;color:#fff;border-radius:12px;padding:13px 18px;display:flex;align-items:center;gap:14px;
+    box-shadow:0 12px 32px rgba(0,0,0,.28);z-index:999;transition:all .3s cubic-bezier(.2,.8,.3,1);font-size:14px;}
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0);pointer-events:auto;}
+  .toast .tick{width:22px;height:22px;border-radius:50%;background:#22A353;color:#fff;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:900;flex:0 0 22px;}
+  .toast .undo{color:#7FB4FF;font-weight:700;cursor:pointer;margin-left:4px;}
+  .toast .undo:hover{text-decoration:underline;}
+</style>
+</head>
+<body class="lang-zh">
+
+<aside class="sidebar">
+  <div class="logo-area"><span class="ic">🍜</span><span class="tx">chowbus</span></div>
+  <ul class="menu-list">
+    <li class="menu-item"><span class="menu-icon">🏠</span><span class="zh">首页</span><span class="en">Home</span></li>
+    <li class="menu-item"><span class="menu-icon">🧮</span><span class="zh">调整管理</span><span class="en">Adjustment Management</span></li>
+    <li class="menu-item"><span class="menu-icon">💳</span><span class="zh">交易</span><span class="en">Transactions</span></li>
+    <li class="menu-item"><span class="menu-icon">🤖</span><span class="zh">AI电话点餐</span><span class="en">AI Phone Ordering</span></li>
+    <li class="menu-item"><span class="menu-icon">🧾</span><span class="zh">订单</span><span class="en">Orders</span></li>
+    <li class="menu-item"><span class="menu-icon">📋</span><span class="zh">菜单</span><span class="en">Menu</span><span class="caret">▾</span></li>
+    <li class="menu-item"><span class="menu-icon">🎯</span><span class="zh">促销管理</span><span class="en">Promotion Management</span></li>
+    <li class="menu-item"><span class="menu-icon">👥</span><span class="zh">团队管理</span><span class="en">Team Management</span><span class="caret">▾</span></li>
+
+    <div class="menu-group open">
+      <li class="menu-item"><span class="menu-icon">💲</span><span class="zh">薪酬</span><span class="en">Payroll</span><span class="caret">▴</span></li>
+      <ul class="submenu-list">
+        <li class="submenu-item"><span class="zh">薪酬操作</span><span class="en">Payroll Operations</span></li>
+        <li class="submenu-item"><span class="zh">雇主设置</span><span class="en">Employer Setup</span></li>
+        <li class="submenu-item active"><span class="zh">员工管理</span><span class="en">Employees</span></li>
+      </ul>
+    </div>
+
+    <li class="menu-item"><span class="menu-icon">📟</span><span class="zh">设备</span><span class="en">Devices</span></li>
+    <li class="menu-item"><span class="menu-icon">👤</span><span class="zh">账户</span><span class="en">Account</span><span class="caret">▾</span></li>
+    <li class="menu-item"><span class="menu-icon">✅</span><span class="zh">智能点餐</span><span class="en">Smart Ordering</span><span class="caret">▾</span></li>
+  </ul>
+</aside>
+
+<main>
+  <header class="top">
+    <div class="hleft">
+      <span class="collapse">≡</span>
+      <span class="store">may localserver -12555-Curry Flurry(12555)<span class="ca">▾</span></span>
+      <span class="usa">USA</span>
+    </div>
+    <div class="hright">
+      <span>sisi.hu@chowbus.com</span>
+      <div class="langpill" onclick="toggleLanguage()"><span class="lz">中文</span><span class="le">EN</span></div>
+    </div>
+  </header>
+
+  <div class="content">
+    <div class="crumb" onclick="location.href='chowbus-payroll-employees.html'">
+      <span class="zh">← 返回员工管理</span><span class="en">← Back to Employees</span>
+    </div>
+    <h1 class="page-title"><span class="zh">员工薪酬管理</span><span class="en">Manage Employees</span></h1>
+    <div class="tabs">
+      <div class="tab active" id="tabOn" onclick="switchTab('on')">
+        <span class="zh">使用薪酬</span><span class="en">On payroll</span><span class="cnt" id="cntOn">0</span>
+      </div>
+      <div class="tab" id="tabOff" onclick="switchTab('off')">
+        <span class="zh">未使用薪酬</span><span class="en">Not on payroll</span><span class="cnt" id="cntOff">0</span>
+      </div>
+    </div>
+
+    <div class="card">
+      <table>
+        <thead>
+          <tr>
+            <th><span class="zh">姓名</span><span class="en">Name</span></th>
+            <th><span class="zh">角色</span><span class="en">Role</span></th>
+            <th><span class="zh">手机号</span><span class="en">Phone</span></th>
+            <th><span class="zh">邮箱</span><span class="en">Email</span></th>
+            <th class="col-act"><span class="zh">操作</span><span class="en">Action</span></th>
+          </tr>
+        </thead>
+        <tbody id="rows"></tbody>
+      </table>
+    </div>
+  </div>
+</main>
+
+<div class="toast" id="toast">
+  <span class="tick">✓</span>
+  <span id="toastMsg"></span>
+  <span class="undo" id="toastUndo" onclick="undoLast()"><span class="zh">撤销</span><span class="en">Undo</span></span>
+</div>
+
+<script>
+  // 员工数据(payroll:true=使用薪酬 / false=未使用)。总数偏"使用多、未使用少"。
+  const EMP = [
+    {id:1,  name:'Dan Boyle',    roles:[{t:'Super Admin'}],                 phone:'(415) 555-0132', email:'dan.boyle@example.com',    payroll:true},
+    {id:2,  name:'Maria Lopez',  roles:[{t:'Server'}],                      phone:'(415) 555-0148', email:'maria.lopez@example.com',  payroll:true},
+    {id:3,  name:'Chen Wei',     roles:[{t:'Cook'}],                        phone:'(415) 555-0155', email:'chen.wei@example.com',     payroll:true},
+    {id:4,  name:'James Park',   roles:[{t:'Cashier'},{t:'Host',sec:1}],    phone:'(415) 555-0177', email:'james.park@example.com',   payroll:true},
+    {id:5,  name:'Aisha Khan',   roles:[{t:'Server'}],                      phone:'(415) 555-0190', email:'aisha.khan@example.com',   payroll:true},
+    {id:6,  name:'Diego Ramirez',roles:[{t:'Line Cook'}],                   phone:'(415) 555-0203', email:'diego.r@example.com',      payroll:true},
+    {id:7,  name:'Emily Zhang',  roles:[{t:'Manager'}],                     phone:'(415) 555-0216', email:'emily.zhang@example.com',  payroll:true},
+    {id:8,  name:'Kenji Tanaka', roles:[{t:'Dishwasher'}],                  phone:'(415) 555-0229', email:'kenji.t@example.com',      payroll:true},
+    {id:9,  name:'Sofia Rossi',  roles:[{t:'Bartender'}],                   phone:'(415) 555-0242', email:'sofia.rossi@example.com',  payroll:true},
+    {id:10, name:'Test Parse',   roles:[{t:'Restaurant Owner'}],            phone:'(415) 555-0261', email:'owner@example.com',        payroll:false},
+    {id:11, name:'Test Parse',   roles:[{t:'Manager'},{t:'Waiter',sec:1}],  phone:'(415) 555-0274', email:'test.parse@example.com',   payroll:false},
+    {id:12, name:'Liam Chen',    roles:[{t:'Busser'}],                      phone:'(415) 555-0288', email:'liam.chen@example.com',    payroll:false},
+  ];
+
+  let curTab = 'on';
+  let lastAction = null;      // {id, from:'on'|'off'} 用于撤销
+  let toastTimer = null;
+
+  function esc(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;');}
+  function rolesHtml(rs){return '<div class="roles">'+rs.map(r=>`<span class="role-pill${r.sec?' sec':''}">${esc(r.t)}</span>`).join('')+'</div>';}
+
+  function render(){
+    const onList  = EMP.filter(e=>e.payroll);
+    const offList = EMP.filter(e=>!e.payroll);
+    document.getElementById('cntOn').textContent  = onList.length;
+    document.getElementById('cntOff').textContent = offList.length;
+    const list = curTab==='on' ? onList : offList;
+    const tb = document.getElementById('rows');
+
+    if(list.length===0){
+      const zh = curTab==='on' ? '暂无使用薪酬的员工' : '所有员工都已使用薪酬 🎉';
+      const en = curTab==='on' ? 'No employees on payroll yet' : 'All employees are on payroll 🎉';
+      tb.innerHTML = `<tr><td colspan="5"><div class="empty"><span class="ei">👥</span><span class="zh">${zh}</span><span class="en">${en}</span></div></td></tr>`;
+      return;
+    }
+
+    tb.innerHTML = list.map(e=>{
+      const btn = curTab==='on'
+        ? `<button class="btn-disable" onclick="setPayroll(${e.id},false)"><span class="zh">取消薪酬功能</span><span class="en">Disable Payroll</span></button>`
+        : `<button class="btn-enable"  onclick="setPayroll(${e.id},true)"><span class="zh">使用薪酬功能</span><span class="en">Enable Payroll</span></button>`;
+      return `<tr>
+        <td class="name">${esc(e.name)}</td>
+        <td>${rolesHtml(e.roles)}</td>
+        <td class="contact">${esc(e.phone)}</td>
+        <td class="contact">${esc(e.email)}</td>
+        <td class="col-act">${btn}</td>
+      </tr>`;
+    }).join('');
+  }
+
+  function switchTab(t){
+    curTab=t;
+    document.getElementById('tabOn').classList.toggle('active', t==='on');
+    document.getElementById('tabOff').classList.toggle('active', t==='off');
+    render();
+  }
+
+  // 即时自动保存:改标记 → 重渲染(该员工移到另一 tab)→ Toast(可撤销)
+  function setPayroll(id, val){
+    const e = EMP.find(x=>x.id===id);
+    if(!e) return;
+    lastAction = {id, from: e.payroll ? 'on' : 'off'};
+    e.payroll = val;
+    render();
+    const zh = val ? `已为「${e.name}」开启薪酬功能` : `已取消「${e.name}」的薪酬功能`;
+    const en = val ? `Payroll enabled for ${e.name}` : `Payroll disabled for ${e.name}`;
+    showToast(zh, en);
+  }
+
+  function showToast(zh, en){
+    const t=document.getElementById('toast');
+    document.getElementById('toastMsg').innerHTML = `<span class="zh">${zh}</span><span class="en">${en}</span>`;
+    t.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(()=>t.classList.remove('show'), 4500);
+  }
+
+  function undoLast(){
+    if(!lastAction) return;
+    const e = EMP.find(x=>x.id===lastAction.id);
+    e.payroll = (lastAction.from==='on');
+    lastAction = null;
+    render();
+    document.getElementById('toast').classList.remove('show');
+  }
+
+  function toggleLanguage(){const en=!document.body.classList.contains('lang-en');document.body.classList.toggle('lang-en',en);document.body.classList.toggle('lang-zh',!en);try{localStorage.setItem('cbLang',en?'en':'zh');}catch(e){}}
+  (function(){try{if(localStorage.getItem('cbLang')==='en'){document.body.classList.remove('lang-zh');document.body.classList.add('lang-en');}}catch(e){}})();
+
+  render();
+</script>
+</body>
+</html>

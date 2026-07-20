@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chowbus Payroll · Employees</title>
+<style>
+  :root{--primary:#CC1C4C;--primary-hover:#A6123B;--bg:#F7F8FA;--border:#EDEEF1;--ink:#1F1F1F;--muted:#6B7280;--sidebar-w:250px;}
+  *{box-sizing:border-box;margin:0;padding:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"PingFang SC","Microsoft YaHei",Arial,sans-serif;}
+  body{display:flex;background:var(--bg);color:var(--ink);min-height:100vh;overflow-x:hidden;}
+  body.lang-zh .en{display:none!important;} body.lang-en .zh{display:none!important;}
+
+  /* 侧边栏 */
+  aside.sidebar{width:var(--sidebar-w);background:#fff;border-right:1px solid var(--border);position:fixed;height:100vh;overflow-y:auto;z-index:100;}
+  .logo-area{padding:18px 22px;display:flex;align-items:center;gap:8px;border-bottom:1px solid var(--border);}
+  .logo-area .ic{font-size:22px;}
+  .logo-area .tx{font-weight:900;font-size:19px;color:var(--primary);}
+  .menu-list{list-style:none;padding:10px 0;}
+  .menu-item{padding:11px 22px;display:flex;align-items:center;color:#374151;font-size:14px;cursor:pointer;transition:.15s;}
+  .menu-item:hover{background:#FDF2F4;color:var(--primary);}
+  .menu-icon{margin-right:12px;width:18px;text-align:center;opacity:.75;}
+  .caret{margin-left:auto;font-size:11px;color:#c4c8cf;}
+  .menu-group.open>.menu-item{color:var(--primary);font-weight:600;}
+  .submenu-list{list-style:none;padding:2px 0 6px;}
+  .submenu-item{padding:10px 22px 10px 50px;font-size:13.5px;color:var(--muted);cursor:pointer;transition:.15s;}
+  .submenu-item:hover{color:var(--primary);}
+  .submenu-item.active{color:var(--primary);font-weight:700;background:#FFF0F2;border-left:3px solid var(--primary);padding-left:47px;}
+
+  /* 主区 */
+  main{margin-left:var(--sidebar-w);flex:1;min-height:100vh;display:flex;flex-direction:column;}
+  header.top{height:58px;background:#fff;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;padding:0 28px;position:sticky;top:0;z-index:99;}
+  .hleft{display:flex;align-items:center;gap:16px;font-size:14px;color:#333;}
+  .collapse{font-size:18px;color:#888;cursor:pointer;}
+  .store{font-weight:600;cursor:pointer;}
+  .store .ca{color:#aaa;font-size:11px;margin-left:4px;}
+  .usa{background:#EEE;padding:2px 8px;border-radius:4px;font-size:11px;color:#555;}
+  .hright{display:flex;align-items:center;gap:22px;font-size:13.5px;color:var(--muted);}
+  .langpill{display:inline-flex;border:1px solid #E3B8C4;border-radius:999px;overflow:hidden;cursor:pointer;font-size:12.5px;font-weight:600;}
+  .langpill span{padding:5px 15px;transition:.15s;}
+  body.lang-zh .langpill .lz, body.lang-en .langpill .le{background:var(--primary);color:#fff;}
+  body.lang-zh .langpill .le, body.lang-en .langpill .lz{background:#fff;color:#666;}
+
+  .content{padding:28px 34px;flex:1;}
+  .page-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;}
+  .page-title{font-size:24px;font-weight:800;}
+  .btn-manage{background:var(--primary);color:#fff;border:none;border-radius:8px;padding:10px 22px;font-size:14px;font-weight:700;cursor:pointer;}
+  .btn-manage:hover{background:var(--primary-hover);}
+  .head-actions{display:flex;align-items:center;gap:12px;}
+  .btn-ghost{background:#fff;color:#444;border:1px solid #DCDCDC;border-radius:8px;padding:10px 18px;font-size:14px;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:8px;}
+  .btn-ghost:hover{background:#F7F7F8;border-color:#c9c9c9;}
+  .btn-ghost .cnt{font-size:12px;font-weight:700;background:#EEF0F3;color:#6b7280;border-radius:999px;padding:1px 8px;}
+
+  /* 通知栏(预留的提醒位) */
+  .notice{display:flex;align-items:center;gap:14px;background:#FFF8EC;border:1px solid #F3E2BF;border-radius:12px;padding:14px 18px;margin-bottom:20px;}
+  .notice .n-ic{font-size:20px;flex:0 0 auto;}
+  .notice .n-body{flex:1;font-size:14px;color:#7A5B12;line-height:1.5;}
+  .notice .n-cta{background:var(--primary);color:#fff;border:none;border-radius:8px;padding:8px 18px;font-size:13.5px;font-weight:700;cursor:pointer;white-space:nowrap;flex:0 0 auto;}
+  .notice .n-cta:hover{background:var(--primary-hover);}
+  .notice .n-close{color:#B9A15E;font-size:20px;cursor:pointer;line-height:1;flex:0 0 auto;padding:0 2px;}
+  .notice .n-close:hover{color:#8a733a;}
+
+  .card{background:#fff;border:1px solid var(--border);border-radius:12px;padding:8px 22px 18px;box-shadow:0 2px 12px rgba(0,0,0,.03);}
+  table{width:100%;border-collapse:collapse;}
+  thead th{text-align:left;font-size:14px;font-weight:800;color:#111;padding:18px 8px;border-bottom:1px solid var(--border);}
+  tbody td{padding:20px 8px;border-bottom:1px solid #F1F2F4;font-size:14.5px;vertical-align:middle;}
+  tbody tr:last-child td{border-bottom:none;}
+  .name{color:#1a1a1a;}
+  .roles{display:flex;gap:8px;flex-wrap:wrap;}
+  .role-pill{display:inline-flex;align-items:center;gap:5px;font-size:13px;font-weight:600;padding:4px 12px;border-radius:7px;background:#EEF0FE;color:#6D5AE6;}
+  .role-pill.sec{background:#F1F3F5;color:#7A8494;}
+  .role-pill::before{content:"👤";font-size:11px;opacity:.65;}
+  .role-pill.sec::before{content:"";}
+  .status{display:inline-block;font-size:13px;font-weight:700;padding:6px 14px;border-radius:7px;color:#fff;}
+  .status.ready{background:#22A353;}
+  .status.incomplete{background:#3B82F6;}
+  /* 在职状态(轻量点+字,和上面实色的薪酬状态区分开) */
+  .stat{display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:600;padding:5px 12px;border-radius:7px;}
+  .stat i{width:7px;height:7px;border-radius:50%;display:inline-block;}
+  .stat.active{color:#12905a;background:#EAF7F0;} .stat.active i{background:#22A353;}
+  .stat.inactive{color:#6b7280;background:#F1F2F4;} .stat.inactive i{background:#9aa0aa;}
+  .view{color:#9CA3AF;cursor:pointer;font-size:14px;}
+  .view:hover{color:var(--primary);}
+
+  .pager{display:flex;justify-content:flex-end;align-items:center;gap:14px;margin-top:18px;font-size:13.5px;color:var(--muted);}
+  .pager .pg-num{border:1px solid var(--primary);color:var(--primary);border-radius:6px;width:28px;height:28px;display:inline-flex;align-items:center;justify-content:center;}
+  .pager .arw{color:#bbb;}
+  .pager .pp{border:1px solid var(--border);border-radius:6px;padding:5px 10px;}
+
+  /* Toast */
+  .toast{position:fixed;top:26px;left:50%;transform:translateX(-50%) translateY(-24px);opacity:0;
+    background:#fff;border:1px solid #D6F0DE;border-radius:12px;padding:14px 22px;display:flex;align-items:center;gap:12px;
+    box-shadow:0 12px 32px rgba(0,0,0,.14);z-index:999;transition:all .35s cubic-bezier(.2,.8,.3,1);font-size:15px;font-weight:600;color:#166534;}
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+  .toast .tick{width:26px;height:26px;border-radius:50%;background:#22A353;color:#fff;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:900;flex:0 0 26px;}
+</style>
+</head>
+<body class="lang-zh">
+
+<aside class="sidebar">
+  <div class="logo-area"><span class="ic">🍜</span><span class="tx">chowbus</span></div>
+  <ul class="menu-list">
+    <li class="menu-item"><span class="menu-icon">🏠</span><span class="zh">首页</span><span class="en">Home</span></li>
+    <li class="menu-item"><span class="menu-icon">🧮</span><span class="zh">调整管理</span><span class="en">Adjustment Management</span></li>
+    <li class="menu-item"><span class="menu-icon">💳</span><span class="zh">交易</span><span class="en">Transactions</span></li>
+    <li class="menu-item"><span class="menu-icon">🤖</span><span class="zh">AI电话点餐</span><span class="en">AI Phone Ordering</span></li>
+    <li class="menu-item"><span class="menu-icon">🧾</span><span class="zh">订单</span><span class="en">Orders</span></li>
+    <li class="menu-item"><span class="menu-icon">📋</span><span class="zh">菜单</span><span class="en">Menu</span><span class="caret">▾</span></li>
+    <li class="menu-item"><span class="menu-icon">🎯</span><span class="zh">促销管理</span><span class="en">Promotion Management</span></li>
+    <li class="menu-item"><span class="menu-icon">👥</span><span class="zh">团队管理</span><span class="en">Team Management</span><span class="caret">▾</span></li>
+
+    <div class="menu-group open">
+      <li class="menu-item"><span class="menu-icon">💲</span><span class="zh">薪酬</span><span class="en">Payroll</span><span class="caret">▴</span></li>
+      <ul class="submenu-list">
+        <li class="submenu-item"><span class="zh">薪酬操作</span><span class="en">Payroll Operations</span></li>
+        <li class="submenu-item"><span class="zh">雇主设置</span><span class="en">Employer Setup</span></li>
+        <li class="submenu-item active"><span class="zh">员工管理</span><span class="en">Employees</span></li>
+      </ul>
+    </div>
+
+    <li class="menu-item"><span class="menu-icon">📟</span><span class="zh">设备</span><span class="en">Devices</span></li>
+    <li class="menu-item"><span class="menu-icon">👤</span><span class="zh">账户</span><span class="en">Account</span><span class="caret">▾</span></li>
+    <li class="menu-item"><span class="menu-icon">✅</span><span class="zh">智能点餐</span><span class="en">Smart Ordering</span><span class="caret">▾</span></li>
+  </ul>
+</aside>
+
+<main>
+  <header class="top">
+    <div class="hleft">
+      <span class="collapse">≡</span>
+      <span class="store">may localserver -12555-Curry Flurry(12555)<span class="ca">▾</span></span>
+      <span class="usa">USA</span>
+    </div>
+    <div class="hright">
+      <span>sisi.hu@chowbus.com</span>
+      <div class="langpill" onclick="toggleLanguage()"><span class="lz">中文</span><span class="le">EN</span></div>
+    </div>
+  </header>
+
+  <div class="content">
+
+    <!-- 通知栏:预留的提醒/通知位 -->
+    <div class="notice" id="notice">
+      <span class="n-ic">🔔</span>
+      <div class="n-body">
+        <span class="zh">您新增了 2 名员工，请设置他们是否需要使用薪酬功能。</span>
+        <span class="en">You've added 2 new employees. Please set whether they should use payroll.</span>
+      </div>
+      <button class="n-cta" onclick="location.href='chowbus-payroll-select-employees.html'"><span class="zh">去设置</span><span class="en">Set up</span></button>
+      <span class="n-close" onclick="document.getElementById('notice').style.display='none'">&times;</span>
+    </div>
+
+    <div class="page-head">
+      <h1 class="page-title"><span class="zh">员工管理</span><span class="en">Employees</span></h1>
+      <div class="head-actions">
+        <button class="btn-ghost" onclick="location.href='chowbus-payroll-past-employees.html'">
+          <span class="zh">历史发薪员工</span><span class="en">Past Employees</span><span class="cnt">5</span>
+        </button>
+        <button class="btn-manage" onclick="location.href='chowbus-payroll-manage-employees.html'"><span class="zh">管理员工</span><span class="en">Manage Employees</span></button>
+      </div>
+    </div>
+
+    <div class="card">
+      <table>
+        <thead>
+          <tr>
+            <th><span class="zh">姓名</span><span class="en">Name</span></th>
+            <th><span class="zh">角色</span><span class="en">Role</span></th>
+            <th><span class="zh">在职状态</span><span class="en">Status</span></th>
+            <th><span class="zh">薪酬状态</span><span class="en">Payroll Status</span></th>
+            <th style="text-align:right;padding-right:24px;"><span class="zh">操作</span><span class="en">Action</span></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="name">Dan Boyle</td>
+            <td><div class="roles"><span class="role-pill">Super Admin</span></div></td>
+            <td><span class="stat active"><i></i><span class="zh">在职</span><span class="en">Active</span></span></td>
+            <td><span class="status ready"><span class="zh">可发薪</span><span class="en">Ready to pay</span></span></td>
+            <td style="text-align:right;padding-right:24px;"><span class="view">View</span></td>
+          </tr>
+          <tr>
+            <td class="name">Test Parse</td>
+            <td><div class="roles"><span class="role-pill">Restaurant Owner</span></div></td>
+            <td><span class="stat active"><i></i><span class="zh">在职</span><span class="en">Active</span></span></td>
+            <td><span class="status incomplete"><span class="zh">设置未完成</span><span class="en">Setup incomplete</span></span></td>
+            <td style="text-align:right;padding-right:24px;"><span class="view">View</span></td>
+          </tr>
+          <tr>
+            <td class="name">Test Parse</td>
+            <td><div class="roles"><span class="role-pill">Manager</span><span class="role-pill sec">Waiter</span></div></td>
+            <td><span class="stat active"><i></i><span class="zh">在职</span><span class="en">Active</span></span></td>
+            <td><span class="status incomplete"><span class="zh">设置未完成</span><span class="en">Setup incomplete</span></span></td>
+            <td style="text-align:right;padding-right:24px;"><span class="view">View</span></td>
+          </tr>
+          <tr>
+            <td class="name">Maria Lopez</td>
+            <td><div class="roles"><span class="role-pill">Server</span></div></td>
+            <td><span class="stat inactive"><i></i><span class="zh">离职</span><span class="en">Archived</span></span></td>
+            <td><span class="status ready"><span class="zh">可发薪</span><span class="en">Ready to pay</span></span></td>
+            <td style="text-align:right;padding-right:24px;"><span class="view">View</span></td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="pager">
+        <span class="zh">共 4 条,第 1-4 条</span><span class="en">1-4 of 4 items</span>
+        <span class="arw">&lt;</span>
+        <span class="pg-num">1</span>
+        <span class="arw">&gt;</span>
+        <span class="pp">20 / page ▾</span>
+      </div>
+    </div>
+  </div>
+</main>
+
+<!-- Toast(从选择页跳转过来时显示) -->
+<div class="toast" id="toast">
+  <span class="tick">✓</span>
+  <span><span class="zh">加入成功</span><span class="en">Added successfully</span></span>
+</div>
+
+<script>
+  function toggleLanguage(){const en=!document.body.classList.contains('lang-en');document.body.classList.toggle('lang-en',en);document.body.classList.toggle('lang-zh',!en);try{localStorage.setItem('cbLang',en?'en':'zh');}catch(e){}}
+  (function(){try{if(localStorage.getItem('cbLang')==='en'){document.body.classList.remove('lang-zh');document.body.classList.add('lang-en');}}catch(e){}})();
+  // 若从选择页带 ?added=1 跳转过来,弹出成功 Toast
+  if(new URLSearchParams(location.search).get('added')){
+    const t=document.getElementById('toast');
+    setTimeout(()=>t.classList.add('show'),200);
+    setTimeout(()=>t.classList.remove('show'),3200);
+  }
+</script>
+</body>
+</html>
