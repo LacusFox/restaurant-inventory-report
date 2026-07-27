@@ -38,4 +38,4 @@ git commit -m "$MSG"
 git push origin main
 
 echo ""
-echo "✅ 已同步到 GitHub:https://github.com/lacusfox/restaurant-inventory-report"
+echo "✅ 已同步到 GitHub:https://github.com/LacusFox/restaurant-inventory-report"
