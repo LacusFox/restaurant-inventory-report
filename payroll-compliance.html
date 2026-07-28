@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Payroll 合规问题答复 · Chowbus × Salsa</title>
+<style>
+  :root{
+    --ink:#1f2430; --muted:#6b7280; --line:#e7e9ee; --bg:#f6f7f9;
+    --brand:#CC1C4C; --brand-soft:#FDEEF2;
+    --ok:#188a52; --ok-bg:#E9F7EF; --warn:#B45309; --warn-bg:#FEF4E6;
+    --blue:#2563eb; --blue-bg:#EEF3FE; --card:#fff;
+    --maxw:920px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--bg);color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"PingFang SC","Microsoft YaHei",Arial,sans-serif;
+    line-height:1.78;font-size:16px;-webkit-font-smoothing:antialiased;}
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:0 20px 80px;}
+
+  header.top{background:linear-gradient(135deg,#CC1C4C,#8f1236);color:#fff;padding:38px 0 30px;margin-bottom:26px;}
+  header.top .wrap{padding-bottom:0;}
+  header.top .kicker{font-size:12.5px;letter-spacing:.18em;text-transform:uppercase;opacity:.85;font-weight:700;}
+  header.top h1{font-size:27px;font-weight:800;margin:8px 0 6px;line-height:1.3;}
+  header.top p{font-size:14.5px;opacity:.92;max-width:680px;}
+
+  .legend{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px;}
+  .legend .tag{font-size:12.5px;}
+  .tag{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;font-weight:700;border-radius:999px;padding:3px 11px;}
+  .tag.ok{background:var(--ok-bg);color:var(--ok);}
+  .tag.warn{background:var(--warn-bg);color:var(--warn);}
+  header.top .tag.ok{background:rgba(255,255,255,.16);color:#eafff3;}
+  header.top .tag.warn{background:rgba(255,255,255,.16);color:#ffedd0;}
+
+  /* 目录 */
+  nav.toc{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px 22px;margin-bottom:30px;box-shadow:0 2px 14px rgba(0,0,0,.03);}
+  nav.toc h3{font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-bottom:12px;}
+  nav.toc ol{list-style:none;counter-reset:t;display:grid;grid-template-columns:1fr 1fr;gap:6px 24px;}
+  nav.toc li{counter-increment:t;font-size:14.5px;}
+  nav.toc li::before{content:counter(t);display:inline-flex;width:20px;height:20px;border-radius:50%;background:var(--brand-soft);color:var(--brand);font-size:11.5px;font-weight:800;align-items:center;justify-content:center;margin-right:9px;}
+  nav.toc a{color:var(--ink);text-decoration:none;}
+  nav.toc a:hover{color:var(--brand);}
+
+  h2.part{font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:var(--brand);font-weight:800;margin:44px 0 6px;}
+  h2.part + .part-title{font-size:23px;font-weight:800;margin-bottom:4px;}
+  .part-sub{color:var(--muted);font-size:14.5px;margin-bottom:22px;}
+
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:22px 24px;margin-bottom:18px;box-shadow:0 2px 14px rgba(0,0,0,.03);}
+  .card h3{font-size:18.5px;font-weight:800;margin-bottom:4px;display:flex;gap:10px;align-items:baseline;}
+  .card h3 .qn{color:var(--brand);font-weight:800;}
+  .lead{background:var(--brand-soft);border-left:3px solid var(--brand);border-radius:8px;padding:11px 14px;margin:12px 0 14px;font-size:15px;}
+  .lead b{color:var(--brand);}
+
+  .flow{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin:12px 0;font-size:13.5px;}
+  .flow .step{background:#f2f4f7;border:1px solid var(--line);border-radius:8px;padding:5px 11px;font-weight:600;}
+  .flow .arw{color:#b9bec8;font-weight:800;}
+
+  ul.pts{list-style:none;margin:8px 0 0;}
+  ul.pts li{position:relative;padding:5px 0 5px 26px;font-size:15px;}
+  ul.pts li::before{content:"›";position:absolute;left:8px;top:5px;color:var(--brand);font-weight:800;}
+  .k{display:inline-block;font-weight:800;}
+
+  .badge{display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:800;border-radius:6px;padding:1px 8px;vertical-align:middle;margin-right:4px;}
+  .badge.ok{background:var(--ok-bg);color:var(--ok);}
+  .badge.warn{background:var(--warn-bg);color:var(--warn);}
+  .note-warn{background:var(--warn-bg);border:1px solid #f4d9ad;border-radius:10px;padding:11px 14px;margin-top:12px;font-size:14.5px;color:#7a4a08;}
+  .note-warn b{color:#8a4b00;}
+
+  /* 当前处理状态 */
+  .qstat{display:inline-block;font-size:12.5px;font-weight:800;border-radius:999px;padding:3px 13px;margin:2px 0 12px;}
+  .qstat.wait{background:var(--warn-bg);color:var(--warn);}
+  .qstat.done{background:var(--ok-bg);color:var(--ok);}
+  .qstat.research{background:var(--blue-bg);color:var(--blue);}
+  .qstat.internal{background:#eef0f3;color:#5b6472;}
+  .note-ok{background:var(--ok-bg);border:1px solid #bfe6cf;border-radius:10px;padding:11px 14px;margin-top:12px;font-size:14.5px;color:#14663f;}
+  .note-ok b{color:#0f5132;}
+
+  /* Q1 小费流程图 */
+  .tipflow{max-width:640px;margin:16px 0 2px;}
+  .tipflow .eg{font-size:12.5px;color:var(--muted);margin:0 0 10px;}
+  .tipflow .lane{border-radius:12px;padding:13px 15px;}
+  .tipflow .lane.off{background:var(--warn-bg);border:1px solid #f0d6a8;}
+  .tipflow .lane.on{background:var(--blue-bg);border:1px solid #c9d8fb;}
+  .tipflow .lane h5{font-size:14.5px;font-weight:800;margin:0 0 9px;}
+  .tipflow .lane.off h5{color:var(--warn);} .tipflow .lane.on h5{color:var(--blue);}
+  .tipflow .tstep{display:flex;gap:9px;align-items:flex-start;background:#fff;border:1px solid rgba(0,0,0,.06);border-radius:9px;padding:8px 10px;margin-bottom:7px;font-size:13.5px;line-height:1.55;}
+  .tipflow .tstep:last-child{margin-bottom:0;}
+  .tipflow .tn{flex:0 0 auto;width:20px;height:20px;border-radius:6px;color:#fff;font-size:12px;font-weight:800;display:flex;align-items:center;justify-content:center;}
+  .tipflow .off .tn{background:var(--warn);} .tipflow .on .tn{background:var(--blue);}
+  .tipflow .money{color:#b42318;font-weight:800;}
+  .tipflow .conn{display:flex;flex-direction:column;align-items:center;margin:7px 0;}
+  .tipflow .conn .arw{color:#b9bec8;font-size:15px;line-height:1;}
+  .tipflow .conn .pipe{background:#1f2430;color:#fff;font-size:12px;font-weight:700;border-radius:999px;padding:4px 13px;margin:3px 0;text-align:center;}
+  .tipflow .result{margin-top:11px;background:var(--ok-bg);border:1px solid #bfe6cf;border-radius:11px;padding:12px 15px;font-size:13.5px;line-height:1.7;color:#14663f;}
+  .tipflow .result .t{font-weight:800;color:#0f5132;display:block;margin-bottom:3px;}
+  .tipflow .result b{color:#0f5132;}
+
+  /* Q6 排班合规 */
+  .sched .sh{font-size:15px;font-weight:800;color:var(--brand);margin:16px 0 2px;padding-bottom:5px;border-bottom:1px solid var(--brand-soft);}
+  .sched ul.pts li{font-size:14.5px;}
+  .nosupport{background:var(--warn-bg);border:1px solid #f0d6a8;border-radius:12px;padding:15px 17px;margin-top:20px;}
+  .nosupport .nh{font-weight:800;color:var(--warn);font-size:15.5px;margin-bottom:4px;}
+  .nosupport ul.pts li{color:#5c4a1a;}
+  .nosupport img{width:100%;border-radius:10px;border:1px solid #e5c99a;margin:12px 0;display:block;}
+  .nosupport .cap{font-size:12px;color:#8a6d1a;text-align:center;margin:-6px 0 6px;}
+
+  /* 场景卡 */
+  .scene-group{margin-bottom:8px;}
+  .scene-group > h4{font-size:15px;font-weight:800;color:var(--brand);margin:20px 0 10px;padding-bottom:6px;border-bottom:2px solid var(--brand-soft);}
+  .scene{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:15px 18px;margin-bottom:12px;box-shadow:0 1px 8px rgba(0,0,0,.025);}
+  .scene .st{font-size:16px;font-weight:800;margin-bottom:8px;}
+  .scene .st .num{display:inline-flex;width:24px;height:24px;border-radius:7px;background:var(--brand);color:#fff;font-size:13px;align-items:center;justify-content:center;margin-right:9px;vertical-align:middle;}
+  .row{display:flex;gap:10px;font-size:14.5px;padding:3px 0;align-items:flex-start;}
+  .row .ic{flex:0 0 auto;width:20px;text-align:center;}
+  .row .lb{flex:0 0 76px;font-weight:700;color:var(--muted);font-size:13px;padding-top:1px;}
+  .row.offline .lb{color:#9a6b1f;}
+  .row.system .lb{color:var(--blue);}
+  .tools{display:inline-block;font-size:12px;font-weight:700;color:var(--blue);background:var(--blue-bg);border-radius:5px;padding:0 6px;margin-left:4px;}
+
+  table{width:100%;border-collapse:collapse;margin:12px 0;font-size:14.5px;}
+  th,td{border:1px solid var(--line);padding:9px 12px;text-align:left;vertical-align:top;}
+  th{background:#f2f4f7;font-weight:800;font-size:13.5px;}
+  td .who{font-weight:700;}
+
+  .map li{padding:6px 0 6px 26px;}
+  .map .p{font-weight:800;color:var(--brand);}
+  footer{margin-top:40px;padding-top:20px;border-top:1px solid var(--line);color:var(--muted);font-size:13.5px;}
+  .anchor{scroll-margin-top:16px;}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <div class="kicker">Chowbus × Salsa · Payroll</div>
+    <h1>Payroll 合规问题答复</h1>
+    <div class="legend">
+      <span class="tag ok">✅ 已从 Salsa 文档 / 调研确认</span>
+      <span class="tag warn">⚠️ 需向 Salsa 确认，不拍脑袋</span>
+    </div>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <nav class="toc">
+    <h3>目录</h3>
+    <ol>
+      <li><a href="#q1">小费细节（现金/刷卡、已发/未发）</a></li>
+      <li><a href="#q2">管理者固定月薪、不算 OT</a></li>
+      <li><a href="#q3">Tip Credit 规则核对</a></li>
+      <li><a href="#q4">一个员工多角色的 OT</a></li>
+      <li><a href="#q5">Contract 开关与计费</a></li>
+      <li><a href="#q6">排班相关合规（休息/加班/未成年）</a></li>
+      <li><a href="#scenes">20 个值得关注的合规场景</a></li>
+      <li><a href="#interact">Chowbus 与 Salsa 如何交互</a></li>
+    </ol>
+  </nav>
+
+  <!-- ============ PART 1 ============ -->
+  <h2 class="part">Part 1</h2>
+  <div class="part-title">最关心的 6 个核心问题</div>
+  <div class="part-sub">每条按「结论 → 依据 → 需确认」来讲，能坐实的标 ✅，要问 Salsa 的标 ⚠️。</div>
+
+  <!-- Q1 -->
+  <section class="card anchor" id="q1">
+    <h3><span class="qn">Q1</span> 小费的细节：现金/刷卡、已发/未发，怎么处理？</h3>
+    <div class="qstat done">状态：已确认</div>
+    <div class="lead"><b>其实很简单：Salsa 能处理，只要给它两个数——</b>① <b>应税小费</b>（这段时间要交税的小费总额）；② <b>已经支付的小费</b>（现金 / house cash 当场发掉的那部分）。<br><b>怎么处理：</b>发薪时，先照常<b>算完税、得出税后工资</b>，再把<b>"已经支付的小费"扣掉</b>——这样税照缴，钱不会发第二遍。</div>
+    <ul class="pts">
+      <li><span class="badge ok">✅</span>Salsa 有独立的 <b>"Cash Tips"</b> 类型，小费的代扣与申报由 Salsa 处理。</li>
+      <li><span class="badge ok">✅</span>用 <b>"提前支付（advance payment）"</b> 机制处理"已发不重复发"：把已经发给员工的钱记录进去，Salsa 生成一笔 <b>post-tax 抵消扣款（税后扣）</b>，在薪期结束时从净发里扣掉——已发部分照样按<b>全额计税</b>、上 W-2，但不再发第二遍。</li>
+    </ul>
+
+    <div class="tipflow">
+      <div class="eg">示例：一周 工资 $400 ＋ 现金小费 $100 ＋ 刷卡小费 $100（下班当天都以现金发出）</div>
+      <div class="lane off">
+        <h5>🏪 线下 · 店里实际发生</h5>
+        <div class="tstep"><span class="tn">1</span><div>员工上班，POS / Chowbus 记工时</div></div>
+        <div class="tstep"><span class="tn">2</span><div>顾客给小费：现金小费 <span class="money">$100</span> ／ 刷卡小费 <span class="money">$100</span></div></div>
+        <div class="tstep"><span class="tn">3</span><div>下班：把小费 <span class="money">$200</span> 以现金当场发给员工（刷卡的 $100 用 house cash 垫）</div></div>
+        <div class="tstep"><span class="tn">4</span><div>Chowbus 记录：Tips <span class="money">$100</span>、Cash Tips <span class="money">$100</span>、已现金付给员工 <span class="money">$200</span></div></div>
+      </div>
+      <div class="conn"><span class="arw">▼</span><span class="pipe">Chowbus → Salsa 传：工资 · Tips · Cash Tips · advance-payment(已付 $200)</span><span class="arw">▼</span></div>
+      <div class="lane on">
+        <h5>💻 线上 · Salsa 算薪</h5>
+        <div class="tstep"><span class="tn">5</span><div>Gross = 工资 $400 ＋ 小费（Tips $100 ＋ Cash Tips $100）= <span class="money">$600</span>（小费计入应税）</div></div>
+        <div class="tstep"><span class="tn">6</span><div>按 $600 全额计税（所得税＋社保＋医保 ≈ <span class="money">$90</span>）</div></div>
+        <div class="tstep"><span class="tn">7</span><div>已付 $200 作为 <b>post-tax 扣款</b>，从净发里减掉</div></div>
+        <div class="tstep"><span class="tn">8</span><div>本次打卡净额 = 600 − 90 − 200 = <span class="money">$310</span> → 存入银行</div></div>
+      </div>
+      <div class="result"><span class="t">✅ 结果：税照缴、钱不重复发</span>员工到手 = <b>$310</b>（银行）＋ <b>$200</b>（当天现金）= <b>$510</b>；税按全额 <b>$600</b> 算，W-2 里小费照样计入。</div>
+    </div>
+    <div style="background:#f2f4f7;border:1px solid var(--line);border-radius:10px;padding:11px 14px;margin-top:12px;font-size:14px;color:#3a3f48;line-height:1.7;">
+      <b>💡 Chowbus 现状：</b>不用"分小费"功能也能在<b>钱箱（cash drawer）</b>里记录每个员工的现金小费——这是<b>通用功能</b>，不只针对用分小费的餐厅。<br>
+      <b>目前局限：</b>记录一笔小费需要 <b>cash in ＋ cash out 两条记录</b>，要操作两次才完成一次。
+    </div>
+  </section>
+
+  <!-- Q2 -->
+  <section class="card anchor" id="q2">
+    <h3><span class="qn">Q2</span> 管理者拿固定月薪、不算 OT，怎么标记？</h3>
+    <div class="qstat done">状态：已确认</div>
+    <div class="lead"><span class="badge ok">✅</span>用 Contract 里的 <b>Overtime Eligible = FALSE</b>。设成 FALSE 后，不管有没有打卡数据，Salsa 都不算加班。</div>
+    <ul class="pts">
+      <li>如果 <b>Overtime Eligible = TRUE</b>，固定月薪者<b>也要算加班</b>。加班薪资 = <b>【周薪 ÷ 40 小时】× 加班小时数 × OT 倍数</b>。</li>
+    </ul>
+    <div class="note-warn"><b>⚠️ 红线：</b>固定薪并不代表可以免加班费。要合法免 OT，得<b>同时</b>满足：1）固定发薪水，且不能随便扣钱；2）周薪 ≥ $684；3）店内职责是管理 / 行政类。</div>
+  </section>
+
+  <!-- Q3 -->
+  <section class="card anchor" id="q3">
+    <h3><span class="qn">Q3</span> Tip Credit 规则（核对已有调研）</h3>
+    <div class="qstat research">状态：持续调研中</div>
+    <ul class="pts">
+      <li><span class="badge ok">✅</span>只抵 tipped 角色的最低工资、多角色只抵服务员那段 —— 对。</li>
+      <li><span class="badge ok">✅</span>payroll 自动算、把小费算进去、不够补足 —— 对（就是补差 top-up）。</li>
+      <li><span class="badge ok">✅</span>不限正餐、看小费量、茶饮少就不用 —— 基本对。<b>小修正：</b>联邦定义"小费员工"是<b>每月小费 &gt; $30</b>（月度门槛，不是"一周"），看小费量、不看菜系。</li>
+      <li><span class="badge ok">✅</span>用了 tip credit 小费不能分给 manager 等不拿小费的 —— 对（不用反而能把后厨纳入池子）。</li>
+      <li><span class="k">补一条最关键：</span>能不能用<b>先看州</b>——7 个州（加州、华盛顿、俄勒冈等）完全禁用，加州还是华人餐厅第一大州，直接压缩可用面。</li>
+    </ul>
+    <div class="note-warn"><b>📊 预估结论：</b>按 Chowbus 5,000 商家、正餐占 63%（数据实测）、剔除加州等禁用州（约 22%）、采用率按 50% 估算，<b>若不支持 tip credit，预计约 1,200 家商家（占全盘约 25%）会受影响</b>——即"本来会用、却因功能缺失而用不了"。<br><span style="color:#9a7a2a;">（大盘参考：全美 FS 正餐用 tip credit 约 12–15 万家；华人 FS 约 1.2–1.8 万家，其中加州约 2,000 家因禁用而用不了。）</span></div>
+
+    <div class="sched">
+      <div class="sh">💰 价值 vs 现实：真能"省很多"吗？</div>
+      <ul class="pts">
+        <li><span class="k">账面上确实省：</span>联邦口径下小费岗现金工资可低到 <b>$2.13/小时</b>，最低工资 <b>$7.25</b>，差额 <b>$5.12/小时</b>全靠小费补。一个全职服务员一年（约 2080 小时）账面能省 <b>~$1.06 万</b>。</li>
+      </ul>
+      <div style="font-size:14px;font-weight:800;color:#B45309;margin:8px 0 2px;">但"省很多"被高估：</div>
+      <ul class="pts">
+        <li><b>一、只对"小费岗工时"有效。</b>后厨、洗碗、经理、以及服务员的非小费杂活都不算；而后厨往往是更大的一块人力成本。省的是前厅那一小块，不是整张工资单。</li>
+        <li><b>二、淡场要补差。</b>小费不够达最低工资时老板得补差——省下的钱在冷清时会被吃回去，不是稳赚。</li>
+        <li><b>三、加班仍按全额最低工资算</b>（不是 $2.13），加班那部分省不到，算错还要赔。</li>
+        <li><b>四、最关键——要减掉合规成本和诉讼风险。</b>tip credit 带着事先告知、留证、小费池规则、加班特殊算法一堆义务，错一步就是集体诉讼：西贡烧烤 <b>$460 万</b>、BHG <b>$900 万</b>，一次判赔就能吞掉一家店很多年的结余。<b>按"风险调整后"看，净收益经常远没有账面那么香。</b></li>
+      </ul>
+    </div>
+
+    <div class="nosupport">
+      <div class="nh">⚠️ 最容易翻车的注意事项</div>
+      <ul class="pts">
+        <li><b>① 必须"事先"书面告知、并留证。</b>这是资格前提——没在用之前告知员工，就视为没资格用。</li>
+        <li><b>② 只对"小费岗工时"有效。</b>后厨、洗碗、经理、非小费杂活都不能用。</li>
+        <li><b>③ 小费池不能混错人。</b>用了 tip credit，池子只能是传统拿小费岗位，禁止管理层、也不能分给后厨（Batali 那 $525 万就是小费分配出的事）。</li>
+        <li><b>④ 每个薪期都要"兜底 + 补差"。</b>淡场小费不够时，现金工资+小费达不到最低工资，雇主必须补差。</li>
+        <li><b>⑤ 加班按"全额最低工资"算</b>（不是 $2.13），多角色还要加权平均——这里最容易少算加班费。</li>
+        <li><b>⑥ 各州/城市差异要跟新。</b>7 州禁用；有的城市在逐步取消或过渡（如芝加哥、华盛顿特区）；州小费最低工资年年可能调。</li>
+        <li><b>⑦ 记录留全，这是打官司的命根子。</b>工时（分岗）、小费明细、告知留证——都要能随时调出来。</li>
+      </ul>
+      <div style="margin-top:8px;font-size:13.5px;color:#5c4a1a;"><b>一句话：</b>tip credit 的钱不是"设一下就省了"，而是"把①告知、②岗位/工时区分、③小费池、④补差、⑤加班、⑦记录全做对了，才敢省"——任何一环松，省的钱都可能被一次赔偿吃光。</div>
+    </div>
+  </section>
+
+  <!-- Q4 -->
+  <section class="card anchor" id="q4">
+    <h3><span class="qn">Q4</span> 一个员工多角色（后厨+服务员），OT 怎么算？</h3>
+    <div class="qstat done">状态：已确认</div>
+    <ul class="pts">
+      <li><span class="badge ok">✅</span><span class="k">怎么同步：</span>在 Salsa 里就是"同一个 Worker 挂多个不同费率的薪酬项"。我们维护的多角色，映射成"同一员工的多个费率"传过去。</li>
+      <li><span class="badge ok">✅</span><span class="k">run 几次：</span>一次。一个员工 = 一次发薪 = 一张支票。</li>
+      <li><span class="badge ok">✅</span><span class="k">W-2 几个：</span>一个（同一 EIN 下一个员工一张，不论多少角色；跨不同门店 EIN 才多张）。</li>
+      <li><span class="badge ok">✅</span><span class="k">OT 怎么算：</span>不按角色分开，而是按"该员工、该周全部工时"合并、用<b>加权平均费率</b>算。加州还有"每天超 8 小时"的日加班——把这一天所有角色合起来，正好对应"OT 是不是按这个员工一整天算"这个问题，<b>在加州是的</b>。</li>
+    </ul>
+    <div class="note-ok"><b>✅ 已与 Salsa 确认：</b>多费率下的 OT 采用<b>加权平均费率</b>算法（按该员工该周全部工时合并，不按角色分开）。<br><span style="color:#3a6b52;">（待 tip credit 功能上线后，再确认"tip credit + 多费率 + OT"三者叠加的算法。）</span></div>
+
+    <div style="background:var(--blue-bg);border:1px solid #c9d8fb;border-radius:10px;padding:12px 15px;margin-top:12px;font-size:14px;color:#33507E;line-height:1.7;">
+      <b style="color:#1d4ed8;">🧩 Chowbus 的 OT 处理规则：</b>
+      <ul class="pts" style="margin-top:6px;">
+        <li><b>是否算 OT：</b>按员工<b>所有角色的累计上班时间</b>判定。</li>
+        <li><b>OT 时长：</b>按<b>每个角色分别展示</b> OT 时长。</li>
+        <li><b>例：</b>员工 A 上午服务员 4h、下午+晚上后厨 6h（共 10h）；餐厅设 &gt;8h 为 OT → 记 <b>服务员 OT=0、后厨 OT=2</b>。</li>
+      </ul>
+      <div style="margin-top:6px;font-size:13px;color:#5b6472;">（判定"是否加班/加班多少小时"在 Chowbus 侧按累计工时算、并按角色展示；加班费的<b>费率</b>由 Salsa 按加权平均计算。）</div>
+    </div>
+  </section>
+
+  <!-- Q5 -->
+  <section class="card anchor" id="q5">
+    <h3><span class="qn">Q5</span> Contract（功能开关）与计费</h3>
+    <div class="qstat done">状态：已确认</div>
+    <ul class="pts">
+      <li><span class="badge ok">✅</span><span class="k">计费模型：</span>Salsa 按"<b>当月 run 了 payroll 的人数</b>"计费，一个员工当月发几次都只算一次。</li>
+      <li><span class="badge ok">✅</span><span class="k">怎么记录清晰：</span>文档里有 <b>Usage API</b>，专门"检索各 employer 的用量指标、帮你向客户计费"。"本月 run 了多少员工"<b>不用人工数，用 Usage API 程序化拉</b>。</li>
+    </ul>
+  </section>
+
+  <!-- Q6 -->
+  <section class="card anchor" id="q6">
+    <h3><span class="qn">Q6</span> 排班相关合规（休息 / 加班 / 未成年）</h3>
+    <div class="qstat internal">状态：本期范围</div>
+    <div class="lead">我们<b>跟随排班</b>做的合规只有两块——<b>休息合规</b> 和 <b>排班合规</b>。涉及的规则维度如下（<b>每个州有区别</b>）。</div>
+
+    <div class="sched">
+      <div class="sh">a · 休息（Breaks）</div>
+      <ul class="pts">
+        <li><b>Meal break（餐休）：</b>例：加州 &gt;5h 的班次需 30min 餐休；若班次 &lt;6h，可经员工同意并留证豁免；&gt;10h 需第二次 30min 餐休（若第一次休了，第二次也可同意留证豁免）。<b>漏餐/漏休可能 +1h 工资。</b></li>
+        <li><b>Rest break（带薪小憩）：</b>例：Colorado 每 4h 需 10min 带薪 rest break。<b>漏休可能 +1h 工资。</b></li>
+      </ul>
+
+      <div class="sh">b · OT 加班提醒</div>
+      <ul class="pts">
+        <li><b>日加班：</b>按州（如 Alaska、California 等 6 个州）</li>
+        <li><b>周加班：</b>联邦 40h/周 → 1.5×</li>
+        <li><b>连续上班</b></li>
+      </ul>
+
+      <div class="sh">c · 每 7 天需完整休息 1 日</div>
+      <ul class="pts"><li>例：Illinois、Massachusetts、California、New York、Puerto Rico</li></ul>
+
+      <div class="sh">d · 分段班（Split Shift）</div>
+      <ul class="pts"><li>例：California，需补 1h 最低工资（高于最低工资的部分可抵）</li></ul>
+
+      <div class="sh">e · 未成年（14–15 与 16–17 有区别）</div>
+      <ul class="pts">
+        <li><b>上班时长：</b>分「上课期间」和「休息假期」，各有——每天最大工时、每周最大工时、每周最多天数</li>
+        <li><b>连续工作：</b>不得超过 * 小时</li>
+        <li><b>时间点：</b>通常仅 07:00–19:00 可工作；6/1 至 Labor Day 可延至 21:00</li>
+        <li><b>餐休：</b>连续工作 * 小时，需 ** 分钟休息</li>
+      </ul>
+    </div>
+
+    <div class="nosupport">
+      <div class="nh">本期未支持</div>
+      <ul class="pts">
+        <li><b>预测性排班（Predictive Scheduling / Fair Workweek）：</b>只在下面 6 个州有要求，主要针对连锁餐厅、且对门店数量有门槛；<b>不在一期范围</b>，且我们目前几乎没有餐厅满足门槛。</li>
+      </ul>
+      <img src="predictive-scheduling-states.png" alt="预测性排班各州/城市条例与餐饮覆盖门槛">
+      <div class="cap">各州 / 城市预测性排班条例与餐饮覆盖门槛</div>
+      <ul class="pts">
+        <li><b>未成年危险岗位校验：</b>我们的岗位是<b>餐厅自定义</b>的，无法识别是否涉及动力切片机 / 绞肉机 / 烘焙机；后续更多体现在<b>入职</b>的合规校验上。</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ============ PART 2 ============ -->
+  <h2 class="part" id="scenes">Part 2</h2>
+  <div class="part-title">20 个值得关注的 Payroll 合规场景</div>
+  <div class="part-sub">每个场景讲清：真实中 <span style="color:#9a6b1f;font-weight:700;">🏪 老板线下怎么处理</span> ＋ <span style="color:#2563eb;font-weight:700;">💻 系统怎么协助</span>（不限 Salsa，兼提 ADP / QuickBooks / Gusto）。</div>
+
+  <div class="scene-group">
+    <h4>A · 工时、加班与最低工资</h4>
+
+    <div class="scene"><div class="st"><span class="num">1</span>最低工资合规（联邦/州/市多层 + 年度调整）</div>
+      <div class="row offline"><span class="ic">🏪</span><span class="lb">线下</span><span>老板凭记忆定时薪，常常忘了本地（市/县）最低工资年初上调，容易发低了。</span></div>
+      <div class="row system"><span class="ic">💻</span><span class="lb">系统</span><span>按门店所在州/市自动套用最新最低工资表，发薪时低于门槛会拦截提醒。<span class="tools">ADP</span><span class="tools">QuickBooks</span><span class="tools">Salsa</span></span></div>
+    </div>
+
+    <div class="scene"><div class="st"><span class="num">2</span>固定月薪管理者不算 OT（Exempt / 加班资格）</div>
+      <div class="row offline"><span class="ic">🏪</span><span class="lb">线下</span><span>经理不打卡、拿死工资，老板默认"经理没有加班费"，但不一定核对是否真符合豁免条件。</span></div>
+      <div class="row system"><span class="ic">💻</span><span class="lb">系统</span><span>给员工打"加班资格 = 否"的标记，系统就不算 OT；月薪按薪期自动折算。<span class="tools">Salsa（Overtime Eligible）</span><span class="tools">ADP</span></span></div>
+    </div>
+
+    <div class="scene"><div class="st"><span class="num">3</span>多费率加权平均 OT（一人多角色）</div>
+      <div class="row offline"><span class="ic">🏪</span><span class="lb">线下</span><span>员工一周做两种岗、两种时薪，老板算加班时经常只用最低那个费率——这是最常见的欠薪违规。</span></div>
+      <div class="row system"><span class="ic">💻</span><span class="lb">系统</span><span>自动用"加权平均费率"算加班溢价，跨费率合并。<span class="tools">Gusto</span><span class="tools">ADP</span> · ⚠️ Salsa 需确认是否加权平均</span></div>
+    </div>
+
+    <div class="scene"><div class="st"><span class="num">4</span>加州日加班 / 双倍时</div>
+      <div class="row offline"><span class="ic">🏪</span><span class="lb">线下</span><span>加州"每天超 8 小时算加班、超 12 小时双倍、连续第 7 天"规则复杂，老板手工很难算准。</span></div>
+      <div class="row system"><span class="ic">💻</span><span class="lb">系统</span><span>按工作地点的州规则自动套日加班/双倍时。<span class="tools">ADP</span><span class="tools">Salsa（按州）</span></span></div>
+    </div>
+
+    <div class="scene"><div class="st"><span class="num">5</span>加班基数要含奖金/班次津贴</div>
+      <div class="row offline"><span class="ic">🏪</span><span class="lb">线下</span><span>发了绩效奖金或夜班津贴，老板算加班时只按基础时薪，漏把奖金摊进加班基数。</span></div>
+      <div class="row system"><span class="ic">💻</span><span class="lb">系统</span><span>把非酌情奖金、班次津贴自动并入"常规工资率"再算加班。<span class="tools">ADP</span><span class="tools">QuickBooks</span></span></div>
+    </div>
+
+    <div class="scene"><div class="st"><span class="num">6</span>打卡与下班后工作 / 工时取整</div>
+      <div class="row offline"><span class="ic">🏪</span><span class="lb">线下</span><span>纸质工时表、口头记工，下班后收尾干活没记，容易被主张"off-the-clock 欠薪"。</span></div>
+      <div class="row system"><span class="ic">💻</span><span class="lb">系统</span><span>电子打卡精确记录，工时直接进算薪，留痕可举证。<span class="tools">Homebase</span><span class="tools">Toast</span><span class="tools">Chowbus POS</span></span></div>
+    </div>
+  </div>
+
+  <div class="scene-group">
+    <h4>B · 小费</h4>
+
+    <div class="scene"><div class="st"><span class="num">7</span>Tip Credit（小费抵最低工资 + 补差）</div>
+      <div class="row offline"><span class="ic">🏪</span><span class="lb">线下</span><span>老板给服务员发低现金工资、指望小费补足，但淡场小费不够时常忘了补差。</span></div>
+      <div class="row system"><span class="ic">💻</span><span class="lb">系统</span><span>每薪期自动核对"现金工资 + 小费 ≥ 最低工资"，不够自动补差。<span class="tools">ADP</span><span class="tools">Gusto</span> · Salsa 明年 1 月上</span></div>
+    </div>
+
+    <div class="scene"><div class="st"><span class="num">8</span>小费申报（现金 + 刷卡，进 W-2 / 8027）</div>
+      <div class="row offline"><span class="ic">🏪</span><span class="lb">线下</span><span>现金小费常被少报或不报，老板"睁只眼闭只眼"，埋税务风险。</span></div>
+      <div class="row system"><span class="ic">💻</span><span class="lb">系统</span><span>员工申报入口 + 自动并入应税、上 W-2；大型餐饮出 Form 8027 分配小费。<span class="tools">ADP</span><span class="tools">Salsa</span></span></div>
+    </div>
+
+    <div class="scene"><div class="st"><span class="num">9</span>小费池分配 & controlled vs direct</div>
+      <div class="row offline"><span class="ic">🏪</span><span class="lb">线下</span><span>收工后凭经验手动分小费，谁分多少全靠人记，用了 tip credit 还可能误分给经理/后厨。</span></div>
+      <div class="row system"><span class="ic">💻</span><span class="lb">系统</span><span>按规则自动分池、排除不该分的人，区分 controlled/direct 影响代扣。<span class="tools">Toast</span><span class="tools">Chowbus POS</span></span></div>
+    </div>
+
+    <div class="scene"><div class="st"><span class="num">10</span>服务费 vs 小费（auto-gratuity）</div>
+      <div class="row offline"><span class="ic">🏪</span><span class="lb">线下</span><span>大桌"自动服务费"被当小费处理，其实税务口径不同（服务费算工资、不算小费）。</span></div>
+      <div class="row system"><span class="ic">💻</span><span class="lb">系统</span><span>把服务费和小费分成不同项，税务与"No Tax on Tips"处理才对。<span class="tools">ADP</span><span class="tools">Salsa</span></span></div>
+    </div>
+  </div>
+
+  <div class="scene-group">
+    <h4>C · 排班、休息与身份</h4>
+
+    <div class="scene"><div class="st"><span class="num">11</span>未成年劳工法与排班</div>
+      <div class="row offline"><span class="ic">🏪</span><span class="lb">线下</span><span>雇了 16–17 岁学生，老板凭感觉排班，容易排到太晚或超时，违反童工法。</span></div>
+      <div class="row system"><span class="ic">💻</span><span class="lb">系统</span><span>排班时对未成年自动限制时段/工时、超限提醒。<span class="tools">Homebase</span><span class="tools">Chowbus 排班</span></span></div>
+    </div>
+
+    <div class="scene"><div class="st"><span class="num">12</span>餐休间歇与罚时（meal/rest premium）</div>
+      <div class="row offline"><span class="ic">🏪</span><span class="lb">线下</span><span>忙起来没安排休息，也没记录；加州漏一次休息就欠 1 小时罚时工资，且难举证。</span></div>
+      <div class="row system"><span class="ic">💻</span><span class="lb">系统</span><span>打卡记录休息、缺休自动算罚时并留痕。<span class="tools">ADP</span><span class="tools">Salsa（Premium Pay，目前限 NY）</span></span></div>
+    </div>
+
+    <div class="scene"><div class="st"><span class="num">13</span>员工 vs 承包商分类（1099 / W-2）</div>
+      <div class="row offline"><span class="ic">🏪</span><span class="lb">线下</span><span>老板图省事，把本该是员工的人当"1099 承包商"现金发，误分类是巨额补税+罚款雷区。</span></div>
+      <div class="row system"><span class="ic">💻</span><span class="lb">系统</span><span>分类字段 + 分类判断指引；W-2 与 1099 分别处理。<span class="tools">QuickBooks</span><span class="tools">Gusto</span><span class="tools">Salsa（Classification）</span></span></div>
+    </div>
+  </div>
+
+  <div class="scene-group">
+    <h4>D · 扣款、假期与工资单</h4>
+
+    <div class="scene"><div class="st"><span class="num">14</span>工资扣押 Garnishment（子女抚养/税务/债权）</div>
+      <div class="row offline"><span class="ic">🏪</span><span class="lb">线下</span><span>收到法院扣押令，老板手工从工资里扣，容易扣错顺序或超过法定上限。</span></div>
+      <div class="row system"><span class="ic">💻</span><span class="lb">系统</span><span>按优先级和 CCPA 上限自动扣、自动划付。<span class="tools">ADP</span><span class="tools">QuickBooks</span></span></div>
+    </div>
+
+    <div class="scene"><div class="st"><span class="num">15</span>扣款不得压到最低工资以下（制服/餐补/收银短款）</div>
+      <div class="row offline"><span class="ic">🏪</span><span class="lb">线下</span><span>老板从工资里扣制服费、扣收银短款，一不小心把工资扣到低于最低工资，违法。</span></div>
+      <div class="row system"><span class="ic">💻</span><span class="lb">系统</span><span>扣款时自动守住最低工资底线，超限拦截。<span class="tools">ADP</span><span class="tools">Gusto</span></span></div>
+    </div>
+
+    <div class="scene"><div class="st"><span class="num">16</span>带薪病假 & PTO 累计 / 离职结算</div>
+      <div class="row offline"><span class="ic">🏪</span><span class="lb">线下</span><span>州/市强制带薪病假，老板用纸记累计，离职时未休 PTO 该不该付也搞不清（加州视为已挣工资，不能没收）。</span></div>
+      <div class="row system"><span class="ic">💻</span><span class="lb">系统</span><span>按州规则自动累计病假/PTO，离职自动结算。<span class="tools">Gusto</span><span class="tools">ADP</span></span></div>
+    </div>
+
+    <div class="scene"><div class="st"><span class="num">17</span>工资单法定内容（加州 Labor Code 226）</div>
+      <div class="row offline"><span class="ic">🏪</span><span class="lb">线下</span><span>手写或简单工资条，缺明细项；加州对工资单内容要求极严，写漏一项就成集体诉讼把柄。</span></div>
+      <div class="row system"><span class="ic">💻</span><span class="lb">系统</span><span>自动生成符合各州要求的明细工资单。<span class="tools">ADP</span><span class="tools">QuickBooks</span><span class="tools">Salsa</span></span></div>
+    </div>
+  </div>
+
+  <div class="scene-group">
+    <h4>E · 报税、终付与多辖区</h4>
+
+    <div class="scene"><div class="st"><span class="num">18</span>终付时限与等待时间罚金</div>
+      <div class="row offline"><span class="ic">🏪</span><span class="lb">线下</span><span>员工离职，老板拖到下个发薪日才付；加州被动离职当天就得付清，晚付有"等待时间罚金"。</span></div>
+      <div class="row system"><span class="ic">💻</span><span class="lb">系统</span><span>支持离周期/终付支票，按州提醒时限。<span class="tools">ADP</span><span class="tools">Gusto</span><span class="tools">Salsa（off-cycle）</span></span></div>
+    </div>
+
+    <div class="scene"><div class="st"><span class="num">19</span>多州 / 跨城市税与最低工资</div>
+      <div class="row offline"><span class="ic">🏪</span><span class="lb">线下</span><span>多门店跨州、或有远程/送餐跨城，老板搞不清该按哪儿代扣、哪儿的最低工资。</span></div>
+      <div class="row system"><span class="ic">💻</span><span class="lb">系统</span><span>按居住州/工作州自动代扣、套地方税与最低工资。<span class="tools">ADP</span><span class="tools">Salsa（多辖区）</span></span></div>
+    </div>
+
+    <div class="scene"><div class="st"><span class="num">20</span>年终代扣代缴与申报（W-2 / 1099 / deposits）</div>
+      <div class="row offline"><span class="ic">🏪</span><span class="lb">线下</span><span>老板或会计到季度/年底手忙脚乱补税、补表，容易晚缴被罚。</span></div>
+      <div class="row system"><span class="ic">💻</span><span class="lb">系统</span><span>自动代扣、按时缴存、季度/年度申报、出 W-2/1099（加拿大 T4）。<span class="tools">ADP</span><span class="tools">QuickBooks</span><span class="tools">Salsa（后台全包）</span></span></div>
+    </div>
+  </div>
+
+  <!-- ============ PART 3 ============ -->
+  <h2 class="part" id="interact">Part 3</h2>
+  <div class="part-title">Chowbus 与 Salsa 到底怎么交互</div>
+  <div class="part-sub">系统间的分工与数据流——放在后面，作为背景理解。</div>
+
+  <section class="card">
+    <h3>一句话：谁管什么</h3>
+    <div class="lead"><b>Chowbus 管"人和数据"，Salsa 管"算薪和报税"。</b>打个比方：Chowbus 是餐厅的"前台收银 + 人事"，Salsa 是背后的"会计 + 税务师"。中间靠 API 把数据传过去、把结果传回来。</div>
+    <table>
+      <thead><tr><th></th><th>Chowbus（我们）</th><th>Salsa（薪酬引擎）</th></tr></thead>
+      <tbody>
+        <tr><td class="who">负责</td><td>员工主数据、角色/时薪、打卡/工时、小费、排班；把数据喂给 Salsa；界面</td><td>税务规则、算薪、算 OT、算 tip credit（将来）、发钱、代扣代缴、申报、出 W-2/T4</td></tr>
+        <tr><td class="who">通俗说</td><td>记录"发生了什么"</td><td>负责"算钱、发钱、报税"</td></tr>
+        <tr><td class="who">出事证据在谁那</td><td><b>大多在我们这</b>（工时、休息、小费、告知留痕）</td><td>税务申报凭证在 Salsa</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section class="card">
+    <h3>一次完整发薪的数据流（7 步）</h3>
+    <div class="flow">
+      <span class="step">① 建员工/入职</span><span class="arw">→</span>
+      <span class="step">② 平时记录工时/小费</span><span class="arw">→</span>
+      <span class="step">③ 打包传 Salsa</span><span class="arw">→</span>
+      <span class="step">④ Salsa 算薪/税</span><span class="arw">→</span>
+      <span class="step">⑤ 发钱+报税</span><span class="arw">→</span>
+      <span class="step">⑥ Webhook 回传</span><span class="arw">→</span>
+      <span class="step">⑦ Usage API 计费</span>
+    </div>
+    <ul class="pts">
+      <li><span class="k">① 建员工/入职：</span>Chowbus 员工同步给 Salsa 变成 Worker，补上分类、加班资格、税表、银行。</li>
+      <li><span class="k">② 平时：</span>POS 记工时、小费、销售；排班/打卡都在 Chowbus。</li>
+      <li><span class="k">③ 发薪时：</span>把每人的"工时×费率、小费、报销"打包成 Paystream 数据传给 Salsa。</li>
+      <li><span class="k">④ Salsa 算：</span>按各州规则算税、OT、tip credit（将来）、净发，生成工资单。</li>
+      <li><span class="k">⑤ 发钱+报税：</span>通过 ACH（美）/ EFT（加）把钱从餐厅账户划给员工，并代扣代缴、申报、出 W-2/T4。</li>
+      <li><span class="k">⑥ 回传：</span>Salsa 用 Webhook 通知 Chowbus 状态（发薪完成、员工就绪变化等）。</li>
+      <li><span class="k">⑦ 计费：</span>Chowbus 用 Usage API 拉"本月 run 了多少员工"，据此收费。</li>
+    </ul>
+  </section>
+
+  <section class="card">
+    <h3>和我们现有"员工管理"页面怎么对应</h3>
+    <div class="lead">Chowbus 的"员工"和 Salsa 的"Worker"是<b>同一个人的两个身份</b>，靠员工管理里的几个页面做"对齐/映射"。没有这层映射，Salsa 不知道给谁算钱。</div>
+    <ul class="pts map">
+      <li><span class="p">员工管理（列表页）</span>：Chowbus 侧员工总表（在职、角色、薪酬状态）。</li>
+      <li><span class="p">选择使用薪酬的员工</span>：勾选哪些员工开通 payroll → 同步成 Salsa Worker。</li>
+      <li><span class="p">管理员工</span>：给某员工"开/关"薪酬功能。</li>
+      <li><span class="p">导入历史员工并匹配</span>：把 ADP 等旧系统的历史记录与 Chowbus 员工对齐，再进 Salsa。</li>
+    </ul>
+  </section>
+
+  <footer>
+    图例：✅ 已从 Salsa API 文档 / 调研确认　·　⚠️ 需向 Salsa 确认。<br>
+    工具标注（ADP / QuickBooks / Gusto / Homebase / Toast / Salsa）为该类能力的常见提供方，供对照参考。
+  </footer>
+
+</div>
+</body>
+</html>
