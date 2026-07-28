@@ -153,7 +153,6 @@
       <li><a href="#q5">Contract 开关与计费</a></li>
       <li><a href="#q6">排班相关合规（休息/加班/未成年）</a></li>
       <li><a href="#scenes">20 个值得关注的合规场景</a></li>
-      <li><a href="#interact">Chowbus 与 Salsa 如何交互</a></li>
     </ol>
   </nav>
 
@@ -455,57 +454,6 @@
       <div class="row system"><span class="ic">💻</span><span class="lb">系统</span><span>自动代扣、按时缴存、季度/年度申报、出 W-2/1099（加拿大 T4）。<span class="tools">ADP</span><span class="tools">QuickBooks</span><span class="tools">Salsa（后台全包）</span></span></div>
     </div>
   </div>
-
-  <!-- ============ PART 3 ============ -->
-  <h2 class="part" id="interact">Part 3</h2>
-  <div class="part-title">Chowbus 与 Salsa 到底怎么交互</div>
-  <div class="part-sub">系统间的分工与数据流——放在后面，作为背景理解。</div>
-
-  <section class="card">
-    <h3>一句话：谁管什么</h3>
-    <div class="lead"><b>Chowbus 管"人和数据"，Salsa 管"算薪和报税"。</b>打个比方：Chowbus 是餐厅的"前台收银 + 人事"，Salsa 是背后的"会计 + 税务师"。中间靠 API 把数据传过去、把结果传回来。</div>
-    <table>
-      <thead><tr><th></th><th>Chowbus（我们）</th><th>Salsa（薪酬引擎）</th></tr></thead>
-      <tbody>
-        <tr><td class="who">负责</td><td>员工主数据、角色/时薪、打卡/工时、小费、排班；把数据喂给 Salsa；界面</td><td>税务规则、算薪、算 OT、算 tip credit（将来）、发钱、代扣代缴、申报、出 W-2/T4</td></tr>
-        <tr><td class="who">通俗说</td><td>记录"发生了什么"</td><td>负责"算钱、发钱、报税"</td></tr>
-        <tr><td class="who">出事证据在谁那</td><td><b>大多在我们这</b>（工时、休息、小费、告知留痕）</td><td>税务申报凭证在 Salsa</td></tr>
-      </tbody>
-    </table>
-  </section>
-
-  <section class="card">
-    <h3>一次完整发薪的数据流（7 步）</h3>
-    <div class="flow">
-      <span class="step">① 建员工/入职</span><span class="arw">→</span>
-      <span class="step">② 平时记录工时/小费</span><span class="arw">→</span>
-      <span class="step">③ 打包传 Salsa</span><span class="arw">→</span>
-      <span class="step">④ Salsa 算薪/税</span><span class="arw">→</span>
-      <span class="step">⑤ 发钱+报税</span><span class="arw">→</span>
-      <span class="step">⑥ Webhook 回传</span><span class="arw">→</span>
-      <span class="step">⑦ Usage API 计费</span>
-    </div>
-    <ul class="pts">
-      <li><span class="k">① 建员工/入职：</span>Chowbus 员工同步给 Salsa 变成 Worker，补上分类、加班资格、税表、银行。</li>
-      <li><span class="k">② 平时：</span>POS 记工时、小费、销售；排班/打卡都在 Chowbus。</li>
-      <li><span class="k">③ 发薪时：</span>把每人的"工时×费率、小费、报销"打包成 Paystream 数据传给 Salsa。</li>
-      <li><span class="k">④ Salsa 算：</span>按各州规则算税、OT、tip credit（将来）、净发，生成工资单。</li>
-      <li><span class="k">⑤ 发钱+报税：</span>通过 ACH（美）/ EFT（加）把钱从餐厅账户划给员工，并代扣代缴、申报、出 W-2/T4。</li>
-      <li><span class="k">⑥ 回传：</span>Salsa 用 Webhook 通知 Chowbus 状态（发薪完成、员工就绪变化等）。</li>
-      <li><span class="k">⑦ 计费：</span>Chowbus 用 Usage API 拉"本月 run 了多少员工"，据此收费。</li>
-    </ul>
-  </section>
-
-  <section class="card">
-    <h3>和我们现有"员工管理"页面怎么对应</h3>
-    <div class="lead">Chowbus 的"员工"和 Salsa 的"Worker"是<b>同一个人的两个身份</b>，靠员工管理里的几个页面做"对齐/映射"。没有这层映射，Salsa 不知道给谁算钱。</div>
-    <ul class="pts map">
-      <li><span class="p">员工管理（列表页）</span>：Chowbus 侧员工总表（在职、角色、薪酬状态）。</li>
-      <li><span class="p">选择使用薪酬的员工</span>：勾选哪些员工开通 payroll → 同步成 Salsa Worker。</li>
-      <li><span class="p">管理员工</span>：给某员工"开/关"薪酬功能。</li>
-      <li><span class="p">导入历史员工并匹配</span>：把 ADP 等旧系统的历史记录与 Chowbus 员工对齐，再进 Salsa。</li>
-    </ul>
-  </section>
 
   <footer>
     图例：✅ 已从 Salsa API 文档 / 调研确认　·　⚠️ 需向 Salsa 确认。<br>
