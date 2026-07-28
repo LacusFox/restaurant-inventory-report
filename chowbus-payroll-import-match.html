@@ -295,7 +295,6 @@
   function leftCellHtml(imp){
     return `<div class="imp-name">${esc(fullName(imp))}</div>`+
       `<div class="imp-meta">`+
-        `<div><span class="k zh">原角色：</span><span class="k en">Role: </span>${esc(imp.role)}</div>`+
         `<div><span class="k zh">最近发薪：</span><span class="k en">Last pay: </span>${fmtDate(imp.lastPay)}（${daysSince(imp.lastPay)} <span class="zh">天前</span><span class="en">days ago</span>）</div>`+
       `</div>`;
   }
