@@ -167,29 +167,30 @@
     <div class="qstat done">状态：已确认</div>
     <div class="lead"><b>其实很简单：Salsa 能处理，只要给它两个数——</b>① <b>应税小费</b>（这段时间要交税的小费总额）；② <b>已经支付的小费</b>（现金 / house cash 当场发掉的那部分）。<b>服务费（Service Charge / Gratuity）同理。</b><br><b>怎么处理：</b>发薪时，先照常<b>算完税、得出税后工资</b>，再把<b>"已经支付的小费"扣掉</b>——这样税照缴，钱不会发第二遍。</div>
     <ul class="pts">
-      <li><span class="badge ok">✅</span>Salsa 有独立的 <b>"Cash Tips"</b> 类型，小费的代扣与申报由 Salsa 处理。</li>
-      <li><span class="badge ok">✅</span>用 <b>"提前支付（advance payment）"</b> 机制处理"已发不重复发"：把已经发给员工的钱记录进去，Salsa 生成一笔 <b>post-tax 抵消扣款（税后扣）</b>，在薪期结束时从净发里扣掉——已发部分照样按<b>全额计税</b>、上 W-2，但不再发第二遍。</li>
+      <li><span class="badge ok">✅</span><span class="k">判断标准是"员工是否已拿到手",不是现金还是刷卡：</span>已经发给员工的(当天拿走的现金小费、house cash 垫付的刷卡小费)→ 记成 <b>Cash Tips</b>；还没发、店里代管随工资发的 → 记成 <b>Tips</b>。两者都<b>全额计税</b>、都上 W-2。</li>
+      <li><span class="badge ok">✅</span><span class="k">传 Cash Tips 后 Salsa 自动加两行：</span><b>Cash Tips</b>(计入 gross、全额计税)＋ <b>Cash tips offset</b>(税后从净发扣掉,因员工已拿到)——计税但不重复发。<b>你只需传 Cash Tips,offset 由 Salsa 自动生成;不需要、也不要用 advance-payment(那是"预支工资"用的,不用于小费)。</b></li>
     </ul>
 
     <div class="tipflow">
-      <div class="eg">示例：一周 工资 $400 ＋ 现金小费 $100 ＋ 刷卡小费 $100（下班当天都以现金发出）</div>
+      <div class="eg">示例：一周 工资 $400 ＋ 当天以现金发给员工的小费 $200（现金小费 $100 ＋ 刷卡小费 $100，都已发出 → 都算 Cash Tips）</div>
       <div class="lane off">
         <h5>🏪 线下 · 店里实际发生</h5>
         <div class="tstep"><span class="tn">1</span><div>员工上班，POS / Chowbus 记工时</div></div>
         <div class="tstep"><span class="tn">2</span><div>顾客给小费：现金小费 <span class="money">$100</span> ／ 刷卡小费 <span class="money">$100</span></div></div>
         <div class="tstep"><span class="tn">3</span><div>下班：把小费 <span class="money">$200</span> 以现金当场发给员工（刷卡的 $100 用 house cash 垫）</div></div>
-        <div class="tstep"><span class="tn">4</span><div>Chowbus 记录：Tips <span class="money">$100</span>、Cash Tips <span class="money">$100</span>、已现金付给员工 <span class="money">$200</span></div></div>
+        <div class="tstep"><span class="tn">4</span><div>Chowbus 记录：两笔都已发给员工 → <b>都记为 Cash Tips，共 <span class="money">$200</span></b>（判断看"是否已拿走"，不看现金/刷卡）</div></div>
       </div>
-      <div class="conn"><span class="arw">▼</span><span class="pipe">Chowbus → Salsa 传：工资 · Tips · Cash Tips · advance-payment(已付 $200)</span><span class="arw">▼</span></div>
+      <div class="conn"><span class="arw">▼</span><span class="pipe">Chowbus → Salsa 传：工资 · Cash Tips $200（offset 由 Salsa 自动生成）</span><span class="arw">▼</span></div>
       <div class="lane on">
         <h5>💻 线上 · Salsa 算薪</h5>
-        <div class="tstep"><span class="tn">5</span><div>Gross = 工资 $400 ＋ 小费（Tips $100 ＋ Cash Tips $100）= <span class="money">$600</span>（小费计入应税）</div></div>
+        <div class="tstep"><span class="tn">5</span><div>Gross = 工资 $400 ＋ Cash Tips $200 = <span class="money">$600</span>（小费计入应税）</div></div>
         <div class="tstep"><span class="tn">6</span><div>按 $600 全额计税（所得税＋社保＋医保 ≈ <span class="money">$90</span>）</div></div>
-        <div class="tstep"><span class="tn">7</span><div>已付 $200 作为 <b>post-tax 扣款</b>，从净发里减掉</div></div>
+        <div class="tstep"><span class="tn">7</span><div>Salsa <b>自动生成 Cash tips offset −$200</b>，税后从净发扣掉（员工已拿到）</div></div>
         <div class="tstep"><span class="tn">8</span><div>本次打卡净额 = 600 − 90 − 200 = <span class="money">$310</span> → 存入银行</div></div>
       </div>
       <div class="result"><span class="t">✅ 结果：税照缴、钱不重复发</span>员工到手 = <b>$310</b>（银行）＋ <b>$200</b>（当天现金）= <b>$510</b>；税按全额 <b>$600</b> 算，W-2 里小费照样计入。</div>
     </div>
+    <div class="note-ok"><b>✅ 已与 Salsa 确认：</b>已发给员工的小费（不论现金/刷卡）一律用 <b>Cash Tips</b>，Salsa 自动生成 offset，<b>不用 advance-payment</b>（那是"预支工资"用的）。若某笔小费<b>没当天发、随工资发</b>，则记 <b>Tips</b>（照发、不 offset）。强制自动服务费是 <b>Service Charge</b>（按普通工资计税，不算小费）。</div>
     <div style="background:#f2f4f7;border:1px solid var(--line);border-radius:10px;padding:11px 14px;margin-top:12px;font-size:14px;color:#3a3f48;line-height:1.7;">
       <b>💡 Chowbus 现状：</b>不用"分小费"功能也能在<b>钱箱（cash drawer）</b>里记录每个员工的现金小费——这是<b>通用功能</b>，不只针对用分小费的餐厅。<br>
       <b>目前局限：</b>记录一笔小费需要 <b>cash in ＋ cash out 两条记录</b>，要操作两次才完成一次。
