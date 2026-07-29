@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Payroll 合规能力边界复盘 · 成品 vs 白标（Salsa / Check）</title>
+<style>
+  :root{
+    --ink:#22262e; --muted:#6b7280; --line:#e7e9ee; --bg:#f6f7f9;
+    --brand:#CC1C4C; --brand-soft:#FCEDF1;
+    --ok:#137a4b; --ok-bg:#E7F6ED; --warn:#B45309; --warn-bg:#FDF1E1;
+    --blue:#1d4ed8; --blue-bg:#EAF0FE; --red:#b42318; --red-bg:#FDECEA;
+    --maxw:900px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"PingFang SC","Microsoft YaHei",Arial,sans-serif;line-height:1.8;font-size:16px;}
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:0 22px 80px;}
+  header.top{background:linear-gradient(135deg,#CC1C4C,#7d1030);color:#fff;padding:40px 0 30px;margin-bottom:26px;}
+  header.top .wrap{padding-bottom:0;}
+  header.top .kicker{font-size:12.5px;letter-spacing:.16em;text-transform:uppercase;opacity:.85;font-weight:700;}
+  header.top h1{font-size:26px;font-weight:800;margin:10px 0 4px;line-height:1.35;}
+  header.top p{font-size:14px;opacity:.9;}
+
+  .tldr{background:#fff;border:1px solid var(--line);border-left:5px solid var(--brand);border-radius:14px;padding:18px 22px;margin-bottom:30px;box-shadow:0 2px 14px rgba(0,0,0,.04);}
+  .tldr h2{font-size:16px;color:var(--brand);margin-bottom:8px;}
+  .tldr .lead{background:var(--brand-soft);border:1px solid #f3c9d4;border-radius:10px;padding:14px 16px;margin:6px 0 14px;font-size:19px;font-weight:800;color:var(--brand);line-height:1.55;}
+  .tldr .lead u{text-decoration-color:var(--brand);text-underline-offset:3px;}
+  .tldr .alert{background:var(--red-bg);border:1px solid #f0c7c2;border-left:5px solid var(--red);border-radius:10px;padding:11px 15px;margin:0 0 14px;font-size:15px;color:#8a1a12;line-height:1.6;}
+  .tldr ul{margin:0;padding-left:20px;} .tldr li{margin:7px 0;font-size:15px;}
+  .tldr ol.concl{margin:0;padding-left:22px;} .tldr ol.concl li{margin:9px 0;font-size:15px;line-height:1.7;padding-left:4px;}
+  .tldr ol.concl li::marker{color:var(--brand);font-weight:800;}
+
+  h2.sec{font-size:21px;font-weight:800;margin:40px 0 6px;padding-left:13px;border-left:5px solid var(--brand);line-height:1.4;}
+  h2.sec .n{color:var(--brand);}
+  .sub{color:var(--muted);font-size:14px;margin-bottom:14px;}
+  .card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:18px 22px;margin:14px 0;box-shadow:0 2px 12px rgba(0,0,0,.03);}
+  p{margin:10px 0;}
+  ul.pts{list-style:none;margin:8px 0 0;} ul.pts li{position:relative;padding:5px 0 5px 24px;font-size:15px;}
+  ul.pts li::before{content:"›";position:absolute;left:6px;top:5px;color:var(--brand);font-weight:800;}
+  b{color:#111;}
+  .tag{display:inline-block;font-size:12px;font-weight:800;border-radius:6px;padding:1px 9px;margin-right:4px;}
+  .tag.ok{background:var(--ok-bg);color:var(--ok);} .tag.no{background:var(--red-bg);color:var(--red);} .tag.part{background:var(--warn-bg);color:var(--warn);}
+  .note{border-radius:10px;padding:12px 15px;margin-top:12px;font-size:14.5px;}
+  .note.warn{background:var(--warn-bg);border:1px solid #f0d6a8;color:#7a4a08;}
+  .note.ok{background:var(--ok-bg);border:1px solid #bfe6cf;color:#14663f;}
+  .note.red{background:var(--red-bg);border:1px solid #f0c7c2;color:#8a1a12;}
+
+  table{width:100%;border-collapse:collapse;margin:12px 0;font-size:14px;}
+  th,td{border:1px solid var(--line);padding:9px 11px;text-align:left;vertical-align:top;}
+  th{background:#f2f4f7;font-weight:800;font-size:13px;}
+  td .eg{color:var(--muted);font-size:13px;}
+  .yes{color:var(--ok);font-weight:800;} .non{color:var(--red);font-weight:800;} .pt{color:var(--warn);font-weight:800;}
+  td.boxed{outline:2px dashed var(--red);outline-offset:-3px;background:var(--red-bg);}
+
+  .opt{background:#fff;border:1px solid var(--line);border-radius:14px;padding:16px 20px;margin:14px 0;box-shadow:0 2px 12px rgba(0,0,0,.03);}
+  .opt h3{font-size:17px;font-weight:800;margin-bottom:6px;display:flex;align-items:center;gap:8px;}
+  .opt .pill{font-size:12px;font-weight:800;border-radius:999px;padding:2px 10px;}
+  .opt.a{border-top:4px solid var(--brand);} .opt.a .pill{background:var(--brand-soft);color:var(--brand);}
+  .opt.b{border-top:4px solid var(--blue);} .opt.b .pill{background:var(--blue-bg);color:var(--blue);}
+  .opt.c{border-top:4px solid var(--muted);} .opt.c .pill{background:#eef0f3;color:#5b6472;}
+  footer{margin-top:34px;padding-top:18px;border-top:1px solid var(--line);color:var(--muted);font-size:13px;}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <div class="kicker">Payroll 合规 · 复盘与决策</div>
+    <h1>成品 Payroll vs 白标 Payroll：合规能力边界</h1>
+    <p>为什么我们误以为"系统会自动合规"，Salsa / Check 到底兜不兜，下一步怎么走。</p>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <div class="tldr">
+    <h2>结论先行</h2>
+    <ol class="concl">
+      <li><b>Check 不做任何的 OT 计算</b>，但 Salsa 能够计算 OT，以及多角色多费率的 OT。</li>
+      <li><b>Salsa 不做最低工资是否合规的校验，Check 也不做</b>，主流软件只有 Toast 自动做，ADP 需要安装插件。</li>
+      <li><b>Check 的 Tip Credit 只是提供字段</b>，具体金额的计算仍需接入的平台自行计算。</li>
+      <li>大部分 Payroll 系统都无法支持加州的一系列特殊规定，比如：split shift、餐歇休息额外工资。<b>需要老板手动添加到 Payroll</b>。</li>
+      <li><b>没有一个 Payroll 系统能够 100% 保证最低工资合规</b>，在合约条款中会写明此类合规由餐厅老板承担。</li>
+    </ol>
+  </div>
+
+  <!-- 1 -->
+  <h2 class="sec"><span class="n">1.</span> 我们误解了什么？</h2>
+  <div class="card">
+    <p>我们默认——只要接了 payroll 系统，"把钱发对"相关的合规它会自动兜底。具体有两点想当然：</p>
+    <ul class="pts">
+      <li><b>最低工资校验：</b>以为系统会自动检查"发的工资是否达到当地最低工资"、不够会提醒或补差。</li>
+      <li><b>额外应付工资 / 罚时（premium pay）：</b>以为系统会自动处理加州餐休/间歇罚时、分段班、报到时间工资这类"该多给的钱"。</li>
+    </ul>
+    <p>——我们以为这些 Salsa 会默认支持。</p>
+  </div>
+
+  <!-- 2 -->
+  <h2 class="sec"><span class="n">2.</span> 今日信息更新</h2>
+  <div class="card">
+    <p><b>上述两点，Salsa 都不支持</b>（均已向 Salsa 确认 / 有文档依据）：</p>
+    <ul class="pts">
+      <li><span class="tag no">不支持</span><b>最低工资校验：</b>Salsa 明确回复——不校验、不提醒、不拦截；低于最低工资的一批照算照确认，无任何警告。补差也要我们自己算好当 pay item 传。</li>
+      <li><span class="tag no">不支持</span><b>额外应付工资 / 罚时：</b>Salsa 的 Premium Pay <b>目前仅支持纽约</b>（分段班、工时跨度、工资平价），且非 NY 地点直接返回 HTTP 400。<b>加州餐休罚时等完全没有。</b></li>
+    </ul>
+    <div class="note warn"><b>结论：</b>这两块合规能力，需要<b>由接入的平台（Chowbus）自建</b>——在设时薪、跑薪之前，在我们自己产品里把住。</div>
+  </div>
+
+  <!-- 3 -->
+  <h2 class="sec"><span class="n">3.</span> 为什么会误判？根本原因</h2>
+  <div class="card">
+    <p>根因是：<b>没有事先搞清"成品 payroll"和"白标 payroll"的能力边界</b>。</p>
+    <p><b>成品会兜、白标上交给平台：</b></p>
+    <ul class="pts">
+      <li><b>成品 / 全服务（ADP、QuickBooks、Paychex、Toast 等）</b>：把最低工资、小费补差、罚时这些<b>做进了自己产品</b>——因为它们端到端拥有整条产品和客户。<span class="eg">但"做进产品"程度不一：餐厅垂直的 Toast 开箱自动，通用的 ADP/QuickBooks 要配置或手动（详见第 4 节对比）。</span></li>
+      <li><b>Salsa、Check（白标 / 嵌入式 payroll）</b>：是"引擎 / 管道"，<b>刻意把这类能力上交给接入的平台去处理</b>——只负责算税、发钱、报税。</li>
+    </ul>
+    <div class="note ok"><b>旁证：</b>同类平台 <b>Homebase、7shifts 用的也是白标引擎，最低工资 / 小费补差 / 罚时都是它们自己建在产品里的</b>——"平台自建"是这条路线的常态，不是个例。</div>
+    <p style="margin-top:14px;"><b>而我们之前想当然了：</b></p>
+    <ul class="pts">
+      <li>因为对 payroll 不够了解，<b>以为"白标也会兜底所有合规"</b>；</li>
+      <li>但白标<b>从未承诺过</b>——它们功能集 / 宣传里的 "compliance" 其实只指<b>税务合规</b>（代扣、缴税、申报），<b>不含</b>最低工资、加班底线、罚时这类"工资工时合规"；</li>
+      <li>"compliance" 被<b>笼统当成"全部合规"</b>，卖方只兑现了税那部分——同一个词，买卖双方理解不一致。</li>
+    </ul>
+    <div class="note red"><b>教训：</b>评估任何 payroll，要把"合规"拆成<b>税务合规</b>（成品 / 白标通常都做）和<b>工资工时合规</b>（白标基本不做、需平台自建），并直接问对方"<b>你们不做什么、要我们建什么</b>"，而不是只问"你们能做什么"。</div>
+  </div>
+
+  <!-- 4 竞品能力对比 -->
+  <h2 class="sec"><span class="n">4.</span> 竞品能力对比：Salsa / Check / Toast / ADP / QuickBooks</h2>
+  <div class="sub">每格均有官方文档 / 官方回帖依据（见文末来源）。<span style="color:var(--ok);font-weight:700;">绿＝自动</span> · <span style="color:var(--warn);font-weight:700;">橙＝需配置或部分</span> · <span style="color:var(--red);font-weight:700;">红＝不做或手动</span></div>
+  <div class="card">
+    <table>
+      <thead><tr><th>能力</th><th>Salsa</th><th>Check</th><th>Toast</th><th>ADP</th><th>QuickBooks</th></tr></thead>
+      <tbody>
+        <tr><td style="color:var(--muted);">类型</td><td>白标</td><td>白标</td><td>成品·餐厅</td><td>成品·通用</td><td>成品·通用</td></tr>
+        <tr><td><b>最低工资合规校验</b></td><td class="non">不做</td><td class="non">不做</td><td class="yes">自动<sup>¹</sup></td><td class="yes">需装插件</td><td class="non">不做</td></tr>
+        <tr><td><b>Tip Credit</b></td><td class="pt">暂无·2026.1</td><td class="pt">只给字段·不代算</td><td class="yes">自动补差</td><td class="yes">需配置/插件</td><td class="non">手动</td></tr>
+        <tr><td><b>加州休息罚时</b></td><td class="non">仅纽约</td><td class="pt">只给字段·不代算</td><td class="pt">称支持·未证实</td><td class="pt">部分自动·需人工兜</td><td class="non">不自动</td></tr>
+        <tr><td><b>自动计算 OT</b><span class="eg">判定加班+加成</span></td><td class="yes">自动·按州</td><td class="non boxed">不支持·平台自传</td><td class="yes">自动</td><td class="yes">自动</td><td class="yes">自动</td></tr>
+        <tr><td><b>多角色加权 OT</b><span class="eg">多费率 blended</span></td><td class="yes">自动</td><td class="non boxed">不支持·平台自算</td><td class="yes">支持</td><td class="yes">支持</td><td class="non">不自动·需手动</td></tr>
+      </tbody>
+    </table>
+    <div class="sub" style="margin-top:4px;"><sup>¹</sup> Toast 自动补差用系统预置最低工资，雇主须自行核对该数值；白标（Salsa/Check）完全交平台自建。</div>
+  </div>
+
+  <!-- 5 -->
+  <h2 class="sec"><span class="n">5.</span> 下一步计划</h2>
+
+  <div class="opt a">
+    <h3><span class="pill">路线 A</span> 接 Salsa</h3>
+    <p>需要我们自建/补齐的能力：</p>
+    <ul class="pts">
+      <li><b>① 最低工资校验 + 提示补差</b>（设时薪时校验；每期算补差，作为 pay item 传）；</li>
+      <li><b>② 全部额外应付工资/罚时</b>——尤其<b>加州餐休罚时（Salsa 完全不支持，检测+计算全自建）</b>；</li>
+      <li><b>③ 加州"固定薪资非豁免"加班的正确算法</b>，需与 Salsa 确认如何手工配置公式。</li>
+    </ul>
+  </div>
+
+  <div class="opt b">
+    <h3><span class="pill">路线 B</span> 接 Check</h3>
+    <p>接 Check 与接 Salsa <b>要自建的几乎一样</b>：</p>
+    <ul class="pts">
+      <li><b>① 最低工资校验 + 补差：仍需自建</b>（Check 不做）；</li>
+      <li><b>② 加州休息罚时：仍需自建</b>——Check 只给 API 字段（regular rate·独立行），<b>漏餐检测和计算还是我们做</b>；</li>
+      <li><b>③ Tip credit：仍需自建</b>——只给专门字段、不代算（此项 Check 略强：Salsa 明年才有字段）；</li>
+      <li><b>④ 加班：Check 也不自动</b>——加班小时/费率要平台自己传，Check 只按 rate×hours 出金额、且不支持加权加班；<b>此项 Salsa 反而自动算（含多费率）。</b></li>
+    </ul>
+    <div class="note ok"><b>小结：</b>Check 相比 Salsa <b>几乎没有"少自建"</b>——最低工资、休息罚时、加班的检测与计算，接哪家都要 Chowbus 自建。Check 唯一略强是 <b>tip credit 已有专门字段</b>（但仍不代算）。</div>
+  </div>
+
+  <div class="opt c">
+    <h3><span class="pill">路线 C</span> 不接白标，直接对接 ADP / QuickBooks（成品）</h3>
+    <ul class="pts">
+      <li><b>好处：</b>罚时、加班州特例等合规大多由它们兜底，平台自建相对少。</li>
+      <li><b>代价：</b>失去<b>白标 / 嵌入 Chowbus 的体验和控制权</b>——客户会感知到是"另一个系统"，这是重大产品路线取舍。</li>
+    </ul>
+  </div>
+
+  <div class="note red" style="margin-top:18px;"><b>要拍板的决策：</b>①要不要接 Salsa？②若接 Salsa/Check，上面的自建清单进不进本期范围、投入多少？③是否值得为"少自建合规"而放弃白标、转投成品(ADP/QuickBooks)？——建议结合"客户州分布（加州占比）+ 有多少全服务正餐 + 白标对品牌的重要性"一起权衡。</div>
+
+  <footer>
+    信息来源：与 Salsa（Andrew）的多轮确认（明确"we automatically compute blended rates if there are multiple rates and overtime takes the blended rates into account"，需按逐日/班次数据发送）、Salsa 官方文档（Set up and pay Overtime：Payroll Run 期间自动后台计算 OT、含加州日/双倍；Premium Pay 一节"仅限 New York"）、Check 官方文档（tip credit adjustment earning type；加州餐休罚时帮助文；Structuring Earnings / Piece Rate：加班需平台以 overtime earning 自传、"Check does not support weighted overtime calculations"）、Toast 官方帮助文档（Tip Credit and Tip Makeup：自动 earning code、需自行核对最低工资；加州餐休罚时为营销口径、未见其自动计算的官方文档）、QuickBooks 官方文档 / 社区（tip 手动录入、无自动 tip credit；OT 自动按最高费率，但<b>加权/blended OT 不自动、需手动 override</b>；CA 日加班自动、FLSA qualified 部分需手动）、ADP 相关评测与文章（Workforce Now tip credit 需定制配置 / TipHaus 插件；SPARK：餐休罚时部分可自动、某些情况需人工；支持自动 blended OT）、Toast 官方帮助（Blended Overtime 自动计算）、Homebase / 7shifts 官方功能说明。<br>
+    标注：本文"把钱发对"= 工资金额正确性；税务合规（代扣/缴税/申报/W-2）Salsa、Check 均支持，不在本文差距范围内。
+  </footer>
+
+</div>
+</body>
+</html>
