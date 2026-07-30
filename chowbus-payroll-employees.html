@@ -84,10 +84,18 @@
   .pay{font-weight:700;color:#1a1a1a;font-variant-numeric:tabular-nums;}
   .pay .unit{font-weight:600;color:#6b7280;font-size:13px;margin-left:1px;}
   .pay-none{color:#9aa0aa;font-size:13.5px;font-weight:600;}
-  /* 操作栏 */
-  .act-edit{color:var(--primary);cursor:pointer;font-size:14px;font-weight:600;}
-  .act-edit:hover{text-decoration:underline;}
-  .act-sep{color:#d9dce1;margin:0 10px;}
+  /* 操作栏:收拢成 ⋯ 菜单 */
+  .col-act{text-align:right;padding-right:24px;}
+  .act-wrap{position:relative;display:inline-block;}
+  .kebab{background:#fff;border:1px solid var(--border);border-radius:8px;width:36px;height:32px;cursor:pointer;color:#6b7280;font-size:20px;line-height:1;display:inline-flex;align-items:center;justify-content:center;transition:.15s;}
+  .kebab:hover{background:#FDF2F4;border-color:#E7A9B5;color:var(--primary);}
+  .act-menu{position:absolute;right:0;top:calc(100% + 6px);min-width:184px;background:#fff;border:1px solid var(--border);border-radius:10px;box-shadow:0 12px 32px rgba(0,0,0,.14);padding:6px;z-index:50;display:none;text-align:left;}
+  .act-menu.open{display:block;}
+  .act-menu .mi{display:flex;align-items:center;gap:9px;padding:9px 12px;border-radius:7px;font-size:13.5px;color:#374151;cursor:pointer;white-space:nowrap;transition:.12s;}
+  .act-menu .mi:hover{background:#FDF2F4;color:var(--primary);}
+  .act-menu .mi.primary{color:var(--primary);font-weight:700;}
+  .act-menu .mi .mic{width:16px;text-align:center;opacity:.85;}
+  .act-menu .sep{height:1px;background:var(--border);margin:5px 4px;}
 
   .pager{display:flex;justify-content:flex-end;align-items:center;gap:14px;margin-top:18px;font-size:13.5px;color:var(--muted);}
   .pager .pg-num{border:1px solid var(--primary);color:var(--primary);border-radius:6px;width:28px;height:28px;display:inline-flex;align-items:center;justify-content:center;}
@@ -185,7 +193,10 @@
             <td><span class="stat active"><i></i><span class="zh">在职</span><span class="en">Active</span></span></td>
             <td><span class="status ready"><span class="zh">可发薪</span><span class="en">Ready to pay</span></span></td>
             <td><span class="pay">$6,000<span class="unit zh">/月</span><span class="unit en">/mo</span></span></td>
-            <td style="text-align:right;padding-right:24px;"><span class="act-edit"><span class="zh">编辑薪资</span><span class="en">Edit Pay</span></span><span class="act-sep">|</span><span class="view">View</span></td>
+            <td class="col-act"><div class="act-wrap"><button class="kebab" onclick="toggleMenu(event,this)">⋯</button><div class="act-menu">
+              <div class="mi" onclick="act(event,'查看详情','View details')"><span class="mic">👁</span><span class="zh">查看详情</span><span class="en">View details</span></div>
+              <div class="mi" onclick="act(event,'编辑薪资','Edit Pay')"><span class="mic">✏️</span><span class="zh">编辑薪资</span><span class="en">Edit Pay</span></div>
+            </div></div></td>
           </tr>
           <tr>
             <td class="name">Test Parse</td>
@@ -193,7 +204,13 @@
             <td><span class="stat active"><i></i><span class="zh">在职</span><span class="en">Active</span></span></td>
             <td><span class="status incomplete"><span class="zh">设置未完成</span><span class="en">Setup incomplete</span></span></td>
             <td><span class="pay-none"><span class="zh">未设置</span><span class="en">Not set</span></span></td>
-            <td style="text-align:right;padding-right:24px;"><span class="act-edit"><span class="zh">编辑薪资</span><span class="en">Edit Pay</span></span><span class="act-sep">|</span><span class="view">View</span></td>
+            <td class="col-act"><div class="act-wrap"><button class="kebab" onclick="toggleMenu(event,this)">⋯</button><div class="act-menu">
+              <div class="mi" onclick="act(event,'查看详情','View details')"><span class="mic">👁</span><span class="zh">查看详情</span><span class="en">View details</span></div>
+              <div class="mi" onclick="act(event,'编辑薪资','Edit Pay')"><span class="mic">✏️</span><span class="zh">编辑薪资</span><span class="en">Edit Pay</span></div>
+              <div class="sep"></div>
+              <div class="mi" onclick="act(event,'发送入职短信','Send onboarding SMS')"><span class="mic">💬</span><span class="zh">发送入职短信</span><span class="en">Send onboarding SMS</span></div>
+              <div class="mi primary" onclick="act(event,'立即办理入职','Onboard now')"><span class="mic">⚡</span><span class="zh">立即办理入职</span><span class="en">Onboard now</span></div>
+            </div></div></td>
           </tr>
           <tr>
             <td class="name">Test Parse</td>
@@ -201,7 +218,13 @@
             <td><span class="stat active"><i></i><span class="zh">在职</span><span class="en">Active</span></span></td>
             <td><span class="status incomplete"><span class="zh">设置未完成</span><span class="en">Setup incomplete</span></span></td>
             <td><span class="pay-none"><span class="zh">未设置</span><span class="en">Not set</span></span></td>
-            <td style="text-align:right;padding-right:24px;"><span class="act-edit"><span class="zh">编辑薪资</span><span class="en">Edit Pay</span></span><span class="act-sep">|</span><span class="view">View</span></td>
+            <td class="col-act"><div class="act-wrap"><button class="kebab" onclick="toggleMenu(event,this)">⋯</button><div class="act-menu">
+              <div class="mi" onclick="act(event,'查看详情','View details')"><span class="mic">👁</span><span class="zh">查看详情</span><span class="en">View details</span></div>
+              <div class="mi" onclick="act(event,'编辑薪资','Edit Pay')"><span class="mic">✏️</span><span class="zh">编辑薪资</span><span class="en">Edit Pay</span></div>
+              <div class="sep"></div>
+              <div class="mi" onclick="act(event,'发送入职短信','Send onboarding SMS')"><span class="mic">💬</span><span class="zh">发送入职短信</span><span class="en">Send onboarding SMS</span></div>
+              <div class="mi primary" onclick="act(event,'立即办理入职','Onboard now')"><span class="mic">⚡</span><span class="zh">立即办理入职</span><span class="en">Onboard now</span></div>
+            </div></div></td>
           </tr>
           <tr>
             <td class="name">Maria Lopez</td>
@@ -209,7 +232,10 @@
             <td><span class="stat inactive"><i></i><span class="zh">离职</span><span class="en">Archived</span></span></td>
             <td><span class="status ready"><span class="zh">可发薪</span><span class="en">Ready to pay</span></span></td>
             <td><span class="pay">$16.50<span class="unit zh">/小时</span><span class="unit en">/hr</span></span></td>
-            <td style="text-align:right;padding-right:24px;"><span class="act-edit"><span class="zh">编辑薪资</span><span class="en">Edit Pay</span></span><span class="act-sep">|</span><span class="view">View</span></td>
+            <td class="col-act"><div class="act-wrap"><button class="kebab" onclick="toggleMenu(event,this)">⋯</button><div class="act-menu">
+              <div class="mi" onclick="act(event,'查看详情','View details')"><span class="mic">👁</span><span class="zh">查看详情</span><span class="en">View details</span></div>
+              <div class="mi" onclick="act(event,'编辑薪资','Edit Pay')"><span class="mic">✏️</span><span class="zh">编辑薪资</span><span class="en">Edit Pay</span></div>
+            </div></div></td>
           </tr>
         </tbody>
       </table>
@@ -228,10 +254,30 @@
 <!-- Toast(从选择页跳转过来时显示) -->
 <div class="toast" id="toast">
   <span class="tick">✓</span>
-  <span><span class="zh">加入成功</span><span class="en">Added successfully</span></span>
+  <span id="toastMsg"><span class="zh">加入成功</span><span class="en">Added successfully</span></span>
 </div>
 
 <script>
+  // 操作菜单:点 ⋯ 展开,点外部或再次点击收起
+  function closeAllMenus(){document.querySelectorAll('.act-menu.open').forEach(m=>m.classList.remove('open'));}
+  function toggleMenu(ev, btn){
+    ev.stopPropagation();
+    const menu = btn.nextElementSibling;
+    const wasOpen = menu.classList.contains('open');
+    closeAllMenus();
+    if(!wasOpen) menu.classList.add('open');
+  }
+  document.addEventListener('click', closeAllMenus);
+  // 点某个操作:收起菜单 + 顶部提示(mock)
+  let _tt=null;
+  function act(ev, zh, en){
+    ev.stopPropagation();
+    closeAllMenus();
+    document.getElementById('toastMsg').innerHTML = `<span class="zh">${zh}</span><span class="en">${en}</span>`;
+    const t=document.getElementById('toast'); t.classList.add('show');
+    clearTimeout(_tt); _tt=setTimeout(()=>t.classList.remove('show'), 2200);
+  }
+
   function toggleLanguage(){const en=!document.body.classList.contains('lang-en');document.body.classList.toggle('lang-en',en);document.body.classList.toggle('lang-zh',!en);try{localStorage.setItem('cbLang',en?'en':'zh');}catch(e){}}
   (function(){try{if(localStorage.getItem('cbLang')==='en'){document.body.classList.remove('lang-zh');document.body.classList.add('lang-en');}}catch(e){}})();
 
