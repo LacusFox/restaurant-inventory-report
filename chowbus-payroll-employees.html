@@ -80,6 +80,14 @@
   .stat.inactive{color:#6b7280;background:#F1F2F4;} .stat.inactive i{background:#9aa0aa;}
   .view{color:#9CA3AF;cursor:pointer;font-size:14px;}
   .view:hover{color:var(--primary);}
+  /* 薪酬展示 */
+  .pay{font-weight:700;color:#1a1a1a;font-variant-numeric:tabular-nums;}
+  .pay .unit{font-weight:600;color:#6b7280;font-size:13px;margin-left:1px;}
+  .pay-none{color:#9aa0aa;font-size:13.5px;font-weight:600;}
+  /* 操作栏 */
+  .act-edit{color:var(--primary);cursor:pointer;font-size:14px;font-weight:600;}
+  .act-edit:hover{text-decoration:underline;}
+  .act-sep{color:#d9dce1;margin:0 10px;}
 
   .pager{display:flex;justify-content:flex-end;align-items:center;gap:14px;margin-top:18px;font-size:13.5px;color:var(--muted);}
   .pager .pg-num{border:1px solid var(--primary);color:var(--primary);border-radius:6px;width:28px;height:28px;display:inline-flex;align-items:center;justify-content:center;}
@@ -166,6 +174,7 @@
             <th><span class="zh">角色</span><span class="en">Role</span></th>
             <th><span class="zh">在职状态</span><span class="en">Status</span></th>
             <th><span class="zh">薪酬状态</span><span class="en">Payroll Status</span></th>
+            <th><span class="zh">薪酬</span><span class="en">Pay Rate</span></th>
             <th style="text-align:right;padding-right:24px;"><span class="zh">操作</span><span class="en">Action</span></th>
           </tr>
         </thead>
@@ -175,28 +184,32 @@
             <td><div class="roles"><span class="role-pill">Super Admin</span></div></td>
             <td><span class="stat active"><i></i><span class="zh">在职</span><span class="en">Active</span></span></td>
             <td><span class="status ready"><span class="zh">可发薪</span><span class="en">Ready to pay</span></span></td>
-            <td style="text-align:right;padding-right:24px;"><span class="view">View</span></td>
+            <td><span class="pay">$6,000<span class="unit zh">/月</span><span class="unit en">/mo</span></span></td>
+            <td style="text-align:right;padding-right:24px;"><span class="act-edit"><span class="zh">编辑薪资</span><span class="en">Edit Pay</span></span><span class="act-sep">|</span><span class="view">View</span></td>
           </tr>
           <tr>
             <td class="name">Test Parse</td>
             <td><div class="roles"><span class="role-pill">Restaurant Owner</span></div></td>
             <td><span class="stat active"><i></i><span class="zh">在职</span><span class="en">Active</span></span></td>
             <td><span class="status incomplete"><span class="zh">设置未完成</span><span class="en">Setup incomplete</span></span></td>
-            <td style="text-align:right;padding-right:24px;"><span class="view">View</span></td>
+            <td><span class="pay-none"><span class="zh">未设置</span><span class="en">Not set</span></span></td>
+            <td style="text-align:right;padding-right:24px;"><span class="act-edit"><span class="zh">编辑薪资</span><span class="en">Edit Pay</span></span><span class="act-sep">|</span><span class="view">View</span></td>
           </tr>
           <tr>
             <td class="name">Test Parse</td>
             <td><div class="roles"><span class="role-pill">Manager</span><span class="role-pill sec">Waiter</span></div></td>
             <td><span class="stat active"><i></i><span class="zh">在职</span><span class="en">Active</span></span></td>
             <td><span class="status incomplete"><span class="zh">设置未完成</span><span class="en">Setup incomplete</span></span></td>
-            <td style="text-align:right;padding-right:24px;"><span class="view">View</span></td>
+            <td><span class="pay-none"><span class="zh">未设置</span><span class="en">Not set</span></span></td>
+            <td style="text-align:right;padding-right:24px;"><span class="act-edit"><span class="zh">编辑薪资</span><span class="en">Edit Pay</span></span><span class="act-sep">|</span><span class="view">View</span></td>
           </tr>
           <tr>
             <td class="name">Maria Lopez</td>
             <td><div class="roles"><span class="role-pill">Server</span></div></td>
             <td><span class="stat inactive"><i></i><span class="zh">离职</span><span class="en">Archived</span></span></td>
             <td><span class="status ready"><span class="zh">可发薪</span><span class="en">Ready to pay</span></span></td>
-            <td style="text-align:right;padding-right:24px;"><span class="view">View</span></td>
+            <td><span class="pay">$16.50<span class="unit zh">/小时</span><span class="unit en">/hr</span></span></td>
+            <td style="text-align:right;padding-right:24px;"><span class="act-edit"><span class="zh">编辑薪资</span><span class="en">Edit Pay</span></span><span class="act-sep">|</span><span class="view">View</span></td>
           </tr>
         </tbody>
       </table>
