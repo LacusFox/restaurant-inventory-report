@@ -92,9 +92,11 @@
     <div class="menu-group open">
       <li class="menu-item"><span class="menu-icon">💲</span><span class="zh">薪酬</span><span class="en">Payroll</span><span class="caret">▴</span></li>
       <ul class="submenu-list">
-        <li class="submenu-item"><span class="zh">薪酬操作</span><span class="en">Payroll Operations</span></li>
-        <li class="submenu-item"><span class="zh">雇主设置</span><span class="en">Employer Setup</span></li>
-        <li class="submenu-item active"><span class="zh">员工管理</span><span class="en">Employees</span></li>
+        <li class="submenu-item" onclick="location.href='chowbus-payroll-overview.html'"><span class="zh">概览</span><span class="en">Overview</span></li>
+        <li class="submenu-item" onclick="location.href='chowbus-payroll-run-payroll.html'"><span class="zh">跑薪</span><span class="en">Run Payroll</span></li>
+        <li class="submenu-item" onclick="location.href='chowbus-payroll-company-setup.html'"><span class="zh">公司设置</span><span class="en">Company Setup</span></li>
+        <li class="submenu-item active" onclick="location.href='chowbus-payroll-employees.html'"><span class="zh">员工管理</span><span class="en">Employees</span></li>
+        <li class="submenu-item" onclick="location.href='chowbus-payroll-taxes-filings.html'"><span class="zh">税务与申报</span><span class="en">Taxes &amp; Filings</span></li>
       </ul>
     </div>
 
@@ -151,7 +153,7 @@
         <span class="en"><b id="cntEn">0</b> <span id="nounEn">employees</span> selected</span>
       </div>
       <div class="actions">
-        <button class="btn-ghost"><span class="zh">取消</span><span class="en">Cancel</span></button>
+        <button class="btn-ghost" onclick="location.href='chowbus-payroll-import-match.html'"><span class="zh">上一步</span><span class="en">Back</span></button>
         <button class="btn-primary" id="confirmBtn" disabled onclick="confirmSelection()">
           <span class="zh">使用薪酬功能</span><span class="en">Enable Payroll</span>
         </button>

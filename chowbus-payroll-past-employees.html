@@ -39,7 +39,10 @@
   .content{padding:26px 34px;flex:1;max-width:1120px;}
   .crumb{font-size:12.5px;color:#9aa0aa;margin-bottom:10px;cursor:pointer;display:inline-block;}
   .crumb:hover{color:var(--primary);}
-  .page-title{font-size:23px;font-weight:800;margin-bottom:4px;}
+  .page-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;}
+  .page-title{font-size:23px;font-weight:800;}
+  .btn-import{background:var(--primary);color:#fff;border:none;border-radius:8px;padding:10px 20px;font-size:14px;font-weight:700;cursor:pointer;transition:.15s;white-space:nowrap;}
+  .btn-import:hover{background:var(--primary-hover);}
   .page-hint{font-size:13px;color:var(--muted);margin-bottom:18px;line-height:1.6;}
 
   /* 说明条 */
@@ -97,9 +100,11 @@
     <div class="menu-group open">
       <li class="menu-item"><span class="menu-icon">💲</span><span class="zh">薪酬</span><span class="en">Payroll</span><span class="caret">▴</span></li>
       <ul class="submenu-list">
-        <li class="submenu-item"><span class="zh">薪酬操作</span><span class="en">Payroll Operations</span></li>
-        <li class="submenu-item"><span class="zh">雇主设置</span><span class="en">Employer Setup</span></li>
-        <li class="submenu-item active"><span class="zh">员工管理</span><span class="en">Employees</span></li>
+        <li class="submenu-item" onclick="location.href='chowbus-payroll-overview.html'"><span class="zh">概览</span><span class="en">Overview</span></li>
+        <li class="submenu-item" onclick="location.href='chowbus-payroll-run-payroll.html'"><span class="zh">跑薪</span><span class="en">Run Payroll</span></li>
+        <li class="submenu-item" onclick="location.href='chowbus-payroll-company-setup.html'"><span class="zh">公司设置</span><span class="en">Company Setup</span></li>
+        <li class="submenu-item active" onclick="location.href='chowbus-payroll-employees.html'"><span class="zh">员工管理</span><span class="en">Employees</span></li>
+        <li class="submenu-item" onclick="location.href='chowbus-payroll-taxes-filings.html'"><span class="zh">税务与申报</span><span class="en">Taxes &amp; Filings</span></li>
       </ul>
     </div>
 
@@ -126,7 +131,12 @@
     <span class="crumb" onclick="location.href='chowbus-payroll-employees.html'">
       <span class="zh">← 返回员工管理</span><span class="en">← Back to Employees</span>
     </span>
-    <h1 class="page-title"><span class="zh">历史发薪员工</span><span class="en">Past Employees</span></h1>
+    <div class="page-head">
+      <h1 class="page-title"><span class="zh">历史发薪员工</span><span class="en">Past Employees</span></h1>
+      <button class="btn-import" onclick="location.href='chowbus-payroll-import-match.html'">
+        <span class="zh">＋ 导入历史发薪员工</span><span class="en">＋ Import past employees</span>
+      </button>
+    </div>
     <div class="infobar">
       <span class="i-ic">ℹ️</span>
       <span>

@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chowbus Payroll · 跑薪</title>
+<style>
+  :root{--primary:#CC1C4C;--primary-hover:#A6123B;--bg:#F7F8FA;--border:#EDEEF1;--ink:#1F1F1F;--muted:#6B7280;--sidebar-w:250px;}
+  *{box-sizing:border-box;margin:0;padding:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"PingFang SC","Microsoft YaHei",Arial,sans-serif;}
+  body{display:flex;background:var(--bg);color:var(--ink);min-height:100vh;overflow-x:hidden;}
+  body.lang-zh .en{display:none!important;} body.lang-en .zh{display:none!important;}
+
+  aside.sidebar{width:var(--sidebar-w);background:#fff;border-right:1px solid var(--border);position:fixed;height:100vh;overflow-y:auto;z-index:100;}
+  .logo-area{padding:18px 22px;display:flex;align-items:center;gap:8px;border-bottom:1px solid var(--border);}
+  .logo-area .ic{font-size:22px;} .logo-area .tx{font-weight:900;font-size:19px;color:var(--primary);}
+  .menu-list{list-style:none;padding:10px 0;}
+  .menu-item{padding:11px 22px;display:flex;align-items:center;color:#374151;font-size:14px;cursor:pointer;transition:.15s;}
+  .menu-item:hover{background:#FDF2F4;color:var(--primary);}
+  .menu-icon{margin-right:12px;width:18px;text-align:center;opacity:.75;}
+  .caret{margin-left:auto;font-size:11px;color:#c4c8cf;}
+  .menu-group.open>.menu-item{color:var(--primary);font-weight:600;}
+  .submenu-list{list-style:none;padding:2px 0 6px;}
+  .submenu-item{padding:10px 22px 10px 50px;font-size:13.5px;color:var(--muted);cursor:pointer;transition:.15s;}
+  .submenu-item:hover{color:var(--primary);}
+  .submenu-item.active{color:var(--primary);font-weight:700;background:#FFF0F2;border-left:3px solid var(--primary);padding-left:47px;}
+
+  main{margin-left:var(--sidebar-w);flex:1;min-height:100vh;display:flex;flex-direction:column;}
+  header.top{height:58px;background:#fff;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;padding:0 28px;position:sticky;top:0;z-index:99;}
+  .hleft{display:flex;align-items:center;gap:16px;font-size:14px;color:#333;}
+  .collapse{font-size:18px;color:#888;cursor:pointer;}
+  .store{font-weight:600;cursor:pointer;} .store .ca{color:#aaa;font-size:11px;margin-left:4px;}
+  .usa{background:#EEE;padding:2px 8px;border-radius:4px;font-size:11px;color:#555;}
+  .hright{display:flex;align-items:center;gap:22px;font-size:13.5px;color:var(--muted);}
+  .langpill{display:inline-flex;border:1px solid #E3B8C4;border-radius:999px;overflow:hidden;cursor:pointer;font-size:12.5px;font-weight:600;}
+  .langpill span{padding:5px 15px;transition:.15s;}
+  body.lang-zh .langpill .lz, body.lang-en .langpill .le{background:var(--primary);color:#fff;}
+  body.lang-zh .langpill .le, body.lang-en .langpill .lz{background:#fff;color:#666;}
+
+  .content{padding:26px 34px;flex:1;max-width:1000px;}
+  .page-title{font-size:23px;font-weight:800;margin-bottom:16px;}
+
+  /* 周期条 */
+  .period{display:flex;align-items:center;gap:16px;background:#fff;border:1px solid var(--border);border-radius:12px;padding:14px 20px;margin-bottom:22px;box-shadow:0 2px 12px rgba(0,0,0,.03);}
+  .period .p-ic{font-size:20px;} .period .p-tx{font-size:14px;color:#374151;} .period .p-tx b{color:#1a1a1a;}
+  .period .p-tag{margin-left:auto;font-size:12px;font-weight:700;color:var(--primary);background:#FCE4EB;padding:5px 12px;border-radius:999px;}
+
+  /* Stepper */
+  .stepper{display:flex;align-items:center;margin-bottom:26px;}
+  .step{display:flex;align-items:center;gap:10px;flex:0 0 auto;}
+  .step .dot{width:30px;height:30px;border-radius:50%;background:#EDEEF1;color:#9aa0aa;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;transition:.2s;}
+  .step .st-tx{font-size:13.5px;font-weight:700;color:#9aa0aa;transition:.2s;}
+  .step.active .dot{background:var(--primary);color:#fff;} .step.active .st-tx{color:var(--primary);}
+  .step.done .dot{background:#22A353;color:#fff;} .step.done .st-tx{color:#12905a;}
+  .step-line{flex:1;height:2px;background:#EDEEF1;margin:0 14px;min-width:36px;}
+  .step-line.done{background:#22A353;}
+
+  .card{background:#fff;border:1px solid var(--border);border-radius:14px;box-shadow:0 2px 12px rgba(0,0,0,.03);overflow:hidden;}
+  .card-head{padding:18px 22px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px;}
+  .card-head h2{font-size:16px;font-weight:800;} .card-head .ch-sub{font-size:12.5px;color:var(--muted);margin-top:3px;}
+  .card-body{padding:6px 22px 18px;}
+
+  /* 已批横幅 */
+  .approved-banner{display:flex;align-items:center;gap:12px;background:#EAF7F0;border:1px solid #CBEBD9;border-radius:12px;padding:14px 18px;margin-bottom:6px;}
+  .approved-banner .ab-ic{width:26px;height:26px;border-radius:50%;background:#22A353;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:900;flex:0 0 auto;}
+  .approved-banner .ab-tx{flex:1;font-size:13.5px;color:#12905a;} .approved-banner .ab-tx b{font-weight:800;}
+  .link-btn{background:none;border:none;color:var(--primary);font-weight:700;font-size:13px;cursor:pointer;text-decoration:underline;}
+
+  table{width:100%;border-collapse:collapse;}
+  thead th{text-align:left;font-size:12px;font-weight:700;color:#8a8f9a;padding:12px 8px;border-bottom:1px solid var(--border);}
+  thead th.num{text-align:right;}
+  tbody td{padding:14px 8px;border-bottom:1px solid #F1F2F4;font-size:14px;color:#374151;}
+  tbody td.num{text-align:right;font-variant-numeric:tabular-nums;font-weight:600;color:#1a1a1a;}
+  tbody tr:last-child td{border-bottom:none;}
+  .nm{font-weight:600;color:#1a1a1a;}
+  .role-pill{display:inline-block;font-size:12px;font-weight:600;padding:3px 10px;border-radius:6px;background:#EEF0FE;color:#6D5AE6;}
+  tfoot td{padding:14px 8px;font-size:14px;font-weight:800;color:#1a1a1a;border-top:2px solid var(--border);}
+  tfoot td.num{text-align:right;font-variant-numeric:tabular-nums;}
+
+  .totals{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin:4px 0 8px;}
+  .tot{background:#FAFAFB;border:1px solid var(--border);border-radius:12px;padding:16px;}
+  .tot .tl{font-size:12.5px;color:var(--muted);margin-bottom:8px;} .tot .tv{font-size:20px;font-weight:900;font-variant-numeric:tabular-nums;}
+  .tot.hl{background:#FDF2F4;border-color:#F3D3DC;} .tot.hl .tv{color:var(--primary);}
+
+  .submit-wrap{text-align:center;padding:26px 10px;}
+  .submit-wrap .big-ic{width:60px;height:60px;border-radius:50%;background:#FDF2F4;color:var(--primary);display:flex;align-items:center;justify-content:center;font-size:28px;margin:0 auto 14px;}
+  .submit-wrap h3{font-size:18px;font-weight:800;margin-bottom:8px;} .submit-wrap p{font-size:13.5px;color:var(--muted);line-height:1.6;max-width:440px;margin:0 auto;}
+  .pay-line{display:flex;justify-content:center;gap:34px;margin-top:18px;font-size:13.5px;color:#374151;} .pay-line b{display:block;font-size:18px;color:#1a1a1a;margin-top:3px;}
+
+  .footer-bar{margin-top:22px;display:flex;justify-content:space-between;align-items:center;}
+  .btn-primary{background:var(--primary);color:#fff;border:none;border-radius:8px;padding:11px 26px;font-size:14px;font-weight:700;cursor:pointer;transition:.2s;}
+  .btn-primary:hover{background:var(--primary-hover);} .btn-primary:disabled{background:#E7C7D0;cursor:not-allowed;}
+  .btn-ghost{background:#fff;color:#666;border:1px solid #DCDCDC;border-radius:8px;padding:11px 20px;font-size:14px;cursor:pointer;}
+  .btn-ghost:hover{background:#F5F5F5;}
+
+  .toast{position:fixed;left:50%;bottom:32px;transform:translateX(-50%) translateY(24px);opacity:0;pointer-events:none;background:#1f2430;color:#fff;border-radius:12px;padding:13px 18px;display:flex;align-items:center;gap:12px;box-shadow:0 12px 32px rgba(0,0,0,.28);z-index:999;transition:all .3s cubic-bezier(.2,.8,.3,1);font-size:14px;}
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+  .toast .tick{width:22px;height:22px;border-radius:50%;background:#22A353;color:#fff;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:900;flex:0 0 22px;}
+</style>
+</head>
+<body class="lang-zh">
+
+<aside class="sidebar">
+  <div class="logo-area"><span class="ic">🍜</span><span class="tx">chowbus</span></div>
+  <ul class="menu-list">
+    <li class="menu-item"><span class="menu-icon">🏠</span><span class="zh">首页</span><span class="en">Home</span></li>
+    <li class="menu-item"><span class="menu-icon">🧮</span><span class="zh">调整管理</span><span class="en">Adjustment Management</span></li>
+    <li class="menu-item"><span class="menu-icon">💳</span><span class="zh">交易</span><span class="en">Transactions</span></li>
+    <li class="menu-item"><span class="menu-icon">🤖</span><span class="zh">AI电话点餐</span><span class="en">AI Phone Ordering</span></li>
+    <li class="menu-item"><span class="menu-icon">🧾</span><span class="zh">订单</span><span class="en">Orders</span></li>
+    <li class="menu-item"><span class="menu-icon">📋</span><span class="zh">菜单</span><span class="en">Menu</span><span class="caret">▾</span></li>
+    <li class="menu-item"><span class="menu-icon">🎯</span><span class="zh">促销管理</span><span class="en">Promotion Management</span></li>
+    <li class="menu-item"><span class="menu-icon">👥</span><span class="zh">团队管理</span><span class="en">Team Management</span><span class="caret">▾</span></li>
+
+    <div class="menu-group open">
+      <li class="menu-item"><span class="menu-icon">💲</span><span class="zh">薪酬</span><span class="en">Payroll</span><span class="caret">▴</span></li>
+      <ul class="submenu-list">
+        <li class="submenu-item" onclick="location.href='chowbus-payroll-overview.html'"><span class="zh">概览</span><span class="en">Overview</span></li>
+        <li class="submenu-item active" onclick="location.href='chowbus-payroll-run-payroll.html'"><span class="zh">跑薪</span><span class="en">Run Payroll</span></li>
+        <li class="submenu-item" onclick="location.href='chowbus-payroll-company-setup.html'"><span class="zh">公司设置</span><span class="en">Company Setup</span></li>
+        <li class="submenu-item" onclick="location.href='chowbus-payroll-employees.html'"><span class="zh">员工管理</span><span class="en">Employees</span></li>
+        <li class="submenu-item" onclick="location.href='chowbus-payroll-taxes-filings.html'"><span class="zh">税务与申报</span><span class="en">Taxes &amp; Filings</span></li>
+      </ul>
+    </div>
+
+    <li class="menu-item"><span class="menu-icon">📟</span><span class="zh">设备</span><span class="en">Devices</span></li>
+    <li class="menu-item"><span class="menu-icon">👤</span><span class="zh">账户</span><span class="en">Account</span><span class="caret">▾</span></li>
+    <li class="menu-item"><span class="menu-icon">✅</span><span class="zh">智能点餐</span><span class="en">Smart Ordering</span><span class="caret">▾</span></li>
+  </ul>
+</aside>
+
+<main>
+  <header class="top">
+    <div class="hleft">
+      <span class="collapse">≡</span>
+      <span class="store">may localserver -12555-Curry Flurry(12555)<span class="ca">▾</span></span>
+      <span class="usa">USA</span>
+    </div>
+    <div class="hright">
+      <span>sisi.hu@chowbus.com</span>
+      <div class="langpill" onclick="toggleLanguage()"><span class="lz">中文</span><span class="le">EN</span></div>
+    </div>
+  </header>
+
+  <div class="content">
+    <h1 class="page-title"><span class="zh">跑薪</span><span class="en">Run Payroll</span></h1>
+
+    <div class="period">
+      <span class="p-ic">📅</span>
+      <span class="p-tx">
+        <span class="zh">本次发薪周期：<b>2026/8/4 – 8/17</b> · 发薪日 <b>8/20</b></span>
+        <span class="en">Pay period: <b>Aug 4 – 17, 2026</b> · Pay date <b>Aug 20</b></span>
+      </span>
+      <span class="p-tag"><span class="zh">双周发薪</span><span class="en">Bi-weekly</span></span>
+    </div>
+
+    <!-- Stepper -->
+    <div class="stepper" id="stepper">
+      <div class="step" data-s="1"><span class="dot">1</span><span class="st-tx"><span class="zh">审批工时</span><span class="en">Approve Timesheet</span></span></div>
+      <div class="step-line" data-l="1"></div>
+      <div class="step" data-s="2"><span class="dot">2</span><span class="st-tx"><span class="zh">核对与调整</span><span class="en">Review</span></span></div>
+      <div class="step-line" data-l="2"></div>
+      <div class="step" data-s="3"><span class="dot">3</span><span class="st-tx"><span class="zh">提交</span><span class="en">Submit</span></span></div>
+    </div>
+
+    <!-- STEP 1: Approve Timesheet -->
+    <section id="sec1">
+      <div class="card">
+        <div class="card-head">
+          <div>
+            <h2><span class="zh">① 审批工时</span><span class="en">① Approve Timesheet</span></h2>
+            <div class="ch-sub"><span class="zh">确认本周期每位员工的工时，审批后才能进入算薪。也可从「概览」提前单独审批。</span><span class="en">Confirm each employee's hours for this period. Can also be approved ahead of time from Overview.</span></div>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="approved-banner" id="approvedBanner" style="display:none;">
+            <span class="ab-ic">✓</span>
+            <span class="ab-tx"><span class="zh">本周期工时<b>已全部审批</b>，可直接进入下一步。</span><span class="en">All timesheets for this period are <b>approved</b>. You can skip to the next step.</span></span>
+            <button class="link-btn" onclick="reopenTimesheet()"><span class="zh">重新编辑</span><span class="en">Re-open</span></button>
+          </div>
+          <table id="tsTable">
+            <thead><tr>
+              <th><span class="zh">员工</span><span class="en">Employee</span></th>
+              <th><span class="zh">角色</span><span class="en">Role</span></th>
+              <th class="num"><span class="zh">常规工时</span><span class="en">Reg. hrs</span></th>
+              <th class="num"><span class="zh">加班</span><span class="en">OT</span></th>
+              <th class="num"><span class="zh">时薪</span><span class="en">Rate</span></th>
+            </tr></thead>
+            <tbody>
+              <tr><td class="nm">Chen Wei</td><td><span class="role-pill">Cook</span></td><td class="num">80.0</td><td class="num">4.0</td><td class="num">$18.00</td></tr>
+              <tr><td class="nm">Aisha Khan</td><td><span class="role-pill">Server</span></td><td class="num">72.5</td><td class="num">0.0</td><td class="num">$16.50</td></tr>
+              <tr><td class="nm">Diego Ramirez</td><td><span class="role-pill">Line Cook</span></td><td class="num">80.0</td><td class="num">6.5</td><td class="num">$17.00</td></tr>
+              <tr><td class="nm">Kenji Tanaka</td><td><span class="role-pill">Dishwasher</span></td><td class="num">64.0</td><td class="num">0.0</td><td class="num">$16.00</td></tr>
+              <tr><td class="nm">Sofia Rossi</td><td><span class="role-pill">Bartender</span></td><td class="num">70.0</td><td class="num">2.0</td><td class="num">$19.00</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="footer-bar">
+        <button class="btn-ghost" onclick="location.href='chowbus-payroll-overview.html'"><span class="zh">退出</span><span class="en">Exit</span></button>
+        <div style="display:flex;gap:12px;">
+          <button class="btn-ghost" id="skipBtn" style="display:none;" onclick="goStep(2)"><span class="zh">跳过（已审批）→</span><span class="en">Skip (approved) →</span></button>
+          <button class="btn-primary" id="approveBtn" onclick="approveAll()"><span class="zh">批准全部工时并继续</span><span class="en">Approve all &amp; continue</span></button>
+        </div>
+      </div>
+    </section>
+
+    <!-- STEP 2: Review -->
+    <section id="sec2" style="display:none;">
+      <div class="card">
+        <div class="card-head"><div>
+          <h2><span class="zh">② 核对与调整</span><span class="en">② Review &amp; Adjust</span></h2>
+          <div class="ch-sub"><span class="zh">确认本次发薪金额，如需可增加奖金 / 报销 / 扣款。</span><span class="en">Confirm amounts. Add bonuses, reimbursements or deductions if needed.</span></div>
+        </div></div>
+        <div class="card-body">
+          <div class="totals">
+            <div class="tot"><div class="tl"><span class="zh">员工人数</span><span class="en">Employees</span></div><div class="tv">5</div></div>
+            <div class="tot"><div class="tl"><span class="zh">总工时</span><span class="en">Total hours</span></div><div class="tv">379.0</div></div>
+            <div class="tot"><div class="tl"><span class="zh">税费(雇主)</span><span class="en">Employer taxes</span></div><div class="tv">$521</div></div>
+            <div class="tot hl"><div class="tl"><span class="zh">应发合计</span><span class="en">Total payroll</span></div><div class="tv">$7,182</div></div>
+          </div>
+          <table>
+            <thead><tr>
+              <th><span class="zh">员工</span><span class="en">Employee</span></th>
+              <th class="num"><span class="zh">工时</span><span class="en">Hours</span></th>
+              <th class="num"><span class="zh">应发工资</span><span class="en">Gross</span></th>
+              <th class="num"><span class="zh">代扣税</span><span class="en">Taxes</span></th>
+              <th class="num"><span class="zh">实发</span><span class="en">Net</span></th>
+            </tr></thead>
+            <tbody>
+              <tr><td class="nm">Chen Wei</td><td class="num">84.0</td><td class="num">$1,548</td><td class="num">$248</td><td class="num">$1,300</td></tr>
+              <tr><td class="nm">Aisha Khan</td><td class="num">72.5</td><td class="num">$1,196</td><td class="num">$191</td><td class="num">$1,005</td></tr>
+              <tr><td class="nm">Diego Ramirez</td><td class="num">86.5</td><td class="num">$1,527</td><td class="num">$244</td><td class="num">$1,283</td></tr>
+              <tr><td class="nm">Kenji Tanaka</td><td class="num">64.0</td><td class="num">$1,024</td><td class="num">$164</td><td class="num">$860</td></tr>
+              <tr><td class="nm">Sofia Rossi</td><td class="num">72.0</td><td class="num">$1,366</td><td class="num">$219</td><td class="num">$1,147</td></tr>
+            </tbody>
+            <tfoot><tr><td><span class="zh">合计</span><span class="en">Total</span></td><td class="num">379.0</td><td class="num">$6,661</td><td class="num">$1,066</td><td class="num">$5,595</td></tr></tfoot>
+          </table>
+        </div>
+      </div>
+      <div class="footer-bar">
+        <button class="btn-ghost" onclick="goStep(1)"><span class="zh">← 上一步</span><span class="en">← Back</span></button>
+        <button class="btn-primary" onclick="goStep(3)"><span class="zh">继续到提交</span><span class="en">Continue to submit</span></button>
+      </div>
+    </section>
+
+    <!-- STEP 3: Submit -->
+    <section id="sec3" style="display:none;">
+      <div class="card"><div class="card-body">
+        <div class="submit-wrap">
+          <div class="big-ic">🚀</div>
+          <h3><span class="zh">确认提交本次跑薪？</span><span class="en">Ready to submit payroll?</span></h3>
+          <p><span class="zh">提交后将按发薪日 8/20 发放，并自动完成相关税费代扣代缴。提交前请再次确认金额无误。</span><span class="en">Once submitted, employees are paid on Aug 20 and applicable taxes are withheld and filed automatically.</span></p>
+          <div class="pay-line">
+            <div><span class="zh">实发合计</span><span class="en">Net pay</span><b>$5,595</b></div>
+            <div><span class="zh">雇主总成本</span><span class="en">Total cost</span><b>$7,182</b></div>
+            <div><span class="zh">发薪日</span><span class="en">Pay date</span><b>2026/8/20</b></div>
+          </div>
+        </div>
+      </div></div>
+      <div class="footer-bar">
+        <button class="btn-ghost" onclick="goStep(2)"><span class="zh">← 上一步</span><span class="en">← Back</span></button>
+        <button class="btn-primary" onclick="submitPayroll()"><span class="zh">确认并提交跑薪</span><span class="en">Submit Payroll</span></button>
+      </div>
+    </section>
+
+  </div>
+</main>
+
+<div class="toast" id="toast"><span class="tick">✓</span><span id="toastMsg"></span></div>
+
+<script>
+  let step = 1;
+  let approved = false;
+
+  function isZh(){return document.body.classList.contains('lang-zh');}
+
+  function renderStepper(){
+    document.querySelectorAll('.step').forEach(el=>{
+      const s = +el.dataset.s;
+      el.classList.toggle('active', s===step);
+      el.classList.toggle('done', (s<step) || (s===1 && approved && step>=1));
+      const dot = el.querySelector('.dot');
+      dot.textContent = (el.classList.contains('done') && s!==step) ? '✓' : s;
+    });
+    document.querySelectorAll('.step-line').forEach(el=>{
+      el.classList.toggle('done', +el.dataset.l < step);
+    });
+  }
+
+  function showSection(){
+    document.getElementById('sec1').style.display = step===1 ? '' : 'none';
+    document.getElementById('sec2').style.display = step===2 ? '' : 'none';
+    document.getElementById('sec3').style.display = step===3 ? '' : 'none';
+    renderStepper();
+  }
+
+  function goStep(n){ step=n; showSection(); window.scrollTo({top:0,behavior:'smooth'}); }
+
+  function applyApprovedUI(){
+    document.getElementById('approvedBanner').style.display = approved ? '' : 'none';
+    document.getElementById('approveBtn').style.display = approved ? 'none' : '';
+    document.getElementById('skipBtn').style.display = approved ? '' : 'none';
+    // 已批时把表格调淡表示只读
+    document.getElementById('tsTable').style.opacity = approved ? '.6' : '1';
+    renderStepper();
+  }
+
+  function approveAll(){
+    approved = true;
+    applyApprovedUI();
+    showToast('已批准 5 名员工的工时', 'Timesheets approved for 5 employees');
+    setTimeout(()=>goStep(2), 500);
+  }
+  function reopenTimesheet(){
+    approved = false;
+    applyApprovedUI();
+    showToast('已重新打开工时编辑', 'Timesheet re-opened for editing');
+  }
+
+  function submitPayroll(){
+    showToast('跑薪已提交，将于 8/20 发放', 'Payroll submitted — paying out on Aug 20');
+    setTimeout(()=>location.href='chowbus-payroll-overview.html', 1400);
+  }
+
+  function showToast(zh,en){
+    const t=document.getElementById('toast');
+    document.getElementById('toastMsg').innerHTML=`<span class="zh">${zh}</span><span class="en">${en}</span>`;
+    t.classList.add('show'); clearTimeout(t._tm); t._tm=setTimeout(()=>t.classList.remove('show'),2600);
+  }
+
+  function toggleLanguage(){const en=!document.body.classList.contains('lang-en');document.body.classList.toggle('lang-en',en);document.body.classList.toggle('lang-zh',!en);try{localStorage.setItem('cbLang',en?'en':'zh');}catch(e){}}
+  (function(){try{if(localStorage.getItem('cbLang')==='en'){document.body.classList.remove('lang-zh');document.body.classList.add('lang-en');}}catch(e){}})();
+
+  // 若从概览「去审批」进入(?step=timesheet)则停在第1步；默认也是第1步
+  showSection();
+  applyApprovedUI();
+</script>
+</body>
+</html>

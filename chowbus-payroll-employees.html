@@ -127,9 +127,11 @@
     <div class="menu-group open">
       <li class="menu-item"><span class="menu-icon">💲</span><span class="zh">薪酬</span><span class="en">Payroll</span><span class="caret">▴</span></li>
       <ul class="submenu-list">
-        <li class="submenu-item"><span class="zh">薪酬操作</span><span class="en">Payroll Operations</span></li>
-        <li class="submenu-item"><span class="zh">雇主设置</span><span class="en">Employer Setup</span></li>
+        <li class="submenu-item" onclick="location.href='chowbus-payroll-overview.html'"><span class="zh">概览</span><span class="en">Overview</span></li>
+        <li class="submenu-item" onclick="location.href='chowbus-payroll-run-payroll.html'"><span class="zh">跑薪</span><span class="en">Run Payroll</span></li>
+        <li class="submenu-item" onclick="location.href='chowbus-payroll-company-setup.html'"><span class="zh">公司设置</span><span class="en">Company Setup</span></li>
         <li class="submenu-item active"><span class="zh">员工管理</span><span class="en">Employees</span></li>
+        <li class="submenu-item" onclick="location.href='chowbus-payroll-taxes-filings.html'"><span class="zh">税务与申报</span><span class="en">Taxes &amp; Filings</span></li>
       </ul>
     </div>
 
@@ -161,6 +163,7 @@
         <span class="zh">您新增了 <span id="ncZh">2</span> 名员工，请在「管理员工」中设置是否需要使用薪酬功能。</span>
         <span class="en">You've added <span id="ncEn">2</span> new <span id="nnEn">employees</span>. Please set payroll participation under "Manage Employees".</span>
       </div>
+      <button class="n-cta" onclick="location.href='chowbus-payroll-manage-employees.html'"><span class="zh">去设置</span><span class="en">Set now</span></button>
       <span class="n-close" onclick="document.getElementById('notice').style.display='none'">&times;</span>
     </div>
 
@@ -194,7 +197,7 @@
             <td><span class="status ready"><span class="zh">可发薪</span><span class="en">Ready to pay</span></span></td>
             <td><span class="pay">$6,000<span class="unit zh">/月</span><span class="unit en">/mo</span></span></td>
             <td class="col-act"><div class="act-wrap"><button class="kebab" onclick="toggleMenu(event,this)">⋯</button><div class="act-menu">
-              <div class="mi" onclick="act(event,'查看详情','View details')"><span class="mic">👁</span><span class="zh">查看详情</span><span class="en">View details</span></div>
+              <div class="mi" onclick="location.href='chowbus-payroll-employee-detail.html'"><span class="mic">👁</span><span class="zh">查看详情</span><span class="en">View details</span></div>
               <div class="mi" onclick="act(event,'编辑薪资','Edit Pay')"><span class="mic">✏️</span><span class="zh">编辑薪资</span><span class="en">Edit Pay</span></div>
             </div></div></td>
           </tr>
@@ -205,7 +208,7 @@
             <td><span class="status incomplete"><span class="zh">设置未完成</span><span class="en">Setup incomplete</span></span></td>
             <td><span class="pay-none"><span class="zh">未设置</span><span class="en">Not set</span></span></td>
             <td class="col-act"><div class="act-wrap"><button class="kebab" onclick="toggleMenu(event,this)">⋯</button><div class="act-menu">
-              <div class="mi" onclick="act(event,'查看详情','View details')"><span class="mic">👁</span><span class="zh">查看详情</span><span class="en">View details</span></div>
+              <div class="mi" onclick="location.href='chowbus-payroll-employee-detail.html'"><span class="mic">👁</span><span class="zh">查看详情</span><span class="en">View details</span></div>
               <div class="mi" onclick="act(event,'编辑薪资','Edit Pay')"><span class="mic">✏️</span><span class="zh">编辑薪资</span><span class="en">Edit Pay</span></div>
               <div class="sep"></div>
               <div class="mi" onclick="act(event,'发送入职短信','Send onboarding SMS')"><span class="mic">💬</span><span class="zh">发送入职短信</span><span class="en">Send onboarding SMS</span></div>
@@ -219,7 +222,7 @@
             <td><span class="status incomplete"><span class="zh">设置未完成</span><span class="en">Setup incomplete</span></span></td>
             <td><span class="pay-none"><span class="zh">未设置</span><span class="en">Not set</span></span></td>
             <td class="col-act"><div class="act-wrap"><button class="kebab" onclick="toggleMenu(event,this)">⋯</button><div class="act-menu">
-              <div class="mi" onclick="act(event,'查看详情','View details')"><span class="mic">👁</span><span class="zh">查看详情</span><span class="en">View details</span></div>
+              <div class="mi" onclick="location.href='chowbus-payroll-employee-detail.html'"><span class="mic">👁</span><span class="zh">查看详情</span><span class="en">View details</span></div>
               <div class="mi" onclick="act(event,'编辑薪资','Edit Pay')"><span class="mic">✏️</span><span class="zh">编辑薪资</span><span class="en">Edit Pay</span></div>
               <div class="sep"></div>
               <div class="mi" onclick="act(event,'发送入职短信','Send onboarding SMS')"><span class="mic">💬</span><span class="zh">发送入职短信</span><span class="en">Send onboarding SMS</span></div>
@@ -233,7 +236,7 @@
             <td><span class="status ready"><span class="zh">可发薪</span><span class="en">Ready to pay</span></span></td>
             <td><span class="pay">$16.50<span class="unit zh">/小时</span><span class="unit en">/hr</span></span></td>
             <td class="col-act"><div class="act-wrap"><button class="kebab" onclick="toggleMenu(event,this)">⋯</button><div class="act-menu">
-              <div class="mi" onclick="act(event,'查看详情','View details')"><span class="mic">👁</span><span class="zh">查看详情</span><span class="en">View details</span></div>
+              <div class="mi" onclick="location.href='chowbus-payroll-employee-detail.html'"><span class="mic">👁</span><span class="zh">查看详情</span><span class="en">View details</span></div>
               <div class="mi" onclick="act(event,'编辑薪资','Edit Pay')"><span class="mic">✏️</span><span class="zh">编辑薪资</span><span class="en">Edit Pay</span></div>
             </div></div></td>
           </tr>

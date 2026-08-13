@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chowbus Payroll · 员工详情</title>
+<style>
+  :root{--primary:#CC1C4C;--primary-hover:#A6123B;--bg:#F7F8FA;--border:#EDEEF1;--ink:#1F1F1F;--muted:#6B7280;--sidebar-w:250px;}
+  *{box-sizing:border-box;margin:0;padding:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"PingFang SC","Microsoft YaHei",Arial,sans-serif;}
+  body{display:flex;background:var(--bg);color:var(--ink);min-height:100vh;overflow-x:hidden;}
+  body.lang-zh .en{display:none!important;} body.lang-en .zh{display:none!important;}
+
+  aside.sidebar{width:var(--sidebar-w);background:#fff;border-right:1px solid var(--border);position:fixed;height:100vh;overflow-y:auto;z-index:100;}
+  .logo-area{padding:18px 22px;display:flex;align-items:center;gap:8px;border-bottom:1px solid var(--border);}
+  .logo-area .ic{font-size:22px;} .logo-area .tx{font-weight:900;font-size:19px;color:var(--primary);}
+  .menu-list{list-style:none;padding:10px 0;}
+  .menu-item{padding:11px 22px;display:flex;align-items:center;color:#374151;font-size:14px;cursor:pointer;transition:.15s;}
+  .menu-item:hover{background:#FDF2F4;color:var(--primary);}
+  .menu-icon{margin-right:12px;width:18px;text-align:center;opacity:.75;}
+  .caret{margin-left:auto;font-size:11px;color:#c4c8cf;}
+  .menu-group.open>.menu-item{color:var(--primary);font-weight:600;}
+  .submenu-list{list-style:none;padding:2px 0 6px;}
+  .submenu-item{padding:10px 22px 10px 50px;font-size:13.5px;color:var(--muted);cursor:pointer;transition:.15s;}
+  .submenu-item:hover{color:var(--primary);}
+  .submenu-item.active{color:var(--primary);font-weight:700;background:#FFF0F2;border-left:3px solid var(--primary);padding-left:47px;}
+
+  main{margin-left:var(--sidebar-w);flex:1;min-height:100vh;display:flex;flex-direction:column;}
+  header.top{height:58px;background:#fff;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;padding:0 28px;position:sticky;top:0;z-index:99;}
+  .hleft{display:flex;align-items:center;gap:16px;font-size:14px;color:#333;}
+  .collapse{font-size:18px;color:#888;cursor:pointer;}
+  .store{font-weight:600;cursor:pointer;} .store .ca{color:#aaa;font-size:11px;margin-left:4px;}
+  .usa{background:#EEE;padding:2px 8px;border-radius:4px;font-size:11px;color:#555;}
+  .hright{display:flex;align-items:center;gap:22px;font-size:13.5px;color:var(--muted);}
+  .langpill{display:inline-flex;border:1px solid #E3B8C4;border-radius:999px;overflow:hidden;cursor:pointer;font-size:12.5px;font-weight:600;}
+  .langpill span{padding:5px 15px;transition:.15s;}
+  body.lang-zh .langpill .lz, body.lang-en .langpill .le{background:var(--primary);color:#fff;}
+  body.lang-zh .langpill .le, body.lang-en .langpill .lz{background:#fff;color:#666;}
+
+  .content{padding:26px 34px;flex:1;max-width:1040px;}
+  .crumb{font-size:12.5px;color:#9aa0aa;margin-bottom:14px;cursor:pointer;display:inline-block;}
+  .crumb:hover{color:var(--primary);}
+
+  /* 员工头卡 */
+  .emp-head{display:flex;align-items:center;gap:18px;background:#fff;border:1px solid var(--border);border-radius:14px;padding:20px 24px;margin-bottom:22px;box-shadow:0 2px 12px rgba(0,0,0,.03);}
+  .avatar{width:58px;height:58px;border-radius:50%;background:linear-gradient(135deg,#CC1C4C,#8f7fe8);color:#fff;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:800;flex:0 0 auto;}
+  .emp-info{flex:1;}
+  .emp-name{font-size:20px;font-weight:800;display:flex;align-items:center;gap:10px;}
+  .emp-meta{font-size:13px;color:var(--muted);margin-top:6px;display:flex;gap:18px;flex-wrap:wrap;}
+  .emp-meta .k{color:#9aa0aa;}
+  .role-pill{display:inline-flex;align-items:center;gap:5px;font-size:12.5px;font-weight:600;padding:3px 11px;border-radius:7px;background:#EEF0FE;color:#6D5AE6;}
+  .stat-badge{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;font-weight:700;padding:5px 12px;border-radius:7px;background:#EAF7F0;color:#12905a;}
+  .stat-badge i{width:7px;height:7px;border-radius:50%;background:#22A353;display:inline-block;}
+  .pay-badge{font-size:12.5px;font-weight:800;color:#1a1a1a;background:#F4F5F7;border-radius:8px;padding:8px 14px;}
+
+  .sec-label{font-size:13px;font-weight:700;color:#8a8f9a;margin:2px 0 14px;letter-spacing:.02em;}
+  .entry-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;}
+  .entry-card{background:#fff;border:1px solid var(--border);border-radius:14px;padding:20px;display:flex;gap:15px;align-items:flex-start;cursor:pointer;transition:.18s;box-shadow:0 2px 12px rgba(0,0,0,.03);}
+  .entry-card:hover{border-color:#E7A9B5;box-shadow:0 10px 26px rgba(204,28,76,.09);transform:translateY(-2px);}
+  .entry-ic{width:46px;height:46px;border-radius:12px;background:#FDF2F4;color:var(--primary);display:flex;align-items:center;justify-content:center;font-size:22px;flex:0 0 auto;}
+  .entry-body{flex:1;}
+  .entry-title{font-size:15px;font-weight:800;margin-bottom:5px;}
+  .entry-desc{font-size:12.5px;color:var(--muted);line-height:1.55;}
+  .entry-status{display:inline-block;font-size:11px;font-weight:700;padding:3px 9px;border-radius:999px;margin-top:10px;}
+  .st-ok{background:#EAF7F0;color:#12905a;} .st-warn{background:#FBF1DC;color:#9a6a12;} .st-soon{background:#F1F2F4;color:#8a8f9a;}
+  .entry-arrow{color:#c4c8cf;font-size:19px;align-self:center;}
+
+  .toast{position:fixed;left:50%;bottom:32px;transform:translateX(-50%) translateY(24px);opacity:0;pointer-events:none;background:#1f2430;color:#fff;border-radius:12px;padding:13px 18px;display:flex;align-items:center;gap:12px;box-shadow:0 12px 32px rgba(0,0,0,.28);z-index:999;transition:all .3s cubic-bezier(.2,.8,.3,1);font-size:14px;}
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+  .toast .tick{width:22px;height:22px;border-radius:50%;background:#6D5AE6;color:#fff;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:900;flex:0 0 22px;}
+</style>
+</head>
+<body class="lang-zh">
+
+<aside class="sidebar">
+  <div class="logo-area"><span class="ic">🍜</span><span class="tx">chowbus</span></div>
+  <ul class="menu-list">
+    <li class="menu-item"><span class="menu-icon">🏠</span><span class="zh">首页</span><span class="en">Home</span></li>
+    <li class="menu-item"><span class="menu-icon">🧮</span><span class="zh">调整管理</span><span class="en">Adjustment Management</span></li>
+    <li class="menu-item"><span class="menu-icon">💳</span><span class="zh">交易</span><span class="en">Transactions</span></li>
+    <li class="menu-item"><span class="menu-icon">🤖</span><span class="zh">AI电话点餐</span><span class="en">AI Phone Ordering</span></li>
+    <li class="menu-item"><span class="menu-icon">🧾</span><span class="zh">订单</span><span class="en">Orders</span></li>
+    <li class="menu-item"><span class="menu-icon">📋</span><span class="zh">菜单</span><span class="en">Menu</span><span class="caret">▾</span></li>
+    <li class="menu-item"><span class="menu-icon">🎯</span><span class="zh">促销管理</span><span class="en">Promotion Management</span></li>
+    <li class="menu-item"><span class="menu-icon">👥</span><span class="zh">团队管理</span><span class="en">Team Management</span><span class="caret">▾</span></li>
+
+    <div class="menu-group open">
+      <li class="menu-item"><span class="menu-icon">💲</span><span class="zh">薪酬</span><span class="en">Payroll</span><span class="caret">▴</span></li>
+      <ul class="submenu-list">
+        <li class="submenu-item" onclick="location.href='chowbus-payroll-overview.html'"><span class="zh">概览</span><span class="en">Overview</span></li>
+        <li class="submenu-item" onclick="location.href='chowbus-payroll-run-payroll.html'"><span class="zh">跑薪</span><span class="en">Run Payroll</span></li>
+        <li class="submenu-item" onclick="location.href='chowbus-payroll-company-setup.html'"><span class="zh">公司设置</span><span class="en">Company Setup</span></li>
+        <li class="submenu-item active" onclick="location.href='chowbus-payroll-employees.html'"><span class="zh">员工管理</span><span class="en">Employees</span></li>
+        <li class="submenu-item" onclick="location.href='chowbus-payroll-taxes-filings.html'"><span class="zh">税务与申报</span><span class="en">Taxes &amp; Filings</span></li>
+      </ul>
+    </div>
+
+    <li class="menu-item"><span class="menu-icon">📟</span><span class="zh">设备</span><span class="en">Devices</span></li>
+    <li class="menu-item"><span class="menu-icon">👤</span><span class="zh">账户</span><span class="en">Account</span><span class="caret">▾</span></li>
+    <li class="menu-item"><span class="menu-icon">✅</span><span class="zh">智能点餐</span><span class="en">Smart Ordering</span><span class="caret">▾</span></li>
+  </ul>
+</aside>
+
+<main>
+  <header class="top">
+    <div class="hleft">
+      <span class="collapse">≡</span>
+      <span class="store">may localserver -12555-Curry Flurry(12555)<span class="ca">▾</span></span>
+      <span class="usa">USA</span>
+    </div>
+    <div class="hright">
+      <span>sisi.hu@chowbus.com</span>
+      <div class="langpill" onclick="toggleLanguage()"><span class="lz">中文</span><span class="le">EN</span></div>
+    </div>
+  </header>
+
+  <div class="content">
+    <span class="crumb" onclick="location.href='chowbus-payroll-employees.html'">
+      <span class="zh">← 返回员工管理</span><span class="en">← Back to Employees</span>
+    </span>
+
+    <!-- 员工头卡 -->
+    <div class="emp-head">
+      <div class="avatar">DB</div>
+      <div class="emp-info">
+        <div class="emp-name">Dan Boyle <span class="role-pill">Super Admin</span></div>
+        <div class="emp-meta">
+          <span><span class="k zh">邮箱：</span><span class="k en">Email: </span>dan.boyle@example.com</span>
+          <span><span class="k zh">手机：</span><span class="k en">Phone: </span>(415) 555-0132</span>
+          <span><span class="k zh">入职：</span><span class="k en">Hired: </span>2024-03-01</span>
+        </div>
+      </div>
+      <span class="stat-badge"><i></i><span class="zh">在职</span><span class="en">Active</span></span>
+      <span class="pay-badge">$6,000<span class="zh">/月</span><span class="en">/mo</span></span>
+    </div>
+
+    <div class="sec-label"><span class="zh">员工薪酬档案</span><span class="en">Employee payroll records</span></div>
+    <div class="entry-grid">
+      <div class="entry-card" onclick="soon('Employee Profile','员工资料')">
+        <div class="entry-ic">🪪</div>
+        <div class="entry-body">
+          <div class="entry-title"><span class="zh">员工资料</span><span class="en">Employee Profile</span></div>
+          <div class="entry-desc"><span class="zh">基本信息、联系方式、地址、SSN、银行直存账户等。</span><span class="en">Personal info, contact, address, SSN and direct-deposit account.</span></div>
+          <span class="entry-status st-ok"><span class="zh">资料完整</span><span class="en">Complete</span></span>
+        </div>
+        <span class="entry-arrow">›</span>
+      </div>
+
+      <div class="entry-card" onclick="soon('Employee Onboard','员工入职')">
+        <div class="entry-ic">📝</div>
+        <div class="entry-body">
+          <div class="entry-title"><span class="zh">员工入职</span><span class="en">Employee Onboard</span></div>
+          <div class="entry-desc"><span class="zh">W-4、I-9 等入职表单填写与签署进度。</span><span class="en">Onboarding forms like W-4 and I-9 and their signing progress.</span></div>
+          <span class="entry-status st-ok"><span class="zh">已完成</span><span class="en">Done</span></span>
+        </div>
+        <span class="entry-arrow">›</span>
+      </div>
+
+      <div class="entry-card" onclick="soon('Employee Post-Tax Deductions','税后扣款')">
+        <div class="entry-ic">➖</div>
+        <div class="entry-body">
+          <div class="entry-title"><span class="zh">税后扣款</span><span class="en">Post-Tax Deductions</span></div>
+          <div class="entry-desc"><span class="zh">设置税后的固定扣款项，如工装费、罚扣、代扣等。</span><span class="en">Set up recurring post-tax deductions like uniforms or garnishments.</span></div>
+          <span class="entry-status st-soon"><span class="zh">未设置</span><span class="en">None set</span></span>
+        </div>
+        <span class="entry-arrow">›</span>
+      </div>
+
+      <div class="entry-card" onclick="soon('Employee Paystubs','工资单')">
+        <div class="entry-ic">🧾</div>
+        <div class="entry-body">
+          <div class="entry-title"><span class="zh">工资单</span><span class="en">Paystubs</span></div>
+          <div class="entry-desc"><span class="zh">查看并下载该员工每期的工资单明细（PDF）。</span><span class="en">View and download this employee's paystubs by period (PDF).</span></div>
+          <span class="entry-status st-ok"><span class="zh">14 张</span><span class="en">14 stubs</span></span>
+        </div>
+        <span class="entry-arrow">›</span>
+      </div>
+
+      <div class="entry-card" onclick="soon('Employee Tax Docs','税务文件')">
+        <div class="entry-ic">📄</div>
+        <div class="entry-body">
+          <div class="entry-title"><span class="zh">税务文件</span><span class="en">Tax Docs</span></div>
+          <div class="entry-desc"><span class="zh">该员工的 W-2 / 1099 等年度税表，可下载发放。</span><span class="en">Year-end tax forms like W-2 / 1099 for this employee.</span></div>
+          <span class="entry-status st-ok"><span class="zh">2025 W-2 已生成</span><span class="en">2025 W-2 ready</span></span>
+        </div>
+        <span class="entry-arrow">›</span>
+      </div>
+    </div>
+  </div>
+</main>
+
+<div class="toast" id="toast"><span class="tick">+</span><span id="toastMsg"></span></div>
+
+<script>
+  function soon(en,zh){
+    const t=document.getElementById('toast');
+    document.getElementById('toastMsg').innerHTML=`<span class="zh">「${zh}」页面即将上线</span><span class="en">"${en}" is coming soon</span>`;
+    t.classList.add('show'); clearTimeout(t._tm); t._tm=setTimeout(()=>t.classList.remove('show'),2600);
+  }
+  function toggleLanguage(){const en=!document.body.classList.contains('lang-en');document.body.classList.toggle('lang-en',en);document.body.classList.toggle('lang-zh',!en);try{localStorage.setItem('cbLang',en?'en':'zh');}catch(e){}}
+  (function(){try{if(localStorage.getItem('cbLang')==='en'){document.body.classList.remove('lang-zh');document.body.classList.add('lang-en');}}catch(e){}})();
+</script>
+</body>
+</html>
