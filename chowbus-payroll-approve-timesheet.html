@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chowbus Payroll · 审批工时</title>
+<style>
+  :root{--primary:#CC1C4C;--primary-hover:#A6123B;--bg:#F7F8FA;--border:#EDEEF1;--ink:#1F1F1F;--muted:#6B7280;--sidebar-w:250px;--ck-blue:#2B59FF;}
+  *{box-sizing:border-box;margin:0;padding:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"PingFang SC","Microsoft YaHei",Arial,sans-serif;}
+  body{display:flex;background:var(--bg);color:var(--ink);min-height:100vh;overflow-x:hidden;}
+  body.lang-zh .en{display:none!important;} body.lang-en .zh{display:none!important;}
+
+  aside.sidebar{width:var(--sidebar-w);background:#fff;border-right:1px solid var(--border);position:fixed;height:100vh;overflow-y:auto;z-index:100;}
+  .logo-area{padding:18px 22px;display:flex;align-items:center;gap:8px;border-bottom:1px solid var(--border);}
+  .logo-area .ic{font-size:22px;} .logo-area .tx{font-weight:900;font-size:19px;color:var(--primary);}
+  .menu-list{list-style:none;padding:10px 0;}
+  .menu-item{padding:11px 22px;display:flex;align-items:center;color:#374151;font-size:14px;cursor:pointer;transition:.15s;}
+  .menu-item:hover{background:#FDF2F4;color:var(--primary);}
+  .menu-icon{margin-right:12px;width:18px;text-align:center;opacity:.75;}
+  .caret{margin-left:auto;font-size:11px;color:#c4c8cf;}
+  .menu-group.open>.menu-item{color:var(--primary);font-weight:600;}
+  .submenu-list{list-style:none;padding:2px 0 6px;}
+  .submenu-item{padding:10px 22px 10px 50px;font-size:13.5px;color:var(--muted);cursor:pointer;transition:.15s;}
+  .submenu-item:hover{color:var(--primary);}
+  .submenu-item.active{color:var(--primary);font-weight:700;background:#FFF0F2;border-left:3px solid var(--primary);padding-left:47px;}
+
+  main{margin-left:var(--sidebar-w);flex:1;min-height:100vh;display:flex;flex-direction:column;}
+  header.top{height:58px;background:#fff;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;padding:0 28px;position:sticky;top:0;z-index:99;}
+  .hleft{display:flex;align-items:center;gap:16px;font-size:14px;color:#333;}
+  .collapse{font-size:18px;color:#888;cursor:pointer;}
+  .store{font-weight:600;cursor:pointer;} .store .ca{color:#aaa;font-size:11px;margin-left:4px;}
+  .usa{background:#EEE;padding:2px 8px;border-radius:4px;font-size:11px;color:#555;}
+  .hright{display:flex;align-items:center;gap:22px;font-size:13.5px;color:var(--muted);}
+  .langpill{display:inline-flex;border:1px solid #E3B8C4;border-radius:999px;overflow:hidden;cursor:pointer;font-size:12.5px;font-weight:600;}
+  .langpill span{padding:5px 15px;transition:.15s;}
+  body.lang-zh .langpill .lz, body.lang-en .langpill .le{background:var(--primary);color:#fff;}
+  body.lang-zh .langpill .le, body.lang-en .langpill .lz{background:#fff;color:#666;}
+
+  .content{padding:26px 34px;flex:1;max-width:1080px;}
+  .crumb{font-size:12.5px;color:#9aa0aa;margin-bottom:12px;cursor:pointer;display:inline-block;}
+  .crumb:hover{color:var(--primary);}
+  .page-title{font-size:23px;font-weight:800;margin-bottom:6px;}
+  .page-sub{font-size:13.5px;color:var(--muted);margin-bottom:20px;}
+
+  /* 周期选择 */
+  .sec-label{font-size:12.5px;font-weight:700;color:#8a8f9a;margin-bottom:10px;}
+  .period-tabs{display:flex;gap:12px;margin-bottom:22px;flex-wrap:wrap;}
+  .ptab{border:1px solid var(--border);background:#fff;border-radius:12px;padding:12px 16px;cursor:pointer;min-width:196px;transition:.15s;box-shadow:0 2px 8px rgba(0,0,0,.02);}
+  .ptab:hover{border-color:#E7A9B5;}
+  .ptab.active{border-color:var(--primary);background:#FFF0F2;box-shadow:0 4px 14px rgba(204,28,76,.08);}
+  .ptab .pl{font-size:14.5px;font-weight:800;color:#1a1a1a;}
+  .ptab .pm{font-size:12px;color:var(--muted);margin-top:5px;display:flex;align-items:center;gap:6px;}
+  .ptab .dot{width:8px;height:8px;border-radius:50%;display:inline-block;}
+  .ptab .dot.todo{background:#D6A53B;} .ptab .dot.done{background:#22A353;}
+
+  .card{background:#fff;border:1px solid var(--border);border-radius:14px;box-shadow:0 2px 12px rgba(0,0,0,.03);overflow:hidden;}
+  .card-head{padding:18px 22px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px;}
+  .card-head h2{font-size:16px;font-weight:800;}
+  .card-head .status-pill{margin-left:auto;font-size:12px;font-weight:700;padding:5px 13px;border-radius:999px;}
+  .status-pill.todo{background:#FBF1DC;color:#9a6a12;} .status-pill.done{background:#EAF7F0;color:#12905a;}
+  .card-body{padding:6px 22px 18px;}
+
+  .ext-note{display:flex;align-items:center;gap:9px;background:#F3F6FB;border:1px solid #E1E9F4;border-radius:10px;padding:11px 15px;margin:12px 0 4px;font-size:13px;color:#4a5a72;}
+  .ext-note a{color:var(--ck-blue);font-weight:700;cursor:pointer;text-decoration:underline;}
+  .row-tools{display:flex;justify-content:space-between;align-items:center;margin:6px 2px 2px;}
+  .approve-progress{font-size:13px;color:var(--muted);} .approve-progress b{color:var(--primary);}
+  .btn-approve-all{background:none;border:none;color:var(--ck-blue);font-size:13px;font-weight:700;cursor:pointer;text-decoration:underline;}
+
+  table{width:100%;border-collapse:collapse;}
+  thead th{text-align:left;font-size:12px;font-weight:700;color:#8a8f9a;padding:12px 8px;border-bottom:1px solid var(--border);}
+  thead th.num{text-align:right;} thead th.ctr{text-align:center;}
+  tbody td{padding:14px 8px;border-bottom:1px solid #F1F2F4;font-size:14px;color:#374151;}
+  tbody td.num{text-align:right;font-variant-numeric:tabular-nums;font-weight:600;color:#1a1a1a;}
+  tbody td.ctr{text-align:center;}
+  tbody tr:last-child td{border-bottom:none;}
+  .nm{font-weight:600;color:#1a1a1a;}
+  .role-pill{display:inline-block;font-size:12px;font-weight:600;padding:3px 10px;border-radius:6px;background:#EEF0FE;color:#6D5AE6;}
+  .btn-approve{background:#fff;color:var(--ck-blue);border:1px solid #C4D0FF;border-radius:7px;padding:6px 16px;font-size:13px;font-weight:700;cursor:pointer;transition:.15s;}
+  .btn-approve:hover{background:#EEF2FF;border-color:#9DB2FF;}
+  .approved-tag{display:inline-flex;align-items:center;gap:5px;font-size:12.5px;font-weight:700;color:#12905a;background:#EAF7F0;border:1px solid #CBEBD9;border-radius:7px;padding:6px 13px;}
+
+  .done-banner{display:flex;align-items:center;gap:12px;background:#EAF7F0;border:1px solid #CBEBD9;border-radius:12px;padding:14px 18px;margin-top:16px;}
+  .done-banner .db-ic{width:26px;height:26px;border-radius:50%;background:#22A353;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:900;flex:0 0 auto;}
+  .done-banner .db-tx{flex:1;font-size:13.5px;color:#12905a;}
+  .done-banner .db-cta{background:var(--primary);color:#fff;border:none;border-radius:8px;padding:9px 18px;font-size:13.5px;font-weight:700;cursor:pointer;}
+  .done-banner .db-cta:hover{background:var(--primary-hover);}
+
+  .toast{position:fixed;left:50%;bottom:32px;transform:translateX(-50%) translateY(24px);opacity:0;pointer-events:none;background:#1f2430;color:#fff;border-radius:12px;padding:13px 18px;display:flex;align-items:center;gap:12px;box-shadow:0 12px 32px rgba(0,0,0,.28);z-index:999;transition:all .3s cubic-bezier(.2,.8,.3,1);font-size:14px;}
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+  .toast .tick{width:22px;height:22px;border-radius:50%;background:#22A353;color:#fff;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:900;flex:0 0 22px;}
+</style>
+</head>
+<body class="lang-zh">
+
+<aside class="sidebar">
+  <div class="logo-area"><span class="ic">🍜</span><span class="tx">chowbus</span></div>
+  <ul class="menu-list">
+    <li class="menu-item"><span class="menu-icon">🏠</span><span class="zh">首页</span><span class="en">Home</span></li>
+    <li class="menu-item"><span class="menu-icon">🧮</span><span class="zh">调整管理</span><span class="en">Adjustment Management</span></li>
+    <li class="menu-item"><span class="menu-icon">💳</span><span class="zh">交易</span><span class="en">Transactions</span></li>
+    <li class="menu-item"><span class="menu-icon">🤖</span><span class="zh">AI电话点餐</span><span class="en">AI Phone Ordering</span></li>
+    <li class="menu-item"><span class="menu-icon">🧾</span><span class="zh">订单</span><span class="en">Orders</span></li>
+    <li class="menu-item"><span class="menu-icon">📋</span><span class="zh">菜单</span><span class="en">Menu</span><span class="caret">▾</span></li>
+    <li class="menu-item"><span class="menu-icon">🎯</span><span class="zh">促销管理</span><span class="en">Promotion Management</span></li>
+    <li class="menu-item"><span class="menu-icon">👥</span><span class="zh">团队管理</span><span class="en">Team Management</span><span class="caret">▾</span></li>
+
+    <div class="menu-group open">
+      <li class="menu-item"><span class="menu-icon">💲</span><span class="zh">薪酬</span><span class="en">Payroll</span><span class="caret">▴</span></li>
+      <ul class="submenu-list">
+        <li class="submenu-item" onclick="location.href='chowbus-payroll-overview.html'"><span class="zh">概览</span><span class="en">Overview</span></li>
+        <li class="submenu-item active" onclick="location.href='chowbus-payroll-run-payroll.html'"><span class="zh">跑薪</span><span class="en">Run Payroll</span></li>
+        <li class="submenu-item" onclick="location.href='chowbus-payroll-company-setup.html'"><span class="zh">公司设置</span><span class="en">Company Setup</span></li>
+        <li class="submenu-item" onclick="location.href='chowbus-payroll-employees.html'"><span class="zh">员工管理</span><span class="en">Employees</span></li>
+        <li class="submenu-item" onclick="location.href='chowbus-payroll-taxes-filings.html'"><span class="zh">税务与申报</span><span class="en">Taxes &amp; Filings</span></li>
+      </ul>
+    </div>
+
+    <li class="menu-item"><span class="menu-icon">📟</span><span class="zh">设备</span><span class="en">Devices</span></li>
+    <li class="menu-item"><span class="menu-icon">👤</span><span class="zh">账户</span><span class="en">Account</span><span class="caret">▾</span></li>
+    <li class="menu-item"><span class="menu-icon">✅</span><span class="zh">智能点餐</span><span class="en">Smart Ordering</span><span class="caret">▾</span></li>
+  </ul>
+</aside>
+
+<main>
+  <header class="top">
+    <div class="hleft">
+      <span class="collapse">≡</span>
+      <span class="store">may localserver -12555-Curry Flurry(12555)<span class="ca">▾</span></span>
+      <span class="usa">USA</span>
+    </div>
+    <div class="hright">
+      <span>sisi.hu@chowbus.com</span>
+      <div class="langpill" onclick="toggleLanguage()"><span class="lz">中文</span><span class="le">EN</span></div>
+    </div>
+  </header>
+
+  <div class="content">
+    <span class="crumb" onclick="location.href='chowbus-payroll-run-payroll.html'">
+      <span class="zh">← 返回跑薪</span><span class="en">← Back to Run Payroll</span>
+    </span>
+    <h1 class="page-title"><span class="zh">审批工时</span><span class="en">Approve Timesheet</span></h1>
+    <p class="page-sub"><span class="zh">选择发薪周期，逐一确认员工的工时与小费。可分别审批多个周期。</span><span class="en">Pick a pay period and approve each employee's hours and tips. Multiple periods supported.</span></p>
+
+    <div class="sec-label"><span class="zh">选择发薪周期</span><span class="en">Select a pay period</span></div>
+    <div class="period-tabs" id="periodTabs"></div>
+
+    <div class="card">
+      <div class="card-head">
+        <h2 id="cardTitle"></h2>
+        <span class="status-pill" id="statusPill"></span>
+      </div>
+      <div class="card-body">
+        <div class="ext-note">
+          🔗 <span><span class="zh">数据只读。如需修改工时或小费，请前往</span><span class="en">Read-only. To edit hours or tips, go to </span><a onclick="openTimesheets()"><span class="zh">员工考勤表</span><span class="en">Timesheets</span></a><span class="zh"> 进行修改。</span></span>
+        </div>
+        <div class="row-tools">
+          <span class="approve-progress"><span class="zh">已审批 <b id="apDone">0</b> / <span id="apTot">0</span></span><span class="en"><b id="apDoneEn">0</b> / <span id="apTotEn">0</span> approved</span></span>
+          <button class="btn-approve-all" onclick="approveAll()"><span class="zh">全部批准</span><span class="en">Approve all</span></button>
+        </div>
+        <table>
+          <thead><tr>
+            <th><span class="zh">员工</span><span class="en">Employee</span></th>
+            <th><span class="zh">角色</span><span class="en">Role</span></th>
+            <th class="num"><span class="zh">常规工时</span><span class="en">Reg. hrs</span></th>
+            <th class="num"><span class="zh">加班</span><span class="en">OT</span></th>
+            <th class="num"><span class="zh">小费</span><span class="en">Tips</span></th>
+            <th class="ctr"><span class="zh">操作</span><span class="en">Action</span></th>
+          </tr></thead>
+          <tbody id="tsBody"></tbody>
+        </table>
+        <div class="done-banner" id="doneBanner" style="display:none;">
+          <span class="db-ic">✓</span>
+          <span class="db-tx"><span class="zh">该周期工时与小费已全部审批，可在「开始跑薪」中直接使用。</span><span class="en">This period is fully approved and ready to use in Run Payroll.</span></span>
+          <button class="db-cta" onclick="location.href='chowbus-payroll-start-payroll.html'"><span class="zh">去开始跑薪</span><span class="en">Run Payroll</span></button>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<div class="toast" id="toast"><span class="tick">✓</span><span id="toastMsg"></span></div>
+
+<script>
+  /* 审批状态跨页共享：localStorage.cbTsApproved_<periodId> === '1' 表示该周期已全部审批 */
+  function isPeriodApproved(pid){ try{return localStorage.getItem('cbTsApproved_'+pid)==='1';}catch(e){return false;} }
+  function setPeriodApproved(pid,v){ try{ v?localStorage.setItem('cbTsApproved_'+pid,'1'):localStorage.removeItem('cbTsApproved_'+pid);}catch(e){} }
+
+  const PERIODS = [
+    {id:'p_0729', zh:'2026/7/29 – 8/11', en:'Jul 29 – Aug 11, 2026', pay:'8/19'},
+    {id:'p_0715', zh:'2026/7/15 – 7/28', en:'Jul 15 – 28, 2026',      pay:'8/26'},
+    {id:'p_0701', zh:'2026/7/1 – 7/14',  en:'Jul 1 – 14, 2026',       pay:'7/22'},
+  ];
+  const ROSTER = [
+    {name:'Chen Wei',      role:'Cook',       reg:'80.0', ot:'4.0', tips:'$45.00'},
+    {name:'Aisha Khan',    role:'Server',     reg:'72.5', ot:'0.0', tips:'$180.00'},
+    {name:'Diego Ramirez', role:'Line Cook',  reg:'80.0', ot:'6.5', tips:'$30.00'},
+    {name:'Kenji Tanaka',  role:'Dishwasher', reg:'64.0', ot:'0.0', tips:'$0.00'},
+    {name:'Sofia Rossi',   role:'Bartender',  reg:'70.0', ot:'2.0', tips:'$220.00'},
+  ];
+
+  let cur = PERIODS[0].id;
+  const rowState = {};
+  PERIODS.forEach(p=>{ const done=isPeriodApproved(p.id); rowState[p.id]=ROSTER.map(()=>done); });
+
+  function isZh(){return document.body.classList.contains('lang-zh');}
+  function periodLabel(p){return isZh()?p.zh:p.en;}
+  function allDone(pid){ return rowState[pid].every(Boolean); }
+
+  function renderTabs(){
+    document.getElementById('periodTabs').innerHTML = PERIODS.map(p=>{
+      const done = allDone(p.id);
+      return `<div class="ptab ${p.id===cur?'active':''}" onclick="selectPeriod('${p.id}')">
+        <div class="pl">${periodLabel(p)}</div>
+        <div class="pm"><span class="dot ${done?'done':'todo'}"></span>${done
+          ? (isZh()?'已审批':'Approved')
+          : (isZh()?'待审批':'To approve')} · ${isZh()?'发薪日':'Pay'} ${p.pay}</div>
+      </div>`;
+    }).join('');
+  }
+
+  function renderTable(){
+    const st = rowState[cur];
+    document.getElementById('tsBody').innerHTML = ROSTER.map((e,i)=>`<tr>
+        <td class="nm">${e.name}</td>
+        <td><span class="role-pill">${e.role}</span></td>
+        <td class="num">${e.reg}</td>
+        <td class="num">${e.ot}</td>
+        <td class="num">${e.tips}</td>
+        <td class="ctr">${ st[i]
+          ? `<span class="approved-tag">✓ <span class="zh">已审批</span><span class="en">Approved</span></span>`
+          : `<button class="btn-approve" onclick="approveRow(${i})">Approve</button>` }</td>
+      </tr>`).join('');
+    const done = st.filter(Boolean).length, tot = ROSTER.length;
+    ['apDone','apDoneEn'].forEach(id=>document.getElementById(id).textContent=done);
+    ['apTot','apTotEn'].forEach(id=>document.getElementById(id).textContent=tot);
+    const p = PERIODS.find(x=>x.id===cur);
+    document.getElementById('cardTitle').textContent = periodLabel(p);
+    const finished = allDone(cur);
+    const pill = document.getElementById('statusPill');
+    pill.className = 'status-pill ' + (finished?'done':'todo');
+    pill.innerHTML = finished ? '<span class="zh">已审批</span><span class="en">Approved</span>' : '<span class="zh">待审批</span><span class="en">To approve</span>';
+    document.getElementById('doneBanner').style.display = finished ? '' : 'none';
+  }
+
+  function renderAll(){ renderTabs(); renderTable(); }
+
+  function selectPeriod(pid){ cur=pid; renderAll(); }
+
+  function approveRow(i){
+    rowState[cur][i]=true;
+    if(allDone(cur)){ setPeriodApproved(cur,true); showToast('该周期工时和小费已全部审批','Period fully approved'); }
+    renderAll();
+  }
+  function approveAll(){
+    rowState[cur]=ROSTER.map(()=>true);
+    setPeriodApproved(cur,true);
+    showToast('已批准本周期全部','Approved all for this period');
+    renderAll();
+  }
+  function openTimesheets(){ showToast('打开「员工考勤表」（示意）','Opening Timesheets (demo)'); }
+
+  function showToast(zh,en){
+    const t=document.getElementById('toast');
+    document.getElementById('toastMsg').innerHTML=`<span class="zh">${zh}</span><span class="en">${en}</span>`;
+    t.classList.add('show'); clearTimeout(t._tm); t._tm=setTimeout(()=>t.classList.remove('show'),2600);
+  }
+
+  function toggleLanguage(){const en=!document.body.classList.contains('lang-en');document.body.classList.toggle('lang-en',en);document.body.classList.toggle('lang-zh',!en);try{localStorage.setItem('cbLang',en?'en':'zh');}catch(e){}renderAll();}
+  (function(){try{if(localStorage.getItem('cbLang')==='en'){document.body.classList.remove('lang-zh');document.body.classList.add('lang-en');}}catch(e){}})();
+
+  renderAll();
+</script>
+</body>
+</html>

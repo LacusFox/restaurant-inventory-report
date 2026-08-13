@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chowbus Payroll · 开始跑薪</title>
+<style>
+  :root{--primary:#CC1C4C;--primary-hover:#A6123B;--bg:#F7F8FA;--border:#EDEEF1;--ink:#1F1F1F;--muted:#6B7280;--sidebar-w:250px;--ck-blue:#2B59FF;--ck-blue-h:#1E45D6;}
+  *{box-sizing:border-box;margin:0;padding:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"PingFang SC","Microsoft YaHei",Arial,sans-serif;}
+  body{display:flex;background:var(--bg);color:var(--ink);min-height:100vh;overflow-x:hidden;}
+  body.lang-zh .en{display:none!important;} body.lang-en .zh{display:none!important;}
+
+  aside.sidebar{width:var(--sidebar-w);background:#fff;border-right:1px solid var(--border);position:fixed;height:100vh;overflow-y:auto;z-index:100;}
+  .logo-area{padding:18px 22px;display:flex;align-items:center;gap:8px;border-bottom:1px solid var(--border);}
+  .logo-area .ic{font-size:22px;} .logo-area .tx{font-weight:900;font-size:19px;color:var(--primary);}
+  .menu-list{list-style:none;padding:10px 0;}
+  .menu-item{padding:11px 22px;display:flex;align-items:center;color:#374151;font-size:14px;cursor:pointer;transition:.15s;}
+  .menu-item:hover{background:#FDF2F4;color:var(--primary);}
+  .menu-icon{margin-right:12px;width:18px;text-align:center;opacity:.75;}
+  .caret{margin-left:auto;font-size:11px;color:#c4c8cf;}
+  .menu-group.open>.menu-item{color:var(--primary);font-weight:600;}
+  .submenu-list{list-style:none;padding:2px 0 6px;}
+  .submenu-item{padding:10px 22px 10px 50px;font-size:13.5px;color:var(--muted);cursor:pointer;transition:.15s;}
+  .submenu-item:hover{color:var(--primary);}
+  .submenu-item.active{color:var(--primary);font-weight:700;background:#FFF0F2;border-left:3px solid var(--primary);padding-left:47px;}
+
+  main{margin-left:var(--sidebar-w);flex:1;min-height:100vh;display:flex;flex-direction:column;}
+  header.top{height:58px;background:#fff;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;padding:0 28px;position:sticky;top:0;z-index:99;}
+  .hleft{display:flex;align-items:center;gap:16px;font-size:14px;color:#333;}
+  .collapse{font-size:18px;color:#888;cursor:pointer;}
+  .store{font-weight:600;cursor:pointer;} .store .ca{color:#aaa;font-size:11px;margin-left:4px;}
+  .usa{background:#EEE;padding:2px 8px;border-radius:4px;font-size:11px;color:#555;}
+  .hright{display:flex;align-items:center;gap:22px;font-size:13.5px;color:var(--muted);}
+  .langpill{display:inline-flex;border:1px solid #E3B8C4;border-radius:999px;overflow:hidden;cursor:pointer;font-size:12.5px;font-weight:600;}
+  .langpill span{padding:5px 15px;transition:.15s;}
+  body.lang-zh .langpill .lz, body.lang-en .langpill .le{background:var(--primary);color:#fff;}
+  body.lang-zh .langpill .le, body.lang-en .langpill .lz{background:#fff;color:#666;}
+
+  .content{padding:26px 34px;flex:1;max-width:1200px;}
+  .crumb{font-size:12.5px;color:#9aa0aa;margin-bottom:10px;cursor:pointer;display:inline-block;}
+  .crumb:hover{color:var(--primary);}
+  .page-title{font-size:23px;font-weight:800;margin-bottom:18px;}
+
+  /* Stepper */
+  .stepper{display:flex;align-items:center;margin-bottom:26px;flex-wrap:wrap;gap:6px 0;}
+  .step{display:flex;align-items:center;gap:9px;flex:0 0 auto;}
+  .step .dot{width:28px;height:28px;border-radius:50%;background:#EDEEF1;color:#9aa0aa;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;transition:.2s;}
+  .step .st-tx{font-size:13px;font-weight:700;color:#9aa0aa;transition:.2s;}
+  .step.active .dot{background:var(--primary);color:#fff;} .step.active .st-tx{color:var(--primary);}
+  .step.done .dot{background:#22A353;color:#fff;} .step.done .st-tx{color:#12905a;}
+  .step-line{flex:1;height:2px;background:#EDEEF1;margin:0 12px;min-width:24px;}
+  .step-line.done{background:#22A353;}
+
+  .card{background:#fff;border:1px solid var(--border);border-radius:14px;box-shadow:0 2px 12px rgba(0,0,0,.03);overflow:hidden;}
+  .card-head{padding:18px 22px;border-bottom:1px solid var(--border);}
+  .card-head h2{font-size:16px;font-weight:800;} .card-head .ch-sub{font-size:12.5px;color:var(--muted);margin-top:3px;}
+  .card-body{padding:18px 22px;}
+
+  /* Step1 表单 */
+  .form-label{font-size:13px;font-weight:700;color:#374151;margin:4px 0 10px;}
+  .sched-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:24px;}
+  .sched{border:1px solid var(--border);border-radius:12px;padding:16px;cursor:pointer;transition:.15s;text-align:center;}
+  .sched:hover{border-color:#E7A9B5;}
+  .sched.active{border-color:var(--primary);background:#FFF0F2;box-shadow:0 4px 14px rgba(204,28,76,.08);}
+  .sched .s-t{font-size:14px;font-weight:800;color:#1a1a1a;} .sched .s-d{font-size:11.5px;color:var(--muted);margin-top:4px;}
+  .field{margin-bottom:22px;max-width:420px;}
+  .select{width:100%;padding:11px 14px;font-size:14px;border:1px solid #DCDCE3;border-radius:10px;background:#fff;color:#1f1f1f;cursor:pointer;appearance:none;
+    background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%239aa0aa' stroke-width='3'><path d='M6 9l6 6 6-6'/></svg>");background-repeat:no-repeat;background-position:right 12px center;padding-right:34px;}
+  .select:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 3px rgba(204,28,76,.10);}
+  .payday-box{display:inline-flex;align-items:center;gap:10px;background:#F3F6FB;border:1px solid #E1E9F4;border-radius:10px;padding:11px 16px;font-size:14px;color:#374151;}
+  .payday-box b{color:#111;}
+
+  /* Step2 审批 */
+  .ext-note{display:flex;align-items:center;gap:9px;background:#F3F6FB;border:1px solid #E1E9F4;border-radius:10px;padding:11px 15px;margin:2px 0 4px;font-size:13px;color:#4a5a72;}
+  .ext-note a{color:var(--ck-blue);font-weight:700;cursor:pointer;text-decoration:underline;}
+  .approved-banner{display:flex;align-items:center;gap:12px;background:#EAF7F0;border:1px solid #CBEBD9;border-radius:12px;padding:14px 18px;margin-bottom:8px;}
+  .approved-banner .ab-ic{width:26px;height:26px;border-radius:50%;background:#22A353;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:900;flex:0 0 auto;}
+  .approved-banner .ab-tx{flex:1;font-size:13.5px;color:#12905a;} .approved-banner .ab-tx b{font-weight:800;}
+  .row-tools{display:flex;justify-content:space-between;align-items:center;margin:10px 2px 2px;}
+  .approve-progress{font-size:13px;color:var(--muted);} .approve-progress b{color:var(--primary);}
+  .btn-approve-all{background:none;border:none;color:var(--ck-blue);font-size:13px;font-weight:700;cursor:pointer;text-decoration:underline;}
+
+  table{width:100%;border-collapse:collapse;}
+  thead th{text-align:left;font-size:12px;font-weight:700;color:#8a8f9a;padding:12px 8px;border-bottom:1px solid var(--border);}
+  thead th.num{text-align:right;} thead th.ctr{text-align:center;}
+  tbody td{padding:14px 8px;border-bottom:1px solid #F1F2F4;font-size:14px;color:#374151;}
+  tbody td.num{text-align:right;font-variant-numeric:tabular-nums;font-weight:600;color:#1a1a1a;}
+  tbody td.ctr{text-align:center;} tbody tr:last-child td{border-bottom:none;}
+  .nm{font-weight:600;color:#1a1a1a;}
+  .role-pill{display:inline-block;font-size:12px;font-weight:600;padding:3px 10px;border-radius:6px;background:#EEF0FE;color:#6D5AE6;}
+  .btn-approve{background:#fff;color:var(--ck-blue);border:1px solid #C4D0FF;border-radius:7px;padding:6px 16px;font-size:13px;font-weight:700;cursor:pointer;transition:.15s;}
+  .btn-approve:hover{background:#EEF2FF;border-color:#9DB2FF;}
+  .approved-tag{display:inline-flex;align-items:center;gap:5px;font-size:12.5px;font-weight:700;color:#12905a;background:#EAF7F0;border:1px solid #CBEBD9;border-radius:7px;padding:6px 13px;}
+
+  /* 内嵌 Check 组件 */
+  .ck{background:#fff;border:1px solid #E7E8EC;border-radius:16px;box-shadow:0 4px 20px rgba(0,0,0,.05);overflow:hidden;}
+  .ck-top{display:flex;align-items:center;gap:14px;padding:16px 20px;border-bottom:1px solid #EFF0F3;}
+  .ck-pill{display:inline-flex;align-items:center;gap:7px;font-size:13px;font-weight:600;color:#374151;border:1px solid #E1E2E6;border-radius:999px;padding:6px 14px;}
+  .ck-pill i{width:8px;height:8px;border-radius:50%;background:#9aa0aa;display:inline-block;}
+  .ck-circle{width:38px;height:38px;border-radius:50%;border:1px solid #E1E2E6;background:#fff;display:flex;align-items:center;justify-content:center;font-size:16px;color:#374151;cursor:pointer;}
+  .ck-circle:hover{background:#F5F6F8;}
+  .ck-range{font-size:18px;font-weight:800;color:#111;}
+  .ck-actions{margin-left:auto;display:flex;gap:12px;}
+  .ck-btn{border-radius:10px;padding:11px 20px;font-size:14px;font-weight:700;cursor:pointer;border:1px solid transparent;transition:.15s;}
+  .ck-btn.gray{background:#F1F2F4;color:#1f1f1f;} .ck-btn.gray:hover{background:#E7E9ED;}
+  .ck-btn.blue{background:var(--ck-blue);color:#fff;} .ck-btn.blue:hover{background:var(--ck-blue-h);}
+  .ck-body{padding:22px 24px;}
+  .ck-emp-row{display:flex;align-items:center;margin-bottom:14px;}
+  .ck-emp-name{font-size:20px;font-weight:800;color:#111;}
+  .ck-total{margin-left:auto;display:flex;align-items:center;gap:12px;}
+  .ck-total .tg{background:#F4F5F7;border-radius:10px;padding:9px 16px;font-size:15px;font-weight:800;color:#111;}
+  .ck-total .exp{width:34px;height:34px;border-radius:50%;border:1px solid #E1E2E6;display:flex;align-items:center;justify-content:center;color:#6b7280;cursor:pointer;}
+  .ck-pay{font-size:14px;color:#374151;margin-bottom:20px;}
+  .ck-pay .lab{font-weight:700;} .ck-pay .val{color:#111;font-weight:600;margin-left:6px;}
+  .ck-table th{font-size:13px;color:#6b7280;font-weight:700;padding:10px 12px;border:none;}
+  .ck-table th.num{text-align:right;}
+  .ck-table td{padding:12px 12px;border-top:1px solid #F1F2F4;font-size:14px;vertical-align:middle;}
+  .ck-table td.num{text-align:right;font-weight:800;color:#111;font-variant-numeric:tabular-nums;}
+  .ck-kind{font-weight:800;color:#111;}
+  .ck-input,.ck-select{width:100%;background:#F4F5F7;border:1px solid #EAEBEF;border-radius:10px;padding:11px 13px;font-size:13.5px;color:#6b7280;}
+  .ck-select{display:flex;align-items:center;justify-content:space-between;gap:8px;}
+  .ck-select .cv{color:#4b5563;} .ck-select .cc{color:#9aa0aa;}
+  .ck-input::placeholder{color:#aab0ba;}
+  .ck-hours{background:#F4F5F7;border:1px solid #EAEBEF;border-radius:10px;padding:11px 13px;font-size:13.5px;color:#6b7280;}
+  .ck-preview{display:flex;}
+  .ck-side{width:230px;flex:0 0 auto;padding:24px 22px;border-right:1px solid #EFF0F3;}
+  .ck-side h3{font-size:17px;font-weight:800;margin-bottom:18px;}
+  .ck-side .kv{margin-bottom:16px;} .ck-side .kv .k{font-size:13px;color:#6b7280;margin-bottom:4px;} .ck-side .kv .v{font-size:15px;font-weight:700;color:#111;line-height:1.4;}
+  .ck-main{flex:1;padding:20px 24px;}
+  .ck-pv-top{display:flex;align-items:center;gap:12px;margin-bottom:18px;}
+  .ck-pv-top .t{font-size:17px;font-weight:800;} .ck-pv-top .ck-btn{margin-left:auto;}
+  .ck-tabs{display:inline-flex;background:#F4F5F7;border-radius:999px;padding:5px;margin-bottom:20px;flex-wrap:wrap;}
+  .ck-tab{font-size:13.5px;font-weight:700;color:#8a8f9a;padding:8px 16px;border-radius:999px;cursor:pointer;transition:.15s;}
+  .ck-tab.active{background:#fff;color:#111;box-shadow:0 1px 4px rgba(0,0,0,.08);}
+  .ck-empty{padding:40px 10px;text-align:center;color:#9aa0aa;font-size:13.5px;}
+
+  .footer-bar{margin-top:22px;display:flex;justify-content:space-between;align-items:center;}
+  .btn-primary{background:var(--primary);color:#fff;border:none;border-radius:8px;padding:11px 26px;font-size:14px;font-weight:700;cursor:pointer;transition:.2s;}
+  .btn-primary:hover{background:var(--primary-hover);} .btn-primary:disabled{background:#E7C7D0;cursor:not-allowed;}
+  .btn-ghost{background:#fff;color:#666;border:1px solid #DCDCDC;border-radius:8px;padding:11px 20px;font-size:14px;cursor:pointer;}
+  .btn-ghost:hover{background:#F5F5F5;}
+
+  .toast{position:fixed;left:50%;bottom:32px;transform:translateX(-50%) translateY(24px);opacity:0;pointer-events:none;background:#1f2430;color:#fff;border-radius:12px;padding:13px 18px;display:flex;align-items:center;gap:12px;box-shadow:0 12px 32px rgba(0,0,0,.28);z-index:999;transition:all .3s cubic-bezier(.2,.8,.3,1);font-size:14px;}
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+  .toast .tick{width:22px;height:22px;border-radius:50%;background:#22A353;color:#fff;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:900;flex:0 0 22px;}
+</style>
+</head>
+<body class="lang-zh">
+
+<aside class="sidebar">
+  <div class="logo-area"><span class="ic">🍜</span><span class="tx">chowbus</span></div>
+  <ul class="menu-list">
+    <li class="menu-item"><span class="menu-icon">🏠</span><span class="zh">首页</span><span class="en">Home</span></li>
+    <li class="menu-item"><span class="menu-icon">🧮</span><span class="zh">调整管理</span><span class="en">Adjustment Management</span></li>
+    <li class="menu-item"><span class="menu-icon">💳</span><span class="zh">交易</span><span class="en">Transactions</span></li>
+    <li class="menu-item"><span class="menu-icon">🤖</span><span class="zh">AI电话点餐</span><span class="en">AI Phone Ordering</span></li>
+    <li class="menu-item"><span class="menu-icon">🧾</span><span class="zh">订单</span><span class="en">Orders</span></li>
+    <li class="menu-item"><span class="menu-icon">📋</span><span class="zh">菜单</span><span class="en">Menu</span><span class="caret">▾</span></li>
+    <li class="menu-item"><span class="menu-icon">🎯</span><span class="zh">促销管理</span><span class="en">Promotion Management</span></li>
+    <li class="menu-item"><span class="menu-icon">👥</span><span class="zh">团队管理</span><span class="en">Team Management</span><span class="caret">▾</span></li>
+
+    <div class="menu-group open">
+      <li class="menu-item"><span class="menu-icon">💲</span><span class="zh">薪酬</span><span class="en">Payroll</span><span class="caret">▴</span></li>
+      <ul class="submenu-list">
+        <li class="submenu-item" onclick="location.href='chowbus-payroll-overview.html'"><span class="zh">概览</span><span class="en">Overview</span></li>
+        <li class="submenu-item active" onclick="location.href='chowbus-payroll-run-payroll.html'"><span class="zh">跑薪</span><span class="en">Run Payroll</span></li>
+        <li class="submenu-item" onclick="location.href='chowbus-payroll-company-setup.html'"><span class="zh">公司设置</span><span class="en">Company Setup</span></li>
+        <li class="submenu-item" onclick="location.href='chowbus-payroll-employees.html'"><span class="zh">员工管理</span><span class="en">Employees</span></li>
+        <li class="submenu-item" onclick="location.href='chowbus-payroll-taxes-filings.html'"><span class="zh">税务与申报</span><span class="en">Taxes &amp; Filings</span></li>
+      </ul>
+    </div>
+
+    <li class="menu-item"><span class="menu-icon">📟</span><span class="zh">设备</span><span class="en">Devices</span></li>
+    <li class="menu-item"><span class="menu-icon">👤</span><span class="zh">账户</span><span class="en">Account</span><span class="caret">▾</span></li>
+    <li class="menu-item"><span class="menu-icon">✅</span><span class="zh">智能点餐</span><span class="en">Smart Ordering</span><span class="caret">▾</span></li>
+  </ul>
+</aside>
+
+<main>
+  <header class="top">
+    <div class="hleft">
+      <span class="collapse">≡</span>
+      <span class="store">may localserver -12555-Curry Flurry(12555)<span class="ca">▾</span></span>
+      <span class="usa">USA</span>
+    </div>
+    <div class="hright">
+      <span>sisi.hu@chowbus.com</span>
+      <div class="langpill" onclick="toggleLanguage()"><span class="lz">中文</span><span class="le">EN</span></div>
+    </div>
+  </header>
+
+  <div class="content">
+    <span class="crumb" onclick="location.href='chowbus-payroll-run-payroll.html'">
+      <span class="zh">← 返回跑薪</span><span class="en">← Back to Run Payroll</span>
+    </span>
+    <h1 class="page-title"><span class="zh">开始跑薪</span><span class="en">Run Payroll</span></h1>
+
+    <div class="stepper" id="stepper">
+      <div class="step" data-s="1"><span class="dot">1</span><span class="st-tx"><span class="zh">选择周期与发薪方案</span><span class="en">Period &amp; Schedule</span></span></div>
+      <div class="step-line" data-l="1"></div>
+      <div class="step" data-s="2"><span class="dot">2</span><span class="st-tx"><span class="zh">确认工时</span><span class="en">Confirm Timesheet</span></span></div>
+      <div class="step-line" data-l="2"></div>
+      <div class="step" data-s="3"><span class="dot">3</span><span class="st-tx"><span class="zh">修改</span><span class="en">Edit</span></span></div>
+      <div class="step-line" data-l="3"></div>
+      <div class="step" data-s="4"><span class="dot">4</span><span class="st-tx"><span class="zh">预览与提交</span><span class="en">Preview &amp; Submit</span></span></div>
+    </div>
+
+    <!-- STEP 1 -->
+    <section id="sec1">
+      <div class="card">
+        <div class="card-head"><h2><span class="zh">① 选择发薪周期与方案</span><span class="en">① Select pay period &amp; schedule</span></h2></div>
+        <div class="card-body">
+          <div class="form-label"><span class="zh">发薪方案 Pay schedule</span><span class="en">Pay schedule</span></div>
+          <div class="sched-grid" id="schedGrid">
+            <div class="sched" data-v="weekly" onclick="setSched('weekly')"><div class="s-t"><span class="zh">每周</span><span class="en">Weekly</span></div><div class="s-d"><span class="zh">每周发薪</span><span class="en">52 / yr</span></div></div>
+            <div class="sched active" data-v="biweekly" onclick="setSched('biweekly')"><div class="s-t"><span class="zh">双周</span><span class="en">Bi-weekly</span></div><div class="s-d"><span class="zh">每两周发薪</span><span class="en">26 / yr</span></div></div>
+            <div class="sched" data-v="semimonthly" onclick="setSched('semimonthly')"><div class="s-t"><span class="zh">半月</span><span class="en">Semi-monthly</span></div><div class="s-d"><span class="zh">每月两次</span><span class="en">24 / yr</span></div></div>
+            <div class="sched" data-v="monthly" onclick="setSched('monthly')"><div class="s-t"><span class="zh">每月</span><span class="en">Monthly</span></div><div class="s-d"><span class="zh">每月发薪</span><span class="en">12 / yr</span></div></div>
+          </div>
+
+          <div class="field">
+            <div class="form-label"><span class="zh">发薪周期 Pay period</span><span class="en">Pay period</span></div>
+            <select class="select" id="periodSel" onchange="onPeriodChange()"></select>
+          </div>
+
+          <div class="field">
+            <div class="form-label"><span class="zh">发薪日 Pay day</span><span class="en">Pay day</span></div>
+            <span class="payday-box">📅 <span class="zh">发薪日：</span><span class="en">Pay day: </span><b id="payDay"></b></span>
+          </div>
+        </div>
+      </div>
+      <div class="footer-bar">
+        <button class="btn-ghost" onclick="location.href='chowbus-payroll-run-payroll.html'"><span class="zh">退出</span><span class="en">Exit</span></button>
+        <button class="btn-primary" onclick="goStep(2)"><span class="zh">下一步：确认工时 →</span><span class="en">Next: Confirm Timesheet →</span></button>
+      </div>
+    </section>
+
+    <!-- STEP 2 -->
+    <section id="sec2" style="display:none;">
+      <div class="card">
+        <div class="card-head">
+          <h2><span class="zh">② 确认工时</span><span class="en">② Confirm Timesheet</span></h2>
+          <div class="ch-sub"><span id="periodEcho"></span></div>
+        </div>
+        <div class="card-body">
+          <div class="approved-banner" id="approvedBanner" style="display:none;">
+            <span class="ab-ic">✓</span>
+            <span class="ab-tx"><span class="zh">该周期工时已在「审批工时」中<b>全部审批</b>，可直接进入下一步。</span><span class="en">This period was already <b>fully approved</b> under Approve Timesheet — skip ahead.</span></span>
+          </div>
+          <div class="ext-note">
+            🔗 <span><span class="zh">数据只读。如需修改工时或小费，请前往</span><span class="en">Read-only. To edit hours or tips, go to </span><a onclick="openTimesheets()"><span class="zh">员工考勤表</span><span class="en">Timesheets</span></a><span class="zh"> 进行修改。</span></span>
+          </div>
+          <div class="row-tools" id="rowTools">
+            <span class="approve-progress"><span class="zh">已审批 <b id="apDone">0</b> / <span id="apTot">0</span></span><span class="en"><b id="apDoneEn">0</b> / <span id="apTotEn">0</span> approved</span></span>
+            <button class="btn-approve-all" onclick="approveAll()"><span class="zh">全部批准</span><span class="en">Approve all</span></button>
+          </div>
+          <table>
+            <thead><tr>
+              <th><span class="zh">员工</span><span class="en">Employee</span></th>
+              <th><span class="zh">角色</span><span class="en">Role</span></th>
+              <th class="num"><span class="zh">常规工时</span><span class="en">Reg. hrs</span></th>
+              <th class="num"><span class="zh">加班</span><span class="en">OT</span></th>
+              <th class="num"><span class="zh">小费</span><span class="en">Tips</span></th>
+              <th class="ctr"><span class="zh">操作</span><span class="en">Action</span></th>
+            </tr></thead>
+            <tbody id="tsBody"></tbody>
+          </table>
+        </div>
+      </div>
+      <div class="footer-bar">
+        <button class="btn-ghost" onclick="goStep(1)"><span class="zh">← 上一步</span><span class="en">← Back</span></button>
+        <button class="btn-primary" id="toEditBtn" onclick="goStep(3)"><span class="zh">下一步：修改 →</span><span class="en">Next: Edit →</span></button>
+      </div>
+    </section>
+
+    <!-- STEP 3: Check Edit -->
+    <section id="sec3" style="display:none;">
+      <div class="ck">
+        <div class="ck-top">
+          <span class="ck-pill"><i></i>Draft</span>
+          <span class="ck-circle" onclick="goStep(2)">‹</span>
+          <span class="ck-circle">⚙</span>
+          <span class="ck-range" id="ckRange">7/15/2026 - 7/28/2026 (Bi-weekly)</span>
+          <div class="ck-actions">
+            <button class="ck-btn gray" onclick="ckToast('已删除草稿','Draft deleted')">Delete</button>
+            <button class="ck-btn gray" onclick="ckToast('草稿已保存','Draft saved')">Save Draft</button>
+            <button class="ck-btn blue" onclick="goStep(4)">Preview payroll</button>
+          </div>
+        </div>
+        <div class="ck-body">
+          <div class="ck-emp-row">
+            <span class="ck-emp-name">Qiyi Gong</span>
+            <span class="ck-total"><span class="tg">Total: $ 1,055.77</span><span class="exp">⤢</span></span>
+          </div>
+          <div class="ck-pay"><span class="lab">Payment Method:</span><span class="val">Direct Deposit ▾</span></div>
+          <table class="ck-table">
+            <thead><tr>
+              <th style="width:14%">Earning items (4)</th><th style="width:20%">Description</th><th style="width:20%">Workplace</th>
+              <th style="width:22%">Earning rate</th><th style="width:12%">Hours</th><th class="num" style="width:12%">Amount</th>
+            </tr></thead>
+            <tbody>
+              <tr><td class="ck-kind">Hourly</td><td><input class="ck-input" placeholder="e.g. Description..."></td><td><div class="ck-select"><span class="cv">moli</span><span class="cc">▾</span></div></td><td><div class="ck-select"><span class="cv">hour ($10.000 / hr)</span><span class="cc">▾</span></div></td><td><div class="ck-hours">40 hrs</div></td><td class="num">$ 400.00</td></tr>
+              <tr><td class="ck-kind">Hourly</td><td><input class="ck-input" placeholder="e.g. Description..."></td><td><div class="ck-select"><span class="cv">moli</span><span class="cc">▾</span></div></td><td><div class="ck-select"><span class="cv">overtime ($15.000 /...</span><span class="cc">▾</span></div></td><td><div class="ck-hours">5 hrs</div></td><td class="num">$ 75.00</td></tr>
+              <tr><td class="ck-kind">Salaried</td><td><input class="ck-input" placeholder="e.g. Description..."></td><td><div class="ck-select"><span class="cv">moli</span><span class="cc">▾</span></div></td><td><div class="ck-select"><span class="cv">123 ($100000.000 /...</span><span class="cc">▾</span></div></td><td><div class="ck-hours">10 hrs</div></td><td class="num">$ 480.77</td></tr>
+              <tr><td class="ck-kind">Paycheck tips</td><td><input class="ck-input" placeholder="e.g. Description..."></td><td><div class="ck-select"><span class="cv">moli</span><span class="cc">▾</span></div></td><td><div class="ck-select"><span class="cc">-</span><span class="cc">▾</span></div></td><td><div class="ck-hours">-</div></td><td class="num">$ 100.00</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="footer-bar">
+        <button class="btn-ghost" onclick="goStep(2)"><span class="zh">← 上一步</span><span class="en">← Back</span></button>
+        <button class="btn-primary" onclick="goStep(4)"><span class="zh">预览薪酬 →</span><span class="en">Preview payroll →</span></button>
+      </div>
+    </section>
+
+    <!-- STEP 4: Check Preview + Submit -->
+    <section id="sec4" style="display:none;">
+      <div class="ck">
+        <div class="ck-preview">
+          <aside class="ck-side">
+            <h3>Payroll summary</h3>
+            <div class="kv"><div class="k">Pay period</div><div class="v" id="pvPeriod">7/15/2026 -<br>7/28/2026</div></div>
+            <div class="kv"><div class="k">Pay day</div><div class="v" id="pvPayday">8/26/2026</div></div>
+            <div class="kv"><div class="k">Approval deadline</div><div class="v">8/21/2026<br>12:00 pm PT</div></div>
+            <div class="kv"><div class="k">Total employees paid</div><div class="v">1</div></div>
+            <div class="kv"><div class="k">Total contractors paid</div><div class="v">0</div></div>
+            <div class="kv"><div class="k">Cash requirement</div><div class="v">$1,098.53</div></div>
+          </aside>
+          <div class="ck-main">
+            <div class="ck-pv-top">
+              <span class="ck-circle" onclick="goStep(3)">‹</span>
+              <span class="t">Edit payroll</span>
+              <button class="ck-btn blue" onclick="submitPayroll()">Submit payroll</button>
+            </div>
+            <div class="ck-tabs">
+              <span class="ck-tab active" data-tab="pay" onclick="ckTab('pay')">Pay breakdown</span>
+              <span class="ck-tab" data-tab="taxes" onclick="ckTab('taxes')">Taxes</span>
+              <span class="ck-tab" data-tab="hourly" onclick="ckTab('hourly')">Hourly breakdown</span>
+              <span class="ck-tab" data-tab="posttax" onclick="ckTab('posttax')">Post-tax deductions</span>
+              <span class="ck-tab" data-tab="benefits" onclick="ckTab('benefits')">Benefits</span>
+            </div>
+            <div id="tab-pay">
+              <table class="ck-table">
+                <thead><tr>
+                  <th>Employee</th><th>Payment Method</th><th class="num">Earnings</th><th class="num">Add'l earnings</th>
+                  <th class="num">Total reimb.</th><th class="num">PTO/Sick leave</th><th class="num">Gross pay</th><th class="num">Net pay</th>
+                </tr></thead>
+                <tbody>
+                  <tr><td class="ck-kind">Qiyi Gong</td><td>Direct Deposit</td><td class="num">$955.77</td><td class="num">$100.00</td><td class="num">$0.00</td><td class="num">$0.00</td><td class="num">$1,055.77</td><td class="num">$1,040.46</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <div id="tab-other" style="display:none;"><div class="ck-empty"><span class="zh">该标签页为示意，暂无演示数据。</span><span class="en">This tab is a placeholder — no demo data.</span></div></div>
+          </div>
+        </div>
+      </div>
+      <div class="footer-bar">
+        <button class="btn-ghost" onclick="goStep(3)"><span class="zh">← 返回修改</span><span class="en">← Back to Edit</span></button>
+        <button class="btn-primary" onclick="submitPayroll()"><span class="zh">提交跑薪</span><span class="en">Submit payroll</span></button>
+      </div>
+    </section>
+
+  </div>
+</main>
+
+<div class="toast" id="toast"><span class="tick">✓</span><span id="toastMsg"></span></div>
+
+<script>
+  function isPeriodApproved(pid){ try{return localStorage.getItem('cbTsApproved_'+pid)==='1';}catch(e){return false;} }
+  function setPeriodApproved(pid,v){ try{ v?localStorage.setItem('cbTsApproved_'+pid,'1'):localStorage.removeItem('cbTsApproved_'+pid);}catch(e){} }
+
+  const PERIODS = [
+    {id:'p_0729', zh:'2026/7/29 – 8/11', en:'Jul 29 – Aug 11, 2026', pay:'2026/8/19'},
+    {id:'p_0715', zh:'2026/7/15 – 7/28', en:'Jul 15 – 28, 2026',      pay:'2026/8/26'},
+    {id:'p_0701', zh:'2026/7/1 – 7/14',  en:'Jul 1 – 14, 2026',       pay:'2026/7/22'},
+  ];
+  const ROSTER = [
+    {name:'Chen Wei',      role:'Cook',       reg:'80.0', ot:'4.0', tips:'$45.00'},
+    {name:'Aisha Khan',    role:'Server',     reg:'72.5', ot:'0.0', tips:'$180.00'},
+    {name:'Diego Ramirez', role:'Line Cook',  reg:'80.0', ot:'6.5', tips:'$30.00'},
+    {name:'Kenji Tanaka',  role:'Dishwasher', reg:'64.0', ot:'0.0', tips:'$0.00'},
+    {name:'Sofia Rossi',   role:'Bartender',  reg:'70.0', ot:'2.0', tips:'$220.00'},
+  ];
+
+  let step = 1;
+  let sched = 'biweekly';
+  let selPid = PERIODS[1].id;   // 默认 7/15–7/28
+  let rows = ROSTER.map(()=>false);
+
+  const SCHED_EN = {weekly:'Weekly',biweekly:'Bi-weekly',semimonthly:'Semi-monthly',monthly:'Monthly'};
+  function isZh(){return document.body.classList.contains('lang-zh');}
+  function period(){ return PERIODS.find(p=>p.id===selPid); }
+  function periodLabel(p){return isZh()?p.zh:p.en;}
+
+  function setSched(v){ sched=v; document.querySelectorAll('.sched').forEach(el=>el.classList.toggle('active', el.dataset.v===v)); }
+
+  function fillPeriodSelect(){
+    const sel = document.getElementById('periodSel');
+    sel.innerHTML = PERIODS.map(p=>`<option value="${p.id}" ${p.id===selPid?'selected':''}>${periodLabel(p)}${isPeriodApproved(p.id)?(isZh()?'（工时已审批）':' (approved)'):''}</option>`).join('');
+    updatePayDay();
+  }
+  function onPeriodChange(){ selPid = document.getElementById('periodSel').value; rows = ROSTER.map(()=>isPeriodApproved(selPid)); updatePayDay(); }
+  function updatePayDay(){ document.getElementById('payDay').textContent = period().pay; }
+
+  function renderStepper(){
+    document.querySelectorAll('.step').forEach(el=>{ const s=+el.dataset.s;
+      el.classList.toggle('active', s===step); el.classList.toggle('done', s<step);
+      el.querySelector('.dot').textContent = (s<step)?'✓':s; });
+    document.querySelectorAll('.step-line').forEach(el=>el.classList.toggle('done', +el.dataset.l < step));
+  }
+  function showSection(){ [1,2,3,4].forEach(n=>document.getElementById('sec'+n).style.display = step===n?'':'none'); renderStepper(); }
+  function goStep(n){
+    if(n===2) enterConfirm();
+    if(n===3||n===4) syncCheck();
+    step=n; showSection(); window.scrollTo({top:0,behavior:'smooth'});
+  }
+
+  /* Step2 */
+  function enterConfirm(){
+    const p = period();
+    document.getElementById('periodEcho').innerHTML = (isZh()
+      ? `周期：${p.zh} · 发薪日 ${p.pay} · ${SCHED_EN[sched]==='Bi-weekly'?'双周':SCHED_EN[sched]}`
+      : `Period: ${p.en} · Pay ${p.pay} · ${SCHED_EN[sched]}`);
+    if(isPeriodApproved(selPid)) rows = ROSTER.map(()=>true);
+    renderConfirm();
+  }
+  function renderConfirm(){
+    const approved = isPeriodApproved(selPid) || rows.every(Boolean);
+    document.getElementById('approvedBanner').style.display = approved ? '' : 'none';
+    document.getElementById('rowTools').style.display = approved ? 'none' : '';
+    document.getElementById('tsBody').innerHTML = ROSTER.map((e,i)=>`<tr>
+        <td class="nm">${e.name}</td><td><span class="role-pill">${e.role}</span></td>
+        <td class="num">${e.reg}</td><td class="num">${e.ot}</td><td class="num">${e.tips}</td>
+        <td class="ctr">${ (rows[i]||approved)
+          ? `<span class="approved-tag">✓ <span class="zh">已审批</span><span class="en">Approved</span></span>`
+          : `<button class="btn-approve" onclick="approveRow(${i})">Approve</button>` }</td>
+      </tr>`).join('');
+    const done = (approved?ROSTER.length:rows.filter(Boolean).length), tot=ROSTER.length;
+    ['apDone','apDoneEn'].forEach(id=>document.getElementById(id).textContent=done);
+    ['apTot','apTotEn'].forEach(id=>document.getElementById(id).textContent=tot);
+    document.getElementById('toEditBtn').disabled = !approved && !rows.every(Boolean);
+  }
+  function approveRow(i){ rows[i]=true; if(rows.every(Boolean)){ setPeriodApproved(selPid,true); showToast('工时和小费已全部审批','Approved'); } renderConfirm(); }
+  function approveAll(){ rows=ROSTER.map(()=>true); setPeriodApproved(selPid,true); showToast('已批准全部','Approved all'); renderConfirm(); }
+  function openTimesheets(){ showToast('打开「员工考勤表」（示意）','Opening Timesheets (demo)'); }
+
+  /* Step3/4 头部日期同步所选周期 */
+  function syncCheck(){
+    const p = period();
+    const range = p.zh.replace(/\s*–\s*/,' - ').replace('2026/','7/... ');
+    document.getElementById('ckRange').textContent = p.zh.replace('2026/','').trim() + ' ('+SCHED_EN[sched]+')';
+    document.getElementById('pvPeriod').textContent = p.zh;
+    document.getElementById('pvPayday').textContent = p.pay;
+  }
+
+  function ckTab(t){
+    document.querySelectorAll('.ck-tab').forEach(el=>el.classList.toggle('active', el.dataset.tab===t));
+    document.getElementById('tab-pay').style.display = t==='pay'?'':'none';
+    document.getElementById('tab-other').style.display = t==='pay'?'none':'';
+  }
+  function ckToast(zh,en){ showToast(zh,en); }
+  function submitPayroll(){ showToast('跑薪已提交，将于 '+period().pay+' 发放','Payroll submitted'); setTimeout(()=>location.href='chowbus-payroll-overview.html',1400); }
+
+  function showToast(zh,en){
+    const t=document.getElementById('toast');
+    document.getElementById('toastMsg').innerHTML=`<span class="zh">${zh}</span><span class="en">${en}</span>`;
+    t.classList.add('show'); clearTimeout(t._tm); t._tm=setTimeout(()=>t.classList.remove('show'),2600);
+  }
+
+  function toggleLanguage(){const en=!document.body.classList.contains('lang-en');document.body.classList.toggle('lang-en',en);document.body.classList.toggle('lang-zh',!en);try{localStorage.setItem('cbLang',en?'en':'zh');}catch(e){}fillPeriodSelect();if(step===2)renderConfirm();}
+  (function(){try{if(localStorage.getItem('cbLang')==='en'){document.body.classList.remove('lang-zh');document.body.classList.add('lang-en');}}catch(e){}})();
+
+  fillPeriodSelect();
+  showSection();
+</script>
+</body>
+</html>
