@@ -109,6 +109,20 @@
   .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
   .toast .tick{width:26px;height:26px;border-radius:50%;background:#22A353;color:#fff;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:900;flex:0 0 26px;}
 </style>
+<script>
+  /* 首次进入「员工管理」→ 跳转到匹配导入页；之后再进入 → 正常显示本页。
+     标记存于 localStorage.cbEmployeesVisited。带 ?added=1（导入流程完成返回）时不跳转。 */
+  (function(){
+    try{
+      var p = new URLSearchParams(location.search);
+      if(p.get('added')){ localStorage.setItem('cbEmployeesVisited','1'); return; }
+      if(!localStorage.getItem('cbEmployeesVisited')){
+        localStorage.setItem('cbEmployeesVisited','1');
+        location.replace('chowbus-payroll-import-match.html');
+      }
+    }catch(e){}
+  })();
+</script>
 </head>
 <body class="lang-zh">
 
