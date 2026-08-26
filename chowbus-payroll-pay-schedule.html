@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chowbus Payroll · 发薪方案</title>
+<style>
+  :root{--primary:#CC1C4C;--primary-hover:#A6123B;--bg:#F7F8FA;--border:#EDEEF1;--ink:#1F1F1F;--muted:#6B7280;--sidebar-w:250px;--teal:#3E8E82;}
+  *{box-sizing:border-box;margin:0;padding:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"PingFang SC","Microsoft YaHei",Arial,sans-serif;}
+  body{display:flex;background:var(--bg);color:var(--ink);min-height:100vh;overflow-x:hidden;}
+  body.lang-zh .en{display:none!important;} body.lang-en .zh{display:none!important;}
+
+  aside.sidebar{width:var(--sidebar-w);background:#fff;border-right:1px solid var(--border);position:fixed;height:100vh;overflow-y:auto;z-index:100;}
+  .logo-area{padding:18px 22px;display:flex;align-items:center;gap:8px;border-bottom:1px solid var(--border);}
+  .logo-area .ic{font-size:22px;} .logo-area .tx{font-weight:900;font-size:19px;color:var(--primary);}
+  .menu-list{list-style:none;padding:10px 0;}
+  .menu-item{padding:11px 22px;display:flex;align-items:center;color:#374151;font-size:14px;cursor:pointer;transition:.15s;}
+  .menu-item:hover{background:#FDF2F4;color:var(--primary);}
+  .menu-icon{margin-right:12px;width:18px;text-align:center;opacity:.75;}
+  .caret{margin-left:auto;font-size:11px;color:#c4c8cf;}
+  .menu-group.open>.menu-item{color:var(--primary);font-weight:600;}
+  .submenu-list{list-style:none;padding:2px 0 6px;}
+  .submenu-item{padding:10px 22px 10px 50px;font-size:13.5px;color:var(--muted);cursor:pointer;transition:.15s;}
+  .submenu-item:hover{color:var(--primary);}
+  .submenu-item.active{color:var(--primary);font-weight:700;background:#FFF0F2;border-left:3px solid var(--primary);padding-left:47px;}
+
+  main{margin-left:var(--sidebar-w);flex:1;min-height:100vh;display:flex;flex-direction:column;}
+  header.top{height:58px;background:#fff;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;padding:0 28px;position:sticky;top:0;z-index:99;}
+  .hleft{display:flex;align-items:center;gap:16px;font-size:14px;color:#333;}
+  .collapse{font-size:18px;color:#888;cursor:pointer;}
+  .store{font-weight:600;cursor:pointer;} .store .ca{color:#aaa;font-size:11px;margin-left:4px;}
+  .usa{background:#EEE;padding:2px 8px;border-radius:4px;font-size:11px;color:#555;}
+  .hright{display:flex;align-items:center;gap:22px;font-size:13.5px;color:var(--muted);}
+  .langpill{display:inline-flex;border:1px solid #E3B8C4;border-radius:999px;overflow:hidden;cursor:pointer;font-size:12.5px;font-weight:600;}
+  .langpill span{padding:5px 15px;transition:.15s;}
+  body.lang-zh .langpill .lz, body.lang-en .langpill .le{background:var(--primary);color:#fff;}
+  body.lang-zh .langpill .le, body.lang-en .langpill .lz{background:#fff;color:#666;}
+
+  .content{padding:26px 34px;flex:1;max-width:960px;}
+  .crumb{font-size:12.5px;color:#9aa0aa;margin-bottom:12px;cursor:pointer;display:inline-block;}
+  .crumb:hover{color:var(--primary);}
+  .page-title{font-size:24px;font-weight:800;margin-bottom:8px;}
+  .page-desc{font-size:14px;color:#4b5563;line-height:1.6;margin-bottom:8px;max-width:640px;}
+  .pg-add{display:flex;justify-content:flex-end;margin:8px 0 16px;}
+  .btn-addpg{background:none;border:none;color:var(--primary);font-weight:800;font-size:15px;cursor:pointer;display:inline-flex;align-items:center;gap:7px;}
+  .btn-addpg:hover{color:var(--primary-hover);}
+
+  /* 发薪组卡片 */
+  .pg-card{background:#fff;border:1px solid var(--border);border-radius:14px;padding:22px 24px;margin-bottom:16px;box-shadow:0 2px 12px rgba(0,0,0,.03);}
+  .pg-top{display:flex;align-items:center;gap:14px;}
+  .pg-name{font-size:18px;font-weight:800;color:#1a1a1a;}
+  .pg-actions{margin-left:auto;display:flex;align-items:center;gap:12px;position:relative;}
+  .manage{display:inline-flex;align-items:center;gap:7px;color:var(--primary);font-weight:700;font-size:14px;cursor:pointer;border:1px solid transparent;border-radius:9px;padding:8px 14px;transition:.15s;}
+  .manage:hover{border-color:#C4D0FF;background:#F7F9FF;}
+  .pg-sep{color:#DcDce3;}
+  .kebab{background:none;border:none;color:var(--primary);font-size:20px;cursor:pointer;width:34px;height:34px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;transition:.15s;}
+  .kebab:hover{background:#FDE7EE;}
+  .kmenu{position:absolute;right:0;top:42px;background:#fff;border:1px solid var(--border);border-radius:12px;box-shadow:0 12px 32px rgba(0,0,0,.16);padding:8px;min-width:180px;display:none;z-index:20;}
+  .kmenu.open{display:block;}
+  .kmenu .mi{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:8px;font-size:14px;color:var(--primary);font-weight:600;cursor:pointer;}
+  .kmenu .mi:hover{background:#FDF2F4;}
+  .pg-freq{margin-top:16px;} .pg-freq .k{font-size:13px;color:var(--muted);} .pg-freq .v{font-size:15px;color:#1a1a1a;margin-top:3px;}
+  .badge-default{display:inline-block;margin-top:16px;background:var(--teal);color:#fff;font-size:13px;font-weight:700;padding:6px 14px;border-radius:8px;}
+
+  /* ===== 抽屉 / 模态 ===== */
+  .overlay{position:fixed;inset:0;background:rgba(20,22,30,.45);display:none;z-index:500;justify-content:flex-end;}
+  .overlay.open{display:flex;}
+  .drawer{background:#fff;width:min(760px,96vw);height:100%;display:flex;flex-direction:column;box-shadow:-8px 0 40px rgba(0,0,0,.22);}
+  .drawer-head{display:flex;align-items:center;gap:14px;padding:20px 26px 0;}
+  .dh-back,.dh-x{width:40px;height:40px;border-radius:10px;border:1px solid #E7E8EC;background:#fff;display:flex;align-items:center;justify-content:center;font-size:18px;color:#374151;cursor:pointer;}
+  .dh-x{margin-left:auto;border:none;font-size:22px;} .dh-x:hover{color:#111;}
+  .dh-back:hover{background:#F5F6F8;}
+  .drawer-title{font-size:22px;font-weight:800;color:#111;}
+  .wsteps{display:flex;padding:14px 26px 0;gap:0;}
+  .wstep{flex:1;padding-top:10px;font-size:13px;font-weight:700;color:#9aa0aa;border-top:3px solid #E7E8EC;}
+  .wstep.on{color:#1a1a1a;border-top-color:var(--primary);}
+  .drawer-body{flex:1;overflow-y:auto;padding:20px 26px 26px;}
+  .drawer-foot{border-top:1px solid var(--border);padding:14px 26px;display:flex;justify-content:flex-end;gap:12px;background:#fff;}
+
+  .step-h{font-size:20px;font-weight:800;margin-bottom:10px;color:#111;}
+  .step-p{font-size:14px;color:#4b5563;line-height:1.6;margin-bottom:20px;max-width:600px;}
+
+  .fld{margin-bottom:20px;}
+  .fld>label{display:flex;align-items:center;gap:6px;font-size:14px;font-weight:700;color:#1a1a1a;margin-bottom:8px;}
+  .info-i{width:15px;height:15px;border-radius:50%;border:1px solid #c4c8cf;color:#9aa0aa;font-size:10px;font-weight:800;display:inline-flex;align-items:center;justify-content:center;cursor:help;}
+  .sel,.dt{width:100%;padding:12px 14px;font-size:14px;border:1px solid #DCDCE3;border-radius:10px;background:#fff;color:#1f1f1f;}
+  select.sel{appearance:none;cursor:pointer;padding-right:34px;
+    background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%239aa0aa' stroke-width='3'><path d='M6 9l6 6 6-6'/></svg>");background-repeat:no-repeat;background-position:right 12px center;}
+  .sel:focus,.dt:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 3px rgba(204,28,76,.10);}
+  .nameline{display:flex;align-items:center;gap:10px;}
+  .nameval{font-size:14.5px;color:#1a1a1a;border-bottom:1px dashed #c4c8cf;padding-bottom:2px;}
+  .name-pen{color:var(--primary);cursor:pointer;font-size:15px;}
+  .name-input{font-size:14.5px;padding:6px 10px;border:1px solid var(--primary);border-radius:8px;box-shadow:0 0 0 3px rgba(204,28,76,.10);outline:none;}
+  .infobox{display:flex;gap:10px;background:#EAF1FB;border:1px solid #CFE0F5;border-radius:10px;padding:12px 14px;font-size:13px;color:#2c4a72;line-height:1.55;margin:-4px 0 18px;}
+  .infobox .ib-ic{color:#2563EB;font-weight:900;flex:0 0 auto;}
+  .helper{font-size:12.5px;color:var(--muted);margin:-6px 0 4px;line-height:1.55;} .helper b{color:#374151;}
+  .radios{display:flex;gap:24px;margin:2px 0 6px;flex-wrap:wrap;}
+  .radio{display:flex;align-items:center;gap:8px;font-size:13.5px;color:#374151;cursor:pointer;}
+  .radio input{accent-color:var(--primary);width:16px;height:16px;}
+  .row2{display:grid;grid-template-columns:1fr 1.5fr;gap:12px;}
+  .hr{height:1px;background:var(--border);margin:22px 0;}
+
+  .toggle{display:inline-flex;align-items:center;gap:12px;cursor:pointer;font-size:14px;color:#1a1a1a;font-weight:600;margin-top:6px;}
+  .tg-track{width:42px;height:23px;border-radius:999px;background:#D9DBE0;position:relative;transition:.15s;flex:0 0 auto;}
+  .tg-knob{position:absolute;top:2px;left:2px;width:19px;height:19px;border-radius:50%;background:#fff;transition:.15s;box-shadow:0 1px 3px rgba(0,0,0,.2);}
+  .toggle.on .tg-track{background:var(--primary);} .toggle.on .tg-knob{left:21px;}
+  .toggle-help{font-size:12px;color:var(--muted);margin-top:6px;}
+  .err-box{display:flex;gap:12px;background:#FFF4E0;border:1px solid #F1D79A;border-radius:12px;padding:16px 18px;}
+  .err-ic{width:24px;height:24px;border-radius:50%;background:#E08A00;color:#fff;font-weight:900;display:flex;align-items:center;justify-content:center;flex:0 0 auto;font-size:14px;}
+  .err-title{font-size:14px;font-weight:800;color:#7a5b12;margin-bottom:8px;}
+  .err-box ul{margin:0;padding-left:18px;} .err-box li{font-size:13px;color:#7a5b12;line-height:1.6;margin-bottom:4px;}
+
+  /* 即将到来的发薪日 */
+  .upcoming-head{display:flex;justify-content:space-between;align-items:center;margin:6px 0 12px;}
+  .upcoming-head h3{font-size:16px;font-weight:800;}
+  .see-all{color:var(--primary);font-weight:700;font-size:13.5px;cursor:pointer;}
+  .pd-card{display:flex;gap:18px;border:1px solid var(--border);border-radius:12px;padding:18px;margin-bottom:16px;}
+  .pd-legend{width:200px;flex:0 0 auto;}
+  .pd-legend .lg{margin-bottom:15px;} .pd-legend .lg:last-child{margin-bottom:0;}
+  .pd-legend .k{font-size:12.5px;color:var(--muted);margin-bottom:5px;display:flex;align-items:center;gap:8px;}
+  .pd-legend .sq{width:13px;height:13px;border-radius:3px;display:inline-block;}
+  .sq.rng{background:#E8EAEE;} .sq.sub{background:#F3B6C6;} .sq.pay{background:var(--primary);}
+  .pd-legend .v{font-size:14.5px;font-weight:700;color:#1a1a1a;font-variant-numeric:tabular-nums;}
+
+  .cal{flex:1;min-width:0;}
+  .cal-head{display:flex;align-items:center;gap:10px;margin-bottom:10px;} .cal-head b{font-size:15.5px;}
+  .cal-nav{margin-left:auto;color:#9aa0aa;font-size:15px;letter-spacing:6px;}
+  .cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;}
+  .cal-dow div{text-align:center;font-size:11px;font-weight:800;color:#8a8f9a;padding:3px 0;}
+  .cal-cell{text-align:center;font-size:13px;color:#374151;padding:8px 0;border-radius:9px;}
+  .cal-cell.out{color:#c4c8cf;}
+  .cal-cell.rng{background:#E8EAEE;}
+  .cal-cell.sub{background:#F3B6C6;color:#7a2540;font-weight:700;}
+  .cal-cell.pay{background:var(--primary);color:#fff;font-weight:800;}
+
+  /* 选择员工 */
+  .wk-all{display:flex;align-items:center;gap:14px;padding:12px 2px;border-bottom:1px solid var(--border);font-size:12.5px;font-weight:800;color:#8a8f9a;letter-spacing:.04em;}
+  .wk{display:flex;align-items:center;gap:14px;padding:14px 2px;border-bottom:1px solid #F1F2F4;}
+  .wk .avatar{width:40px;height:40px;border-radius:50%;background:#D9A45B;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:14px;flex:0 0 auto;}
+  .wk .wn{font-weight:700;color:#1a1a1a;font-size:14.5px;} .wk .wt{font-size:12.5px;color:var(--muted);margin-top:2px;}
+  input[type=checkbox]{width:19px;height:19px;accent-color:var(--primary);cursor:pointer;}
+
+  .btn-primary{background:var(--primary);color:#fff;border:none;border-radius:10px;padding:12px 26px;font-size:14px;font-weight:700;cursor:pointer;transition:.15s;}
+  .btn-primary:hover{background:var(--primary-hover);}
+  .btn-ghost{background:#fff;color:#444;border:1px solid #DCDCDC;border-radius:10px;padding:12px 22px;font-size:14px;font-weight:600;cursor:pointer;}
+  .btn-ghost:hover{background:#F5F5F5;}
+
+  .toast{position:fixed;left:50%;bottom:32px;transform:translateX(-50%) translateY(24px);opacity:0;pointer-events:none;background:#1f2430;color:#fff;border-radius:12px;padding:13px 18px;display:flex;align-items:center;gap:12px;box-shadow:0 12px 32px rgba(0,0,0,.28);z-index:1000;transition:all .3s cubic-bezier(.2,.8,.3,1);font-size:14px;}
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+  .toast .tick{width:22px;height:22px;border-radius:50%;background:#22A353;color:#fff;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:900;flex:0 0 22px;}
+</style>
+</head>
+<body class="lang-zh">
+
+<aside class="sidebar">
+  <div class="logo-area"><span class="ic">🍜</span><span class="tx">chowbus</span></div>
+  <ul class="menu-list">
+    <li class="menu-item"><span class="menu-icon">🏠</span><span class="zh">首页</span><span class="en">Home</span></li>
+    <li class="menu-item"><span class="menu-icon">🧮</span><span class="zh">调整管理</span><span class="en">Adjustment Management</span></li>
+    <li class="menu-item"><span class="menu-icon">💳</span><span class="zh">交易</span><span class="en">Transactions</span></li>
+    <li class="menu-item"><span class="menu-icon">🤖</span><span class="zh">AI电话点餐</span><span class="en">AI Phone Ordering</span></li>
+    <li class="menu-item"><span class="menu-icon">🧾</span><span class="zh">订单</span><span class="en">Orders</span></li>
+    <li class="menu-item"><span class="menu-icon">📋</span><span class="zh">菜单</span><span class="en">Menu</span><span class="caret">▾</span></li>
+    <li class="menu-item"><span class="menu-icon">🎯</span><span class="zh">促销管理</span><span class="en">Promotion Management</span></li>
+    <li class="menu-item"><span class="menu-icon">👥</span><span class="zh">团队管理</span><span class="en">Team Management</span><span class="caret">▾</span></li>
+
+    <div class="menu-group open">
+      <li class="menu-item"><span class="menu-icon">💲</span><span class="zh">薪酬</span><span class="en">Payroll</span><span class="caret">▴</span></li>
+      <ul class="submenu-list">
+        <li class="submenu-item" onclick="location.href='chowbus-payroll-overview.html'"><span class="zh">概览</span><span class="en">Overview</span></li>
+        <li class="submenu-item" onclick="location.href='chowbus-payroll-run-payroll.html'"><span class="zh">跑薪</span><span class="en">Run Payroll</span></li>
+        <li class="submenu-item active" onclick="location.href='chowbus-payroll-company-setup.html'"><span class="zh">公司设置</span><span class="en">Company Setup</span></li>
+        <li class="submenu-item" onclick="location.href='chowbus-payroll-employees.html'"><span class="zh">员工管理</span><span class="en">Employees</span></li>
+        <li class="submenu-item" onclick="location.href='chowbus-payroll-taxes-filings.html'"><span class="zh">税务与申报</span><span class="en">Taxes &amp; Filings</span></li>
+      </ul>
+    </div>
+
+    <li class="menu-item"><span class="menu-icon">📟</span><span class="zh">设备</span><span class="en">Devices</span></li>
+    <li class="menu-item"><span class="menu-icon">👤</span><span class="zh">账户</span><span class="en">Account</span><span class="caret">▾</span></li>
+    <li class="menu-item"><span class="menu-icon">✅</span><span class="zh">智能点餐</span><span class="en">Smart Ordering</span><span class="caret">▾</span></li>
+  </ul>
+</aside>
+
+<main>
+  <header class="top">
+    <div class="hleft">
+      <span class="collapse">≡</span>
+      <span class="store">may localserver -12555-Curry Flurry(12555)<span class="ca">▾</span></span>
+      <span class="usa">USA</span>
+    </div>
+    <div class="hright">
+      <span>sisi.hu@chowbus.com</span>
+      <div class="langpill" onclick="toggleLanguage()"><span class="lz">中文</span><span class="le">EN</span></div>
+    </div>
+  </header>
+
+  <div class="content">
+    <span class="crumb" onclick="location.href='chowbus-payroll-company-setup.html'"><span class="zh">← 返回公司设置</span><span class="en">← Back to Company Setup</span></span>
+    <h1 class="page-title"><span class="zh">发薪方案</span><span class="en">Pay Schedule</span></h1>
+    <p class="page-desc"><span class="zh">发薪组定义了员工「如何」以及「何时」发薪。你可以为不同员工创建不同的发薪组。</span><span class="en">Pay groups define how and when workers are paid. You can create different groups for different workers.</span></p>
+    <div class="pg-add"><button class="btn-addpg" onclick="openAdd()"><span>＋</span><span class="zh">新建发薪组</span><span class="en">Add pay group</span></button></div>
+
+    <div id="groupList"></div>
+  </div>
+</main>
+
+<!-- ===== 新建/编辑 向导 ===== -->
+<div class="overlay" id="wizard">
+  <div class="drawer">
+    <div class="drawer-head">
+      <div class="dh-back" id="wizBack" onclick="headerBack()" style="display:none;">←</div>
+      <div class="drawer-title" id="wizTitle"></div>
+      <div class="dh-x" onclick="closeWizard()">✕</div>
+    </div>
+    <div class="wsteps" id="wsteps">
+      <div class="wstep on" id="ws1"><span class="zh">1. 设置发薪组</span><span class="en">1. Set up pay group</span></div>
+      <div class="wstep" id="ws2" style="text-align:right;"><span class="zh">2. 选择员工</span><span class="en">2. Select workers</span></div>
+    </div>
+    <div class="drawer-body" id="wizBody"></div>
+    <div class="drawer-foot" id="wizFoot"></div>
+  </div>
+</div>
+
+<!-- ===== 预览即将到来的发薪日 ===== -->
+<div class="overlay" id="preview">
+  <div class="drawer">
+    <div class="drawer-head">
+      <div class="dh-back" onclick="closePreview()">←</div>
+      <div class="drawer-title"><span class="zh">预览即将到来的发薪日</span><span class="en">Preview upcoming paydays</span></div>
+      <div class="dh-x" onclick="closePreview()">✕</div>
+    </div>
+    <div class="drawer-body" id="previewBody"></div>
+    <div class="drawer-foot"><button class="btn-primary" onclick="closePreview()"><span class="zh">关闭</span><span class="en">Close</span></button></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"><span class="tick">✓</span><span id="toastMsg"></span></div>
+
+<script>
+/* ============ 数据 ============ */
+const WORKERS = [
+  {id:1, name:'Dan Boyle',  initials:'DB', type:'Employee'},
+  {id:2, name:'Test Parse', initials:'TP', type:'Employee'},
+  {id:3, name:'Test Parse', initials:'TP', type:'Employee'},
+];
+let groups = [
+  {id:1, freq:'biweekly', name:'Biweekly pay group', isDefault:false, payDate:'2026-08-20', endBefore:6, workers:[]},
+  {id:2, freq:'weekly',   name:'Weekly pay group',   isDefault:true,  payDate:'2026-08-03', endBefore:7, workers:[1,2,3]},
+];
+let seq = 3;
+
+const FREQ = {
+  weekly:      {zh:'每周',   en:'Every week',       base:'Weekly pay group',      len:7},
+  biweekly:    {zh:'每两周', en:'Every other week', base:'Biweekly pay group',    len:14},
+  semimonthly: {zh:'每月两次', en:'Twice a month',  base:'Semi-monthly pay group'},
+  monthly:     {zh:'每月一次', en:'Once a month',   base:'Monthly pay group'},
+};
+const WD_EN=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+const WD_ZH=['周日','周一','周二','周三','周四','周五','周六'];
+const MON_EN=['January','February','March','April','May','June','July','August','September','October','November','December'];
+const MON_SH=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+
+function isZh(){return document.body.classList.contains('lang-zh');}
+function bi(zh,en){return `<span class="zh">${zh}</span><span class="en">${en}</span>`;}
+
+/* ============ 日期工具 ============ */
+function parseISO(s){const [y,m,d]=s.split('-').map(Number);return new Date(y,m-1,d);}
+function fmtISO(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
+function addDays(d,n){const x=new Date(d);x.setDate(x.getDate()+n);return x;}
+function subBiz(d,n){let x=new Date(d),c=0;while(c<n){x.setDate(x.getDate()-1);const w=x.getDay();if(w!==0&&w!==6)c++;}return x;}
+function longEn(d){return WD_EN[d.getDay()].slice(0,3)+', '+MON_SH[d.getMonth()]+' '+d.getDate()+', '+d.getFullYear();}
+function longZh(d){return d.getFullYear()+'年'+(d.getMonth()+1)+'月'+d.getDate()+'日 ('+WD_ZH[d.getDay()]+')';}
+function ordinal(n){const s=['th','st','nd','rd'],v=n%100;return n+(s[(v-20)%10]||s[v]||s[0]);}
+
+/* 计算某周期（weekly/biweekly） */
+function genPeriods(freq, payISO, endBefore, count){
+  const len = FREQ[freq].len;
+  let pay = parseISO(payISO), out=[];
+  for(let i=0;i<count;i++){
+    const end = addDays(pay, -endBefore);
+    const start = addDays(end, -(len-1));
+    const submit = subBiz(pay, 4);
+    out.push({start:fmtISO(start), end:fmtISO(end), submit:fmtISO(submit), pay:fmtISO(pay),
+              payD:new Date(pay), startD:new Date(start), endD:new Date(end), submitD:new Date(submit)});
+    pay = addDays(pay, len);
+  }
+  return out;
+}
+
+/* 迷你日历 */
+function renderCal(y, m0, marks){
+  const first=new Date(y,m0,1), startDow=first.getDay();
+  const gridStart=new Date(y,m0,1-startDow);
+  let cells='';
+  for(let i=0;i<42;i++){
+    const d=addDays(gridStart,i), iso=fmtISO(d), inM=d.getMonth()===m0;
+    let cls='cal-cell'; if(!inM)cls+=' out';
+    if(marks.range && iso>=marks.range[0] && iso<=marks.range[1]) cls+=' rng';
+    if(marks.submit===iso) cls+=' sub';
+    if(marks.pay===iso) cls+=' pay';
+    cells+=`<div class="${cls}">${d.getDate()}</div>`;
+  }
+  return `<div class="cal">
+    <div class="cal-head"><b>${MON_EN[m0]} ${y}</b><span class="cal-nav">‹  ›</span></div>
+    <div class="cal-grid cal-dow"><div>SU</div><div>MO</div><div>TU</div><div>WE</div><div>TH</div><div>FR</div><div>SA</div></div>
+    <div class="cal-grid">${cells}</div></div>`;
+}
+function pdCard(p){
+  const cal=renderCal(p.payD.getFullYear(), p.payD.getMonth(), {pay:p.pay, submit:p.submit, range:[p.start,p.end]});
+  return `<div class="pd-card">
+    <div class="pd-legend">
+      <div class="lg"><div class="k"><span class="sq rng"></span>${bi('发薪周期','Pay period')}</div><div class="v">${p.start}–${p.end}</div></div>
+      <div class="lg"><div class="k"><span class="sq sub"></span>${bi('提交日','Submit date')}</div><div class="v">${p.submit}</div></div>
+      <div class="lg"><div class="k"><span class="sq pay"></span>${bi('发薪日','Pay date')}</div><div class="v">${p.pay}</div></div>
+    </div>${cal}</div>`;
+}
+
+/* ============ 列表 ============ */
+function freqText(g){ const f=FREQ[g.freq]; return isZh()?f.zh:f.en; }
+function renderList(){
+  document.getElementById('groupList').innerHTML = groups.map(g=>`
+    <div class="pg-card">
+      <div class="pg-top">
+        <span class="pg-name">${g.name}</span>
+        <div class="pg-actions">
+          <span class="manage" onclick="openManage(${g.id})">${bi('管理员工','Manage workers')}</span>
+          <span class="pg-sep">|</span>
+          <button class="kebab" onclick="toggleKebab(event,${g.id})">⋮</button>
+          <div class="kmenu" id="km-${g.id}">
+            <div class="mi" onclick="openEdit(${g.id})">${bi('编辑发薪组','Edit pay group')}</div>
+            <div class="mi" onclick="delGroup(${g.id})">${bi('删除','Delete')}</div>
+          </div>
+        </div>
+      </div>
+      <div class="pg-freq"><div class="k">${bi('发薪频率','Pay frequency')}</div><div class="v">${freqText(g)}</div></div>
+      ${g.isDefault?`<span class="badge-default">${bi('默认发薪组','Default pay group')}</span>`:''}
+    </div>`).join('');
+}
+function toggleKebab(e,id){ e.stopPropagation(); const m=document.getElementById('km-'+id); const open=m.classList.contains('open'); closeKebabs(); if(!open)m.classList.add('open'); }
+function closeKebabs(){ document.querySelectorAll('.kmenu.open').forEach(m=>m.classList.remove('open')); }
+document.addEventListener('click', closeKebabs);
+function delGroup(id){ closeKebabs(); groups=groups.filter(g=>g.id!==id); renderList(); showToast('已删除发薪组','Pay group deleted'); }
+
+/* ============ 向导状态 ============ */
+let wizStep=1, editingId=null, form=null, manageMode=false;
+
+function defaultForm(freq){
+  const base={freq, name:autoName(freq), isDefault:false, workers:new Set()};
+  if(freq==='weekly')      Object.assign(base,{payDate:'', endBefore:null});
+  if(freq==='biweekly')    Object.assign(base,{payDate:'', endBefore:null});
+  if(freq==='monthly')     Object.assign(base,{dayOfMonth:1, endMode:'same', firstEndDay:1, firstEndOffset:'same', firstEndDays:0, firstEndDir:'before', firstPayDate:''});
+  if(freq==='semimonthly') Object.assign(base,{firstPayday:1, secondPayday:15, endMode:'same', firstEndDay:1, firstEndOffset:'same', secondEndDay:15, secondEndOffset:'same', firstEndDays:0, firstEndDir:'before', secondEndDays:0, secondEndDir:'before', firstPayDate:''});
+  return base;
+}
+function autoName(freq){ const base=FREQ[freq].base; const n=groups.filter(g=>g.freq===freq).length; return n>0? base+' ('+(n+1)+')' : base; }
+
+function openAdd(){ manageMode=false; editingId=null; wizStep=1; form={freq:'', name:'', isDefault:false, workers:new Set()}; showWizard(); }
+function loadForm(g){ const f=defaultForm(g.freq); Object.assign(f, g); f.workers=new Set(g.workers||[]); return f; }
+function openEdit(id){ closeKebabs(); manageMode=false; editingId=id; wizStep=1; form=loadForm(groups.find(x=>x.id===id)); showWizard(); }
+function openManage(id){ closeKebabs(); manageMode=true; editingId=id; wizStep=2; form=loadForm(groups.find(x=>x.id===id)); showWizard(); }
+function headerBack(){ if(manageMode) closeWizard(); else wizBack(); }
+
+function showWizard(){ document.getElementById('wizard').classList.add('open'); renderWizard(); }
+function closeWizard(){ document.getElementById('wizard').classList.remove('open'); }
+
+function renderWizard(){
+  document.getElementById('wizTitle').innerHTML = manageMode ? bi('管理员工','Manage workers')
+    : (editingId? bi('编辑发薪组','Edit pay group') : bi('新建发薪组','Add pay group'));
+  document.getElementById('wsteps').style.display = manageMode ? 'none' : 'flex';
+  document.getElementById('ws1').classList.toggle('on', true);
+  document.getElementById('ws2').classList.toggle('on', wizStep===2);
+  document.getElementById('wizBack').style.display = (manageMode || wizStep===2) ? '' : 'none';
+  if(wizStep===1) renderStep1(); else renderStep2();
+}
+function wizBack(){ if(wizStep===2){wizStep=1;renderWizard();} }
+
+/* ---- Step 1 ---- */
+function daysBeforeOptions(sel){ let o=`<option value="" ${sel==null?'selected':''} disabled hidden>${isZh()?'请选择周期结束':'Select period end'}</option>`; for(let n=0;n<=13;n++){o+=`<option value="${n}" ${n===sel?'selected':''}>${n} ${isZh()?'天前(相对发薪日)':'days before payday'}</option>`;} return o; }
+function domOptions(sel){ let o=''; for(let n=1;n<=28;n++){o+=`<option value="${n}" ${n===sel?'selected':''}>${ordinal(n)}</option>`;} o+=`<option value="99" ${sel===99?'selected':''}>${isZh()?'当月最后一天':'Last day'}</option>`; return o; }
+function offsetOptions(sel){ const opt=[['same', isZh()?'当月':'day of the same month'],['prev', isZh()?'上月':'day of the previous month'],['next', isZh()?'下月':'day of the next month']];
+  return opt.map(([v,l])=>`<option value="${v}" ${v===sel?'selected':''}>${l}</option>`).join(''); }
+function daysNumOptions(sel){ let o=''; for(let n=0;n<=15;n++){ const lab=isZh()?(n+' 天'):(n===1?'1 day':n+' days'); o+=`<option value="${n}" ${n===sel?'selected':''}>${lab}</option>`;} return o; }
+function dirOptions(sel){ const opt=[['before',isZh()?'发薪日前':'before payday'],['after',isZh()?'发薪日后':'after payday']]; return opt.map(([v,l])=>`<option value="${v}" ${v===sel?'selected':''}>${l}</option>`).join(''); }
+
+/* 「pay period ends on」两个下拉：随 endMode 切换（同日期 vs 相对发薪日天数） */
+function endsRow(which){
+  const f=form;
+  if(f.endMode==='same'){
+    const day=which===0?f.firstEndDay:f.secondEndDay, off=which===0?f.firstEndOffset:f.secondEndOffset;
+    return `<div class="row2"><select class="sel" onchange="setEnd(${which},'day',+this.value)">${domOptions(day)}</select><select class="sel" onchange="setEnd(${which},'off',this.value)">${offsetOptions(off)}</select></div>`;
+  }
+  const days=which===0?f.firstEndDays:f.secondEndDays, dir=which===0?f.firstEndDir:f.secondEndDir;
+  return `<div class="row2"><select class="sel" onchange="setEnd(${which},'days',+this.value)">${daysNumOptions(days)}</select><select class="sel" onchange="setEnd(${which},'dir',this.value)">${dirOptions(dir)}</select></div>`;
+}
+function setEnd(which,kind,val){
+  if(kind==='day'){ which===0?form.firstEndDay=val:form.secondEndDay=val; }
+  if(kind==='off'){ which===0?form.firstEndOffset=val:form.secondEndOffset=val; }
+  if(kind==='days'){ which===0?form.firstEndDays=val:form.secondEndDays=val; }
+  if(kind==='dir'){ which===0?form.firstEndDir=val:form.secondEndDir=val; }
+  renderStep1();
+}
+
+/* 月度/半月：日期与周期推算 */
+function monthAdd(y,m,delta){ let t=m+delta; let ny=y+Math.floor(t/12); let nm=((t%12)+12)%12; return [ny,nm]; }
+function domToDate(y,m,dom){ const last=new Date(y,m+1,0).getDate(); return new Date(y,m, dom===99?last:Math.min(dom,last)); }
+function periodEndFor(form,pay,which){
+  const y=pay.getFullYear(), m=pay.getMonth();
+  if(form.endMode==='same'){
+    const day=which===0?form.firstEndDay:form.secondEndDay, off=which===0?form.firstEndOffset:form.secondEndOffset;
+    const [ey,em]=monthAdd(y,m, off==='prev'?-1:off==='next'?1:0);
+    return domToDate(ey,em,day);
+  }
+  const days=which===0?form.firstEndDays:form.secondEndDays, dir=which===0?form.firstEndDir:form.secondEndDir;
+  return addDays(pay, dir==='before'?-days:days);
+}
+function paydayList(form,count){
+  const doms=form.freq==='monthly'?[form.dayOfMonth]:[form.firstPayday,form.secondPayday];
+  const start=parseISO(form.firstPayDate);
+  let list=[]; let [y,m]=monthAdd(start.getFullYear(),start.getMonth(),-2);
+  for(let k=0;k<count+12;k++){ doms.forEach((dom,idx)=>list.push({date:domToDate(y,m,dom),which:idx})); [y,m]=monthAdd(y,m,1); }
+  list.sort((a,b)=>a.date-b.date); return list;
+}
+function genMonthlyLike(form,count){
+  if(!form.firstPayDate) return [];
+  const list=paydayList(form,count), start=parseISO(form.firstPayDate);
+  let i=list.findIndex(x=>x.date>=start); if(i<1)i=1;
+  let prevEnd=periodEndFor(form,list[i-1].date,list[i-1].which), out=[];
+  for(let k=0;k<count && i<list.length;k++,i++){
+    const pay=list[i].date, end=periodEndFor(form,pay,list[i].which), startD=addDays(prevEnd,1), submit=subBiz(pay,4);
+    out.push({start:fmtISO(startD),end:fmtISO(end),submit:fmtISO(submit),pay:fmtISO(pay),payD:pay,startD,endD:end,submitD:submit});
+    prevEnd=end;
+  }
+  return out;
+}
+function currentPeriods(count){
+  if(form.freq==='weekly'||form.freq==='biweekly') return genPeriods(form.freq,form.payDate,form.endBefore,count);
+  return genMonthlyLike(form,count);
+}
+
+/* 半月薪校验：返回未通过的规则（zh,en） */
+function semiErrors(form){
+  const errs=[];
+  const fp=form.firstPayday===99?31:form.firstPayday, sp=form.secondPayday===99?31:form.secondPayday;
+  function endIdx(which){
+    if(form.endMode==='same'){ const day=(which===0?form.firstEndDay:form.secondEndDay), off=(which===0?form.firstEndOffset:form.secondEndOffset); let d=(day===99?31:day); if(off==='prev')d-=31; if(off==='next')d+=31; return d; }
+    const days=(which===0?form.firstEndDays:form.secondEndDays), dir=(which===0?form.firstEndDir:form.secondEndDir), base=(which===0?fp:sp); return base+(dir==='before'?-days:days);
+  }
+  const fe=endIdx(0), se=endIdx(1);
+  if(!(sp-fp>=10)) errs.push(['第二个发薪日必须至少晚于第一个发薪日 10 天，请重新选择发薪日。','The second payday must be at least 10 days after first payday. Please select different paydays.']);
+  if(!(se-fe>=10)) errs.push(['第二个周期结束必须至少晚于第一个周期结束 10 天，请重新选择周期结束日。','The second pay period end must be at least 10 days after first pay period end. Please select different pay period ends.']);
+  if(!(fp<sp))     errs.push(['第一个发薪日必须早于第二个发薪日。','The first payday must be before the second payday']);
+  if(!(fe<se))     errs.push(['第一个周期结束必须早于第二个周期结束。','The first period end must be before the second period end']);
+  return errs;
+}
+function errBox(errs){
+  return `<div class="err-box"><span class="err-ic">!</span><div>
+    <div class="err-title">${bi('无法生成即将到来的发薪日','We were unable to generate upcoming paydays')}</div>
+    <ul>${errs.map(e=>`<li>${bi(e[0],e[1])}</li>`).join('')}</ul></div></div>`;
+}
+/* 月度/半月的「即将到来的发薪日」区块（含校验 → 错误框 / 卡片） */
+function upcomingSection(form){
+  if(!form.firstPayDate) return '';
+  const invalid = form.freq==='semimonthly' && semiErrors(form).length>0;
+  let inner;
+  if(invalid) inner = errBox(semiErrors(form));
+  else { inner = genMonthlyLike(form, form.freq==='monthly'?1:2).map(pdCard).join(''); }
+  return `<div class="hr"></div><div class="upcoming-head"><h3>${bi('即将到来的发薪日','Upcoming paydays')}</h3>${invalid?'':`<span class="see-all" onclick="openPreview()">${bi('查看全部','See all')}</span>`}</div>${inner}`;
+}
+
+function renderStep1(){
+  const f=form;
+  let body = `<div class="step-h">${bi('设置发薪组','Set up pay group')}</div>
+    <div class="step-p">${bi('发薪组帮助你安排「谁在何时发薪」。我们会据此提醒你何时需要跑薪。','A pay group helps you organize who gets paid when. We\'ll use this to remind you when payroll is due.')}</div>`;
+
+  // 频率
+  body += `<div class="fld"><label>${bi('发薪频率','Pay frequency')} <span class="info-i">i</span></label>
+    <select class="sel" onchange="onFreq(this.value)">
+      <option value="" ${f.freq===''?'selected':''} disabled hidden>${isZh()?'请选择…':'Select…'}</option>
+      <option value="weekly" ${f.freq==='weekly'?'selected':''}>${isZh()?'每周':'Every week'}</option>
+      <option value="biweekly" ${f.freq==='biweekly'?'selected':''}>${isZh()?'每两周':'Every other week'}</option>
+      <option value="semimonthly" ${f.freq==='semimonthly'?'selected':''}>${isZh()?'每月两次':'Twice a month'}</option>
+      <option value="monthly" ${f.freq==='monthly'?'selected':''}>${isZh()?'每月一次':'Once a month'}</option>
+    </select></div>`;
+
+  if(f.freq){
+    // 名称
+    body += `<div class="fld"><label>${bi('发薪组名称','Pay group name')}</label>
+      <div class="nameline" id="nameLine">
+        <span class="nameval" onclick="editName()" style="cursor:pointer">${f.name}</span>
+      </div></div>`;
+  }
+
+  if(f.freq==='weekly'||f.freq==='biweekly'){
+    body += weeklyBlock();
+  } else if(f.freq==='monthly'){
+    body += monthlyBlock();
+  } else if(f.freq==='semimonthly'){
+    body += semiBlock();
+  }
+
+  document.getElementById('wizBody').innerHTML = body;
+  document.getElementById('wizFoot').innerHTML =
+    `<button class="btn-ghost" onclick="closeWizard()">${bi('取消','Cancel')}</button>
+     <button class="btn-primary" onclick="wizNext()">${bi('下一步','Next')}</button>`;
+}
+
+function defaultToggle(){
+  const f=form;
+  return `<div class="hr"></div>
+    <div class="toggle ${f.isDefault?'on':''}" onclick="toggleDefault()"><span class="tg-track"><span class="tg-knob"></span></span>${bi('设为默认发薪组','Set as default pay group')}</div>
+    <div class="toggle-help">${bi('所有新员工及当前未分配的员工将自动加入该组。','All new and currently unassigned workers will be automatically assigned to it.')}</div>`;
+}
+
+function weeklyBlock(){
+  const f=form;
+  let h = `<div class="fld"><label>${bi('本方案发薪日','Pay date for this schedule')} <span class="info-i">i</span></label>
+    <input type="date" class="dt" value="${f.payDate||''}" onchange="onPayDate(this.value)"></div>`;
+  if(!f.payDate) return h;                       // ① 仅显示发薪日
+  const submit = subBiz(parseISO(f.payDate),4);
+  h += `<div class="infobox"><span class="ib-ic">ⓘ</span><span>${bi(
+    '如通过直存(Direct Deposit)发薪，须在 <b>'+longZh(submit)+'</b> 前提交跑薪（发薪日前 4 个工作日）。',
+    'Payroll must be submitted by <b>'+longEn(submit)+'</b> (4 business days before pay date) if paying by direct deposit.')}</span></div>`;
+  h += `<div class="fld"><label>${bi('首个发薪周期结束于','First pay period ends on')} <span class="info-i">i</span></label>
+    <select class="sel" onchange="onEndBefore(this.value)">${daysBeforeOptions(f.endBefore)}</select></div>`;
+  if(f.endBefore==null) return h;                // ② 出提交提示 + 「结束于」下拉
+  const p = genPeriods(f.freq, f.payDate, f.endBefore, 1)[0];   // ③ 出说明句 + 日历 + 默认开关
+  h += `<div class="helper">${bi(
+    '你在每 <b>'+WD_ZH[p.payD.getDay()]+'</b> 发薪，对应 <b>'+WD_ZH[p.startD.getDay()]+'</b> 至 <b>'+WD_ZH[p.endD.getDay()]+'</b> 的工时。',
+    'You pay your team on <b>'+WD_EN[p.payD.getDay()]+'</b> for work done between <b>'+WD_EN[p.startD.getDay()]+'</b> and <b>'+WD_EN[p.endD.getDay()]+'</b>.')}</div>`;
+  h += `<div class="hr"></div>
+    <div class="upcoming-head"><h3>${bi('即将到来的发薪日','Upcoming paydays')}</h3><span class="see-all" onclick="openPreview()">${bi('查看全部','See all')}</span></div>
+    ${pdCard(p)}`;
+  h += defaultToggle();
+  return h;
+}
+
+function monthlyBlock(){
+  const f=form;
+  return `<div class="fld"><label>${bi('发薪日为每月几号','Day of the month payday is on')} <span class="info-i">i</span></label>
+      <select class="sel" onchange="form.dayOfMonth=+this.value;renderStep1()">${domOptions(f.dayOfMonth)}</select></div>
+    <div class="fld"><label>${bi('你的发薪周期何时结束？','When do your pay periods end?')}</label>
+      <div class="radios">
+        <label class="radio"><input type="radio" name="endmode" ${f.endMode==='same'?'checked':''} onchange="form.endMode='same';renderStep1()">${bi('每月相同日期','Same days every month')}</label>
+        <label class="radio"><input type="radio" name="endmode" ${f.endMode==='days'?'checked':''} onchange="form.endMode='days';renderStep1()">${bi('相对发薪日固定天数','Same number of days from payday')}</label>
+      </div>
+      <div class="helper">${bi('你可以让发薪周期在每月的同一日期结束；或设置为发薪日前/后固定天数结束。','You can choose to have your pay periods end on the same date every month; or, set the pay periods to end on a fixed number of days before or after payday.')}</div></div>
+    <div class="fld"><label>${bi('首个发薪周期结束于','First pay period ends on')} <span class="info-i">i</span></label>${endsRow(0)}</div>
+    <div class="fld"><label>${bi('新方案的首个发薪日','First pay date on new schedule')} <span class="info-i">i</span></label>
+      <input type="date" class="dt" value="${f.firstPayDate||''}" onchange="form.firstPayDate=this.value;renderStep1()"></div>
+    ${upcomingSection(f)}${defaultToggle()}`;
+}
+
+function semiBlock(){
+  const f=form;
+  return `<div class="fld"><label>${bi('每月第一次发薪日','First payday of the month')} <span class="info-i">i</span></label>
+      <select class="sel" onchange="form.firstPayday=+this.value;renderStep1()">${domOptions(f.firstPayday)}</select></div>
+    <div class="fld"><label>${bi('每月第二次发薪日','Second payday of the month')} <span class="info-i">i</span></label>
+      <select class="sel" onchange="form.secondPayday=+this.value;renderStep1()">${domOptions(f.secondPayday)}</select></div>
+    <div class="fld"><label>${bi('你的发薪周期何时结束？','When do your pay periods end?')}</label>
+      <div class="radios">
+        <label class="radio"><input type="radio" name="endmode" ${f.endMode==='same'?'checked':''} onchange="form.endMode='same';renderStep1()">${bi('每月相同日期','Same days every month')}</label>
+        <label class="radio"><input type="radio" name="endmode" ${f.endMode==='days'?'checked':''} onchange="form.endMode='days';renderStep1()">${bi('相对发薪日固定天数','Same number of days from payday')}</label>
+      </div>
+      <div class="helper">${bi('你可以让发薪周期在每月的同一日期结束；或设置为发薪日前/后固定天数结束。','You can choose to have your pay periods end on the same date every month; or, set the pay periods to end on a fixed number of days before or after payday.')}</div></div>
+    <div class="fld"><label>${bi('首个发薪周期结束于','First pay period ends on')} <span class="info-i">i</span></label>${endsRow(0)}</div>
+    <div class="fld"><label>${bi('第二个发薪周期结束于','Second pay period ends on')} <span class="info-i">i</span></label>${endsRow(1)}</div>
+    <div class="fld"><label>${bi('新方案的首个发薪日','First pay date on new schedule')} <span class="info-i">i</span></label>
+      <input type="date" class="dt" value="${f.firstPayDate||''}" onchange="form.firstPayDate=this.value;renderStep1()"></div>
+    ${upcomingSection(f)}${defaultToggle()}`;
+}
+
+function onFreq(v){ const keepWorkers=form.workers, keepDefault=form.isDefault; form=defaultForm(v); form.workers=keepWorkers; form.isDefault=keepDefault; renderStep1(); }
+function onPayDate(v){ form.payDate=v; renderStep1(); }
+function onEndBefore(v){ form.endBefore=+v; renderStep1(); }
+function toggleDefault(){ form.isDefault=!form.isDefault; renderStep1(); }
+function editName(){
+  const line=document.getElementById('nameLine');
+  line.innerHTML=`<input class="name-input" id="nameInput" value="${form.name.replace(/"/g,'&quot;')}">`;
+  const inp=document.getElementById('nameInput'); inp.focus(); inp.select();
+  inp.addEventListener('blur',()=>{ form.name=inp.value.trim()||form.name; renderStep1(); });
+  inp.addEventListener('keydown',e=>{ if(e.key==='Enter')inp.blur(); });
+}
+
+function wizNext(){
+  if(!form.freq){ showToast('请先选择发薪频率','Please select a pay frequency'); return; }
+  if((form.freq==='weekly'||form.freq==='biweekly') && !form.payDate){ showToast('请填写发薪日','Please set the pay date'); return; }
+  if((form.freq==='weekly'||form.freq==='biweekly') && form.endBefore==null){ showToast('请选择首个发薪周期结束','Please select when the first pay period ends'); return; }
+  wizStep=2; renderWizard();
+}
+
+/* ---- Step 2 ---- */
+function renderStep2(){
+  const sel=form.workers;
+  const allChecked = WORKERS.every(w=>sel.has(w.id));
+  let body=`<div class="step-h">${bi('选择员工','Select workers')}</div>
+    <div class="step-p">${bi('选择要加入该发薪组的员工。若某人已在其他组，我们会自动为你重新分配。','Choose which workers to include in this pay group. If someone is already assigned to a different one, we\'ll reassign them for you.')}</div>
+    <div class="wk-all"><input type="checkbox" ${allChecked?'checked':''} onchange="toggleAllWk(this.checked)"><span>${isZh()?'全部员工':'ALL WORKERS'} (${WORKERS.length})</span></div>`;
+  body += WORKERS.map(w=>`<div class="wk">
+      <input type="checkbox" ${sel.has(w.id)?'checked':''} onchange="toggleWk(${w.id},this.checked)">
+      <div class="avatar">${w.initials}</div>
+      <div><div class="wn">${w.name}</div><div class="wt">${w.type}</div></div>
+    </div>`).join('');
+  document.getElementById('wizBody').innerHTML=body;
+  document.getElementById('wizFoot').innerHTML= manageMode
+    ? `<button class="btn-ghost" onclick="closeWizard()">${bi('取消','Cancel')}</button>
+       <button class="btn-primary" onclick="saveGroup()">${bi('保存','Save')}</button>`
+    : `<button class="btn-ghost" onclick="wizBack()">${bi('上一步','Back')}</button>
+       <button class="btn-primary" onclick="saveGroup()">${bi('保存','Save')}</button>`;
+}
+function toggleAllWk(c){ form.workers = c? new Set(WORKERS.map(w=>w.id)) : new Set(); renderStep2(); }
+function toggleWk(id,c){ c?form.workers.add(id):form.workers.delete(id); renderStep2(); }
+
+function saveGroup(){
+  const data=Object.assign({}, form); delete data.workers; data.workers=[...form.workers];
+  if(form.isDefault) groups.forEach(g=>g.isDefault=false);
+  if(editingId){ const g=groups.find(x=>x.id===editingId); Object.assign(g, data); g.id=editingId; }
+  else { groups.push(Object.assign({id:seq++}, data)); }
+  closeWizard(); renderList();
+  showToast(editingId?'发薪组已更新':'发薪组已创建', editingId?'Pay group updated':'Pay group created');
+}
+
+/* ---- 预览 ---- */
+function openPreview(){
+  document.getElementById('previewBody').innerHTML = currentPeriods(6).map(pdCard).join('');
+  document.getElementById('preview').classList.add('open');
+}
+function closePreview(){ document.getElementById('preview').classList.remove('open'); }
+
+/* ---- 通用 ---- */
+function showToast(zh,en){
+  const t=document.getElementById('toast');
+  document.getElementById('toastMsg').innerHTML=`<span class="zh">${zh}</span><span class="en">${en}</span>`;
+  t.classList.add('show'); clearTimeout(t._tm); t._tm=setTimeout(()=>t.classList.remove('show'),2600);
+}
+function toggleLanguage(){const en=!document.body.classList.contains('lang-en');document.body.classList.toggle('lang-en',en);document.body.classList.toggle('lang-zh',!en);try{localStorage.setItem('cbLang',en?'en':'zh');}catch(e){}renderList();if(document.getElementById('wizard').classList.contains('open'))renderWizard();}
+(function(){try{if(localStorage.getItem('cbLang')==='en'){document.body.classList.remove('lang-zh');document.body.classList.add('lang-en');}}catch(e){}})();
+
+renderList();
+</script>
+</body>
+</html>

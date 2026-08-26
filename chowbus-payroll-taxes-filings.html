@@ -43,10 +43,10 @@
   .entry-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:18px;}
   .entry-card{background:#fff;border:1px solid var(--border);border-radius:14px;padding:22px;display:flex;gap:16px;align-items:flex-start;cursor:pointer;transition:.18s;box-shadow:0 2px 12px rgba(0,0,0,.03);}
   .entry-card:hover{border-color:#E7A9B5;box-shadow:0 10px 26px rgba(204,28,76,.09);transform:translateY(-2px);}
-  .entry-ic{width:48px;height:48px;border-radius:13px;background:#FDF2F4;color:var(--primary);display:flex;align-items:center;justify-content:center;font-size:23px;flex:0 0 auto;}
+  .entry-ic{display:none;}
   .entry-body{flex:1;}
   .entry-title{font-size:15.5px;font-weight:800;margin-bottom:6px;}
-  .entry-desc{font-size:13px;color:var(--muted);line-height:1.6;}
+  .entry-desc{display:none;}
   .entry-status{display:inline-block;font-size:11.5px;font-weight:700;padding:3px 10px;border-radius:999px;margin-top:11px;}
   .st-ok{background:#EAF7F0;color:#12905a;} .st-warn{background:#FBF1DC;color:#9a6a12;} .st-soon{background:#F1F2F4;color:#8a8f9a;}
   .entry-arrow{color:#c4c8cf;font-size:20px;align-self:center;}
@@ -54,6 +54,47 @@
   .toast{position:fixed;left:50%;bottom:32px;transform:translateX(-50%) translateY(24px);opacity:0;pointer-events:none;background:#1f2430;color:#fff;border-radius:12px;padding:13px 18px;display:flex;align-items:center;gap:12px;box-shadow:0 12px 32px rgba(0,0,0,.28);z-index:999;transition:all .3s cubic-bezier(.2,.8,.3,1);font-size:14px;}
   .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
   .toast .tick{width:22px;height:22px;border-radius:50%;background:#6D5AE6;color:#fff;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:900;flex:0 0 22px;}
+
+  /* ===== Filing Checklist / Preview 弹窗 ===== */
+  .md-overlay{position:fixed;inset:0;background:rgba(20,22,30,.45);display:none;z-index:700;align-items:flex-start;justify-content:center;padding:40px 24px;overflow-y:auto;}
+  .md-overlay.open{display:flex;}
+  .md-modal{background:#fff;border-radius:16px;box-shadow:0 30px 80px rgba(0,0,0,.3);width:min(900px,96vw);margin:auto;}
+  .md-head{display:flex;align-items:center;padding:18px 24px;border-bottom:1px solid var(--border);position:sticky;top:0;background:#fff;border-radius:16px 16px 0 0;z-index:2;}
+  .md-head .x{margin-left:auto;font-size:22px;color:#9aa0aa;cursor:pointer;line-height:1;}
+  .md-body{padding:30px 40px 40px;}
+  .fc-back{display:flex;align-items:center;gap:14px;margin-bottom:6px;} .fc-back .bk{font-size:24px;color:#374151;cursor:pointer;line-height:1;}
+  .fc-h1{font-size:26px;font-weight:800;color:#111;}
+  .fc-sub{font-size:15px;color:#6b7280;line-height:1.6;margin:8px 0 26px;}
+  .fc-row{display:flex;align-items:center;gap:16px;border:1px solid var(--border);border-radius:12px;padding:20px 22px;margin-bottom:16px;}
+  .fc-row .fic{font-size:20px;width:26px;text-align:center;}
+  .fc-row .lbl{font-size:17px;font-weight:700;color:#111;flex:1;}
+  .fc-go{background:#F1F2F4;border:none;border-radius:9px;padding:11px 18px;font-size:15px;font-weight:700;color:#111;cursor:pointer;display:inline-flex;align-items:center;gap:8px;} .fc-go:hover{background:#E7E9ED;}
+  .ts-row{display:flex;align-items:center;gap:12px;border:1px solid var(--border);border-radius:12px;padding:18px 20px;margin-bottom:14px;font-size:15px;color:#111;}
+  .ts-row .chk{width:20px;height:20px;border-radius:50%;border:2px solid #22A353;color:#22A353;display:inline-flex;align-items:center;justify-content:center;font-size:11px;font-weight:900;flex:0 0 auto;}
+  .ts-row .nm{font-weight:700;} .ts-row .mut{color:#9aa0aa;} .ts-row .edit{margin-left:auto;background:#F1F2F4;border:none;border-radius:8px;padding:9px 18px;font-weight:700;cursor:pointer;}
+  .ts-row .edit:hover{background:#E7E9ED;}
+  .pv-tip{display:flex;gap:10px;align-items:center;border:1px solid var(--border);border-radius:12px;padding:16px 18px;color:#6b7280;font-size:15px;margin-bottom:24px;}
+  .pv-tabs{display:flex;gap:28px;margin-bottom:24px;}
+  .pv-tab{padding:6px 2px;font-size:17px;color:#9aa0aa;cursor:pointer;border-bottom:2px solid transparent;} .pv-tab.active{color:#111;font-weight:700;border-bottom-color:#111;}
+  .pv-lbl{font-size:17px;font-weight:800;margin-bottom:12px;}
+  .pv-searchwrap{position:relative;margin-bottom:12px;} .pv-searchwrap .ic{position:absolute;left:15px;top:50%;transform:translateY(-50%);color:#9aa0aa;}
+  .pv-search{width:100%;padding:14px 14px 14px 42px;border:1px solid #DADCE0;border-radius:10px;font-size:15px;}
+  .pv-dl{width:100%;background:#F1F2F4;border:none;border-radius:10px;padding:15px;font-size:16px;font-weight:700;color:#111;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;} .pv-dl:hover{background:#E7E9ED;}
+  .pv-count{font-size:14px;color:#9aa0aa;margin-top:12px;}
+  .rm-card{border:1px solid var(--border);border-radius:14px;padding:22px 24px;margin-bottom:18px;}
+  .rm-card h4{font-size:17px;font-weight:800;color:#111;margin-bottom:12px;} .rm-card ul{margin:0;padding-left:20px;} .rm-card li{font-size:15px;color:#6b7280;line-height:1.6;margin-bottom:10px;}
+  .cr-empty{color:#9aa0aa;font-size:15px;}
+  .acc-item{border-bottom:1px solid #EFF0F3;}
+  .acc-item:first-child{border-top:1px solid #EFF0F3;}
+  .acc-hd{display:flex;align-items:center;gap:9px;padding:20px 4px;cursor:pointer;}
+  .acc-hd h4{font-size:19px;font-weight:800;color:#111;}
+  .acc-hd .q{width:18px;height:18px;border-radius:50%;border:1px solid #c4c8cf;color:#9aa0aa;font-size:11px;font-weight:700;display:inline-flex;align-items:center;justify-content:center;}
+  .acc-hd .cv{margin-left:auto;color:#9aa0aa;font-size:14px;}
+  .acc-body{padding:2px 4px 26px;}
+  .acc-dates{display:flex;gap:16px;margin-bottom:16px;flex-wrap:wrap;}
+  .acc-f{display:flex;flex-direction:column;gap:8px;} .acc-f label{font-size:14px;font-weight:700;color:#111;} .acc-f input{padding:11px 13px;border:1px solid #DADCE0;border-radius:10px;font-size:14px;width:180px;}
+  .acc-check{display:flex;align-items:center;gap:10px;font-size:15px;color:#111;margin-bottom:16px;cursor:pointer;} .acc-check input{width:18px;height:18px;accent-color:#1f44e0;}
+  .acc-dl{background:#1f44e0;color:#fff;border:none;border-radius:9px;padding:12px 20px;font-weight:700;font-size:15px;cursor:pointer;} .acc-dl:hover{background:#1636bd;}
 </style>
 </head>
 <body class="lang-zh">
@@ -104,7 +145,7 @@
     <h1 class="page-title"><span class="zh">税务与申报</span><span class="en">Taxes &amp; Filings</span></h1>
 
     <div class="entry-grid">
-      <div class="entry-card" onclick="soon('Filing Checklist','申报清单')">
+      <div class="entry-card" onclick="openFilingChecklist()">
         <div class="entry-ic">✅</div>
         <div class="entry-body">
           <div class="entry-title"><span class="zh">申报清单</span><span class="en">Filing Checklist</span></div>
@@ -114,7 +155,7 @@
         <span class="entry-arrow">›</span>
       </div>
 
-      <div class="entry-card" onclick="soon('Filing Preview','申报预览')">
+      <div class="entry-card" onclick="openFilingPreview()">
         <div class="entry-ic">🔍</div>
         <div class="entry-body">
           <div class="entry-title"><span class="zh">申报预览</span><span class="en">Filing Preview</span></div>
@@ -124,7 +165,7 @@
         <span class="entry-arrow">›</span>
       </div>
 
-      <div class="entry-card" onclick="soon('Company Tax Docs','公司税务文件')">
+      <div class="entry-card" onclick="openCompanyDocs()">
         <div class="entry-ic">📄</div>
         <div class="entry-body">
           <div class="entry-title"><span class="zh">公司税务文件</span><span class="en">Company Tax Docs</span></div>
@@ -134,7 +175,7 @@
         <span class="entry-arrow">›</span>
       </div>
 
-      <div class="entry-card" onclick="soon('Company Reports','公司报表')">
+      <div class="entry-card" onclick="openCompanyReports()">
         <div class="entry-ic">📊</div>
         <div class="entry-body">
           <div class="entry-title"><span class="zh">公司报表</span><span class="en">Company Reports</span></div>
@@ -147,6 +188,38 @@
   </div>
 </main>
 
+<!-- Filing Checklist 弹窗 -->
+<div class="md-overlay" id="fcOverlay">
+  <div class="md-modal">
+    <div class="md-head"><span style="font-size:15px;font-weight:800;color:#111;">Filing Checklist</span><span class="x" onclick="closeFilingChecklist()">&times;</span></div>
+    <div class="md-body" id="fcBody"></div>
+  </div>
+</div>
+
+<!-- Filing Preview 弹窗 -->
+<div class="md-overlay" id="fpOverlay">
+  <div class="md-modal">
+    <div class="md-head"><span style="font-size:15px;font-weight:800;color:#111;">Filing Preview</span><span class="x" onclick="closeFilingPreview()">&times;</span></div>
+    <div class="md-body" id="fpBody"></div>
+  </div>
+</div>
+
+<!-- 公司税务文件 弹窗 -->
+<div class="md-overlay" id="ctOverlay">
+  <div class="md-modal">
+    <div class="md-head"><span style="font-size:15px;font-weight:800;color:#111;">Company Tax Docs</span><span class="x" onclick="closeCompanyDocs()">&times;</span></div>
+    <div class="md-body"><div class="cr-empty">No documents found.</div></div>
+  </div>
+</div>
+
+<!-- 公司报表 弹窗 -->
+<div class="md-overlay" id="crOverlay">
+  <div class="md-modal">
+    <div class="md-head"><span style="font-size:15px;font-weight:800;color:#111;">Company Reports</span><span class="x" onclick="closeCompanyReports()">&times;</span></div>
+    <div class="md-body" id="crBody"></div>
+  </div>
+</div>
+
 <div class="toast" id="toast"><span class="tick">+</span><span id="toastMsg"></span></div>
 
 <script>
@@ -155,6 +228,90 @@
     document.getElementById('toastMsg').innerHTML=`<span class="zh">「${zh}」页面即将上线</span><span class="en">"${en}" is coming soon</span>`;
     t.classList.add('show'); clearTimeout(t._tm); t._tm=setTimeout(()=>t.classList.remove('show'),2600);
   }
+  /* ===== Filing Checklist / Preview（内嵌 Check 组件，内容按原样英文） ===== */
+  function fcToast(t){ const el=document.getElementById('toastMsg'); el.textContent=t; const tt=document.getElementById('toast'); tt.classList.add('show'); clearTimeout(tt._tm); tt._tm=setTimeout(()=>tt.classList.remove('show'),2400); }
+  function pvTab(el){ el.parentNode.querySelectorAll('.pv-tab').forEach(t=>t.classList.remove('active')); el.classList.add('active'); }
+
+  let fcView='hub';
+  function openFilingChecklist(){ fcView='hub'; document.getElementById('fcOverlay').classList.add('open'); fcRender(); }
+  function closeFilingChecklist(){ document.getElementById('fcOverlay').classList.remove('open'); }
+  function fcGo(v){ fcView=v; fcRender(); }
+  function fcRender(){ const b=document.getElementById('fcBody'); b.innerHTML = fcView==='taxsetup'?fcTaxSetup(): fcView==='preview'?fcPreview(true): fcView==='reminders'?fcReminders(): fcHub(); b.scrollTop=0; }
+
+  function fcHub(){ return `
+    <div class="fc-h1">Prepare for tax filing season</div>
+    <div class="fc-sub">Take the following steps by December 31 to ensure accurate and successful tax filings.</div>
+    <div class="fc-row"><span class="fic">🎚️</span><span class="lbl">Review company tax information</span><button class="fc-go" onclick="fcGo('taxsetup')">Go →</button></div>
+    <div class="fc-row"><span class="fic">📄</span><span class="lbl">Preview tax returns</span><button class="fc-go" onclick="fcGo('preview')">Go →</button></div>
+    <div class="fc-row"><span class="fic">💡</span><span class="lbl">Reminders</span><button class="fc-go" onclick="fcGo('reminders')">Go →</button></div>`;
+  }
+  function fcTaxSetup(){ return `
+    <div class="fc-back"><span class="bk" onclick="fcGo('hub')">←</span><span class="fc-h1">Tax setup</span></div>
+    <div class="fc-sub">Enter taxpayer information for each jurisdiction you do business in.</div>
+    <div style="font-weight:800;margin-bottom:14px;color:#111;">Complete</div>
+    <div class="ts-row"><span class="chk">✓</span><span class="nm">Federal</span><span class="mut">· 3 of 3 items complete</span><button class="edit" onclick="fcToast('Edit Federal (demo)')">Edit</button></div>
+    <div class="ts-row"><span class="chk">✓</span><span class="nm">Illinois</span><span class="mut">· 3 of 3 items complete</span><button class="edit" onclick="fcToast('Edit Illinois (demo)')">Edit</button></div>`;
+  }
+  function fcPreview(withBack){ return `
+    ${withBack?`<div class="fc-back"><span class="bk" onclick="fcGo('hub')">←</span><span class="fc-h1">Preview tax returns</span></div>`:`<div class="fc-h1">Preview tax returns</div>`}
+    <div class="fc-sub">Preview employee tax returns to ensure accuracy.</div>
+    <div class="pv-tip">💡 Previews are a snapshot of data refreshed once per week.</div>
+    <div class="pv-tabs"><span class="pv-tab active" onclick="pvTab(this)">2026</span><span class="pv-tab" onclick="pvTab(this)">2025</span><span class="pv-tab" onclick="pvTab(this)">2024</span></div>
+    <div class="pv-lbl">Employees</div>
+    <div class="pv-searchwrap"><span class="ic">🔍</span><input class="pv-search" placeholder="Search employees"></div>
+    <button class="pv-dl" onclick="fcToast('Start download for all (demo)')">⤓ Start download for all</button>
+    <div class="pv-count">0 tax returns</div>`;
+  }
+  function fcReminders(){ return `
+    <div class="fc-back"><span class="bk" onclick="fcGo('hub')">←</span><span class="fc-h1">Reminders</span></div>
+    <div class="fc-sub">Take the following steps to ensure your W-2s, 1099s and company tax returns reflect accurate data. For assistance, contact support.</div>
+    <div class="rm-card"><h4>Review and update your team's information</h4><ul>
+      <li>Ask your employees and contractors to review and update their information including SSNs, legal names, addresses and electronic consent.</li>
+      <li>Double check your team roster includes everyone you've paid this year, including any terminated employees or contractors.</li></ul></div>
+    <div class="rm-card"><h4>Input payrolls run outside of Chowbus</h4><ul>
+      <li>Did you migrate to Chowbus payroll this year? If so, double check all historical payrolls from your previous provider were properly loaded.</li>
+      <li>Be sure to report any payrolls run outside of Chowbus. This might include contractor payments or irregular payrolls like bonuses or commissions.</li>
+      <li>Pay date determines tax year. If a payroll's pay period is in 2026 but it's paid in 2027, it won't be included in your 2026 tax filings.</li></ul></div>
+    <div class="rm-card"><h4>Review and report missing benefit data</h4><ul>
+      <li>Review vacation hours, including used and unused time.</li>
+      <li>Report disability benefits, if applicable.</li>
+      <li>You may need to report group term life insurance exceeding $50,000 or medical benefits for 2% S-Corp shareholders if you do not track this on a per payroll basis.</li></ul></div>`;
+  }
+
+  function openFilingPreview(){ document.getElementById('fpBody').innerHTML=fcPreview(false); document.getElementById('fpOverlay').classList.add('open'); }
+  function closeFilingPreview(){ document.getElementById('fpOverlay').classList.remove('open'); }
+
+  /* ===== 公司税务文件 ===== */
+  function openCompanyDocs(){ document.getElementById('ctOverlay').classList.add('open'); }
+  function closeCompanyDocs(){ document.getElementById('ctOverlay').classList.remove('open'); }
+
+  /* ===== 公司报表（手风琴） ===== */
+  const CR_SECTIONS=[
+    {key:'summary',title:'Payroll Summary',taxable:false},
+    {key:'journal',title:'Payroll Journal',taxable:true},
+    {key:'contractor',title:'Contractor Payments',taxable:false},
+    {key:'child',title:'Child Support Payments',taxable:false},
+    {key:'tax',title:'Tax Liabilities',taxable:false},
+  ];
+  let crOpen={};
+  function openCompanyReports(){ crOpen={}; document.getElementById('crOverlay').classList.add('open'); crRender(); }
+  function closeCompanyReports(){ document.getElementById('crOverlay').classList.remove('open'); }
+  function crToggle(k){ crOpen[k]=!crOpen[k]; crRender(); }
+  function crRender(){
+    document.getElementById('crBody').innerHTML = CR_SECTIONS.map(s=>`
+      <div class="acc-item">
+        <div class="acc-hd" onclick="crToggle('${s.key}')"><h4>${s.title}</h4><span class="q">?</span><span class="cv">${crOpen[s.key]?'▴':'▾'}</span></div>
+        ${crOpen[s.key]?`<div class="acc-body">
+          <div class="acc-dates">
+            <div class="acc-f"><label>Start Date</label><input type="date" placeholder="MM/DD/YYYY"></div>
+            <div class="acc-f"><label>End Date</label><input type="date" placeholder="MM/DD/YYYY"></div>
+          </div>
+          ${s.taxable?`<label class="acc-check"><input type="checkbox"> Select to include taxable wages</label>`:''}
+          <button class="acc-dl" onclick="fcToast('Download report (demo)')">Download Report</button>
+        </div>`:''}
+      </div>`).join('');
+  }
+
   function toggleLanguage(){const en=!document.body.classList.contains('lang-en');document.body.classList.toggle('lang-en',en);document.body.classList.toggle('lang-zh',!en);try{localStorage.setItem('cbLang',en?'en':'zh');}catch(e){}}
   (function(){try{if(localStorage.getItem('cbLang')==='en'){document.body.classList.remove('lang-zh');document.body.classList.add('lang-en');}}catch(e){}})();
 </script>

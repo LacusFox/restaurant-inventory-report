@@ -56,10 +56,10 @@
   .entry-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;}
   .entry-card{background:#fff;border:1px solid var(--border);border-radius:14px;padding:20px;display:flex;gap:15px;align-items:flex-start;cursor:pointer;transition:.18s;box-shadow:0 2px 12px rgba(0,0,0,.03);}
   .entry-card:hover{border-color:#E7A9B5;box-shadow:0 10px 26px rgba(204,28,76,.09);transform:translateY(-2px);}
-  .entry-ic{width:46px;height:46px;border-radius:12px;background:#FDF2F4;color:var(--primary);display:flex;align-items:center;justify-content:center;font-size:22px;flex:0 0 auto;}
+  .entry-ic{display:none;}
   .entry-body{flex:1;}
   .entry-title{font-size:15px;font-weight:800;margin-bottom:5px;}
-  .entry-desc{font-size:12.5px;color:var(--muted);line-height:1.55;}
+  .entry-desc{display:none;}
   .entry-status{display:inline-block;font-size:11px;font-weight:700;padding:3px 9px;border-radius:999px;margin-top:10px;}
   .st-ok{background:#EAF7F0;color:#12905a;} .st-warn{background:#FBF1DC;color:#9a6a12;} .st-soon{background:#F1F2F4;color:#8a8f9a;}
   .entry-arrow{color:#c4c8cf;font-size:19px;align-self:center;}
@@ -67,6 +67,93 @@
   .toast{position:fixed;left:50%;bottom:32px;transform:translateX(-50%) translateY(24px);opacity:0;pointer-events:none;background:#1f2430;color:#fff;border-radius:12px;padding:13px 18px;display:flex;align-items:center;gap:12px;box-shadow:0 12px 32px rgba(0,0,0,.28);z-index:999;transition:all .3s cubic-bezier(.2,.8,.3,1);font-size:14px;}
   .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
   .toast .tick{width:22px;height:22px;border-radius:50%;background:#6D5AE6;color:#fff;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:900;flex:0 0 22px;}
+
+  /* ===== Check「员工入职」弹窗 ===== */
+  .co-overlay{position:fixed;inset:0;background:rgba(20,22,30,.5);display:none;z-index:700;align-items:center;justify-content:center;padding:24px;}
+  .co-overlay.open{display:flex;}
+  .co-modal{position:relative;background:#fff;width:min(1080px,96vw);height:min(86vh,760px);border-radius:16px;box-shadow:0 30px 80px rgba(0,0,0,.35);display:flex;overflow:hidden;}
+  .co-x{position:absolute;top:18px;right:22px;font-size:24px;color:#9aa0aa;cursor:pointer;z-index:3;line-height:1;}
+  .co-x:hover{color:#333;}
+  .co-side{width:300px;flex:0 0 auto;border-right:1px solid #EFF0F3;padding:26px 24px;overflow-y:auto;}
+  .co-logo{font-size:27px;font-weight:900;font-style:italic;letter-spacing:-1px;color:#111;padding-bottom:20px;border-bottom:1px solid #EFF0F3;margin-bottom:20px;}
+  .co-yp{font-size:18px;font-weight:800;color:#111;}
+  .co-yp-sub{font-size:13.5px;color:#6b7280;margin-top:6px;line-height:1.5;margin-bottom:22px;}
+  .co-steps{display:flex;flex-direction:column;gap:6px;}
+  .co-step{display:flex;gap:12px;align-items:center;padding:12px;border-radius:10px;cursor:pointer;border:1px solid transparent;transition:.12s;}
+  .co-step:hover{background:#F7F8FA;}
+  .co-step.active{background:#F5F7FF;border-color:#C7D2FE;}
+  .co-chk{width:22px;height:22px;border-radius:50%;border:2px solid #22A353;color:#22A353;display:inline-flex;align-items:center;justify-content:center;font-size:12px;font-weight:900;flex:0 0 auto;}
+  .co-step-t{font-size:15px;font-weight:700;color:#111;}
+  .co-step-s{font-size:12.5px;color:#6b7280;margin-top:2px;}
+  .co-main{flex:1;overflow-y:auto;padding:44px 46px;}
+  .co-h1{font-size:26px;font-weight:800;color:#111;margin-bottom:8px;}
+  .co-sub{font-size:15px;color:#6b7280;line-height:1.6;margin-bottom:22px;}
+  .co-hr{height:1px;background:#EFF0F3;margin:0 0 22px;max-width:640px;}
+  .co-field{margin-bottom:20px;max-width:640px;}
+  .co-label{font-size:14px;font-weight:700;color:#111;margin-bottom:4px;display:block;}
+  .co-flabel{font-size:13.5px;color:#6b7280;margin-bottom:8px;}
+  .co-req{color:#e0455e;}
+  .co-input,.co-select{width:100%;padding:12px 14px;border:1px solid #DADCE0;border-radius:10px;font-size:14px;background:#fff;color:#111;}
+  .co-input:focus,.co-select:focus{outline:none;border-color:#4b62e0;box-shadow:0 0 0 3px rgba(75,98,224,.14);}
+  select.co-select{appearance:none;cursor:pointer;padding-right:34px;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%239aa0aa' stroke-width='3'><path d='M6 9l6 6 6-6'/></svg>");background-repeat:no-repeat;background-position:right 12px center;}
+  .co-row3{display:grid;grid-template-columns:1fr 120px 130px;gap:12px;}
+  .co-consent{display:flex;gap:11px;align-items:flex-start;font-size:14px;color:#111;line-height:1.5;margin:8px 0 12px;max-width:640px;}
+  .co-consent input{width:18px;height:18px;accent-color:#2b4eff;margin-top:2px;flex:0 0 auto;}
+  .co-ack{font-size:13px;color:#8a8f9a;line-height:1.6;max-width:640px;} .co-ack ol{margin:6px 0 0;padding-left:20px;} .co-ack li{margin-bottom:8px;}
+  .co-btn{background:#4b62e0;color:#fff;border:none;border-radius:10px;padding:12px 26px;font-size:15px;font-weight:700;cursor:pointer;}
+  .co-btn:hover{background:#3a50cf;}
+  .co-btn-blue{background:#2b4eff;} .co-btn-blue:hover{background:#2140db;}
+  .co-btn-gray{background:#fff;color:#111;border:1px solid #DADCE0;border-radius:10px;padding:11px 18px;font-size:14px;font-weight:700;cursor:pointer;} .co-btn-gray:hover{background:#F7F8FA;}
+  .co-foot{position:absolute;right:26px;bottom:22px;}
+  .co-bankrow{display:flex;align-items:center;gap:16px;border-top:1px solid #EFF0F3;padding:18px 2px;max-width:640px;font-size:16px;color:#111;}
+  .co-active{background:#DFF4E7;color:#12905a;font-size:13px;font-weight:700;padding:5px 12px;border-radius:999px;}
+  .co-actions{display:flex;gap:12px;margin-bottom:6px;}
+  .co-formrow{display:flex;align-items:center;gap:12px;padding:18px 2px;border-bottom:1px solid #EFF0F3;cursor:pointer;font-size:16px;color:#111;max-width:760px;}
+  .co-formrow:first-of-type{border-top:1px solid #EFF0F3;}
+  .co-formrow .arw{margin-left:auto;color:#9aa0aa;font-size:18px;}
+
+  /* ===== 员工资料 / 税后扣款 弹窗 ===== */
+  .md-overlay{position:fixed;inset:0;background:rgba(20,22,30,.45);display:none;z-index:700;align-items:flex-start;justify-content:center;padding:40px 24px;overflow-y:auto;}
+  .md-overlay.open{display:flex;}
+  .md-modal{background:#fff;border-radius:16px;box-shadow:0 30px 80px rgba(0,0,0,.3);width:min(760px,96vw);margin:auto;}
+  .md-modal.wide{width:min(1040px,96vw);}
+  .md-head{display:flex;align-items:center;padding:20px 24px;border-bottom:1px solid var(--border);position:sticky;top:0;background:#fff;border-radius:16px 16px 0 0;z-index:2;}
+  .md-head h2{font-size:19px;font-weight:800;}
+  .md-head .x{margin-left:auto;font-size:22px;color:#9aa0aa;cursor:pointer;line-height:1;}
+  .md-body{padding:22px 24px 28px;}
+  /* 信息卡 */
+  .gi-card{border:1px solid var(--border);border-radius:14px;overflow:hidden;margin-bottom:20px;}
+  .gi-card:last-child{margin-bottom:0;}
+  .gi-hd{background:#FAFBFC;padding:16px 20px;font-size:17px;font-weight:800;color:#111;border-bottom:1px solid var(--border);}
+  .gi-row{display:grid;grid-template-columns:210px 1fr;gap:16px;padding:18px 22px;border-bottom:1px solid #F1F2F4;}
+  .gi-row:last-child{border-bottom:none;}
+  .gi-k{font-size:15px;font-weight:700;color:#111;}
+  .gi-v{font-size:15px;color:#6b7280;line-height:1.55;}
+  /* 扣款 */
+  .dd-sec{margin-bottom:26px;}
+  .dd-sec h3{font-size:20px;font-weight:800;color:#111;margin-bottom:16px;}
+  .dd-new{color:#2b5cff;font-weight:600;font-size:15px;cursor:pointer;display:inline-block;}
+  .dd-new:hover{text-decoration:underline;}
+  .dd-form{display:flex;flex-wrap:wrap;gap:16px 18px;align-items:flex-end;}
+  .dd-f{display:flex;flex-direction:column;gap:8px;}
+  .dd-f>label{font-size:14px;font-weight:700;color:#111;} .dd-f .req{color:#e0455e;margin-left:2px;}
+  .dd-inp{padding:11px 13px;border:1px solid #DADCE0;border-radius:10px;font-size:14px;width:100%;background:#fff;color:#111;}
+  .dd-inp:focus{outline:none;border-color:#2b4eff;box-shadow:0 0 0 3px rgba(43,78,255,.12);}
+  select.dd-inp{appearance:none;cursor:pointer;padding-right:32px;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%239aa0aa' stroke-width='3'><path d='M6 9l6 6 6-6'/></svg>");background-repeat:no-repeat;background-position:right 11px center;}
+  .dd-money,.dd-pct{position:relative;}
+  .dd-money .pfx{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:#9aa0aa;font-size:14px;} .dd-money .dd-inp{padding-left:26px;}
+  .dd-pct .sfx{position:absolute;right:12px;top:50%;transform:translateY(-50%);color:#9aa0aa;font-size:14px;} .dd-pct .dd-inp{padding-right:26px;}
+  .dd-save{background:#2b4eff;color:#fff;border:none;border-radius:9px;padding:11px 22px;font-weight:700;font-size:14px;cursor:pointer;}
+  .dd-save:hover{background:#2140db;}
+  .dd-cancel{background:none;border:none;font-weight:700;font-size:14px;cursor:pointer;color:#111;padding:11px 6px;}
+  .dd-managed{display:flex;align-items:center;gap:9px;font-size:15px;color:#111;padding-bottom:11px;} .dd-managed input{width:18px;height:18px;accent-color:#2b4eff;}
+  .md-tablewrap{border:1px solid var(--border);border-radius:14px;overflow:hidden;}
+  .md-table{width:100%;border-collapse:collapse;}
+  .md-table th{background:#FAFBFC;text-align:left;font-size:13px;font-weight:700;color:#8a8f9a;letter-spacing:.03em;padding:16px 18px;border-bottom:1px solid var(--border);}
+  .md-table td{padding:18px;border-bottom:1px solid #F1F2F4;font-size:15px;color:#111;}
+  .md-table tr:last-child td{border-bottom:none;}
+  .md-table .dl{color:#2b5cff;font-weight:600;cursor:pointer;text-align:right;white-space:nowrap;}
+  .md-table .dl:hover{text-decoration:underline;}
 </style>
 </head>
 <body class="lang-zh">
@@ -120,12 +207,12 @@
 
     <!-- 员工头卡 -->
     <div class="emp-head">
-      <div class="avatar">DB</div>
+      <div class="avatar">QG</div>
       <div class="emp-info">
-        <div class="emp-name">Dan Boyle <span class="role-pill">Super Admin</span></div>
+        <div class="emp-name">Qiyi Gong <span class="role-pill">Restaurant Owner</span></div>
         <div class="emp-meta">
-          <span><span class="k zh">邮箱：</span><span class="k en">Email: </span>dan.boyle@example.com</span>
-          <span><span class="k zh">手机：</span><span class="k en">Phone: </span>(415) 555-0132</span>
+          <span><span class="k zh">邮箱：</span><span class="k en">Email: </span>qiyi.gong@example.com</span>
+          <span><span class="k zh">手机：</span><span class="k en">Phone: </span>(312) 555-0188</span>
           <span><span class="k zh">入职：</span><span class="k en">Hired: </span>2024-03-01</span>
         </div>
       </div>
@@ -135,7 +222,7 @@
 
     <div class="sec-label"><span class="zh">员工薪酬档案</span><span class="en">Employee payroll records</span></div>
     <div class="entry-grid">
-      <div class="entry-card" onclick="soon('Employee Profile','员工资料')">
+      <div class="entry-card" onclick="openProfile()">
         <div class="entry-ic">🪪</div>
         <div class="entry-body">
           <div class="entry-title"><span class="zh">员工资料</span><span class="en">Employee Profile</span></div>
@@ -145,17 +232,17 @@
         <span class="entry-arrow">›</span>
       </div>
 
-      <div class="entry-card" onclick="soon('Employee Onboard','员工入职')">
+      <div class="entry-card" onclick="openEmpOnboard()">
         <div class="entry-ic">📝</div>
         <div class="entry-body">
-          <div class="entry-title"><span class="zh">员工入职</span><span class="en">Employee Onboard</span></div>
+          <div class="entry-title"><span class="zh">员工入职管理</span><span class="en">Employee Onboard</span></div>
           <div class="entry-desc"><span class="zh">W-4、I-9 等入职表单填写与签署进度。</span><span class="en">Onboarding forms like W-4 and I-9 and their signing progress.</span></div>
           <span class="entry-status st-ok"><span class="zh">已完成</span><span class="en">Done</span></span>
         </div>
         <span class="entry-arrow">›</span>
       </div>
 
-      <div class="entry-card" onclick="soon('Employee Post-Tax Deductions','税后扣款')">
+      <div class="entry-card" onclick="openPostTax()">
         <div class="entry-ic">➖</div>
         <div class="entry-body">
           <div class="entry-title"><span class="zh">税后扣款</span><span class="en">Post-Tax Deductions</span></div>
@@ -165,7 +252,7 @@
         <span class="entry-arrow">›</span>
       </div>
 
-      <div class="entry-card" onclick="soon('Employee Paystubs','工资单')">
+      <div class="entry-card" onclick="openPaystubs()">
         <div class="entry-ic">🧾</div>
         <div class="entry-body">
           <div class="entry-title"><span class="zh">工资单</span><span class="en">Paystubs</span></div>
@@ -175,7 +262,7 @@
         <span class="entry-arrow">›</span>
       </div>
 
-      <div class="entry-card" onclick="soon('Employee Tax Docs','税务文件')">
+      <div class="entry-card" onclick="openTaxDocs()">
         <div class="entry-ic">📄</div>
         <div class="entry-body">
           <div class="entry-title"><span class="zh">税务文件</span><span class="en">Tax Docs</span></div>
@@ -188,6 +275,92 @@
   </div>
 </main>
 
+<!-- Check 员工入职 弹窗 -->
+<div class="co-overlay" id="eoOverlay">
+  <div class="co-modal">
+    <span class="co-x" onclick="closeEmpOnboard()">&times;</span>
+    <aside class="co-side">
+      <div class="co-logo">check</div>
+      <div class="co-yp">Your payroll</div>
+      <div class="co-yp-sub">Payroll setup requirements.</div>
+      <div class="co-steps">
+        <div class="co-step" data-step="personal" onclick="eoGo('personal')"><span class="co-chk">✓</span><div><div class="co-step-t">Personal info</div><div class="co-step-s">Complete</div></div></div>
+        <div class="co-step" data-step="payment" onclick="eoGo('payment')"><span class="co-chk">✓</span><div><div class="co-step-t">Payment method</div><div class="co-step-s">Complete</div></div></div>
+        <div class="co-step" data-step="tax" onclick="eoGo('tax')"><span class="co-chk">✓</span><div><div class="co-step-t">Tax withholding</div><div class="co-step-s">Complete</div></div></div>
+      </div>
+    </aside>
+    <div class="co-main" id="eoMain"></div>
+  </div>
+</div>
+
+<!-- 员工资料 弹窗（只读） -->
+<div class="md-overlay" id="pfOverlay">
+  <div class="md-modal">
+    <div class="md-head"><h2><span class="zh">员工资料</span><span class="en">Employee Profile</span></h2><span class="x" onclick="closeProfile()">&times;</span></div>
+    <div class="md-body">
+      <div class="gi-card">
+        <div class="gi-hd">General Information</div>
+        <div class="gi-row"><div class="gi-k">Full Name</div><div class="gi-v">Qiyi Gong</div></div>
+        <div class="gi-row"><div class="gi-k">Date of Birth</div><div class="gi-v">4/25/1977</div></div>
+        <div class="gi-row"><div class="gi-k">SSN</div><div class="gi-v">XXX-XX-0000</div></div>
+        <div class="gi-row"><div class="gi-k">Email</div><div class="gi-v">qiyi.gong@chowbus.com</div></div>
+        <div class="gi-row"><div class="gi-k">Home Address</div><div class="gi-v">2227 S Wentworth Ave,<br>Chicago, IL 60616<br>Chicago, IL 04114</div></div>
+      </div>
+      <div class="gi-card">
+        <div class="gi-hd">Payment Information</div>
+        <div class="gi-row"><div class="gi-k">Payment Method</div><div class="gi-v">Direct Deposit</div></div>
+        <div class="gi-row"><div class="gi-k">Account Type</div><div class="gi-v">Checking</div></div>
+        <div class="gi-row"><div class="gi-k">Account Number Last Four</div><div class="gi-v">0000</div></div>
+      </div>
+      <div class="gi-card">
+        <div class="gi-hd">Workplaces</div>
+        <div class="gi-row"><div class="gi-k">Workplace Name</div><div class="gi-v">moli</div></div>
+        <div class="gi-row"><div class="gi-k">Workplace Address</div><div class="gi-v">2227 S Wentworth Ave,<br>Chicago, IL 60616<br>Port Vern, IL 60616</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 税后扣款 弹窗 -->
+<div class="md-overlay" id="ptOverlay">
+  <div class="md-modal wide">
+    <div class="md-head"><h2><span class="zh">税后扣款</span><span class="en">Post-Tax Deductions</span></h2><span class="x" onclick="closePostTax()">&times;</span></div>
+    <div class="md-body" id="ptBody"></div>
+  </div>
+</div>
+
+<!-- 工资单 弹窗 -->
+<div class="md-overlay" id="psOverlay">
+  <div class="md-modal wide">
+    <div class="md-head"><h2><span class="zh">工资单</span><span class="en">Paystubs</span></h2><span class="x" onclick="closePaystubs()">&times;</span></div>
+    <div class="md-body">
+      <div class="md-tablewrap"><table class="md-table">
+        <thead><tr><th>DATE</th><th>TOTAL AMOUNT</th><th>TOTAL HOURS</th><th></th></tr></thead>
+        <tbody>
+          <tr><td>2026-09-01</td><td>$375.00</td><td>35</td><td class="dl" onclick="eoToast('下载工资单 (demo) · Download paystub')">Download</td></tr>
+        </tbody>
+      </table></div>
+    </div>
+  </div>
+</div>
+
+<!-- 税务文件 弹窗 -->
+<div class="md-overlay" id="tdOverlay">
+  <div class="md-modal wide">
+    <div class="md-head"><h2><span class="zh">税务文件</span><span class="en">Tax Docs</span></h2><span class="x" onclick="closeTaxDocs()">&times;</span></div>
+    <div class="md-body">
+      <div class="md-tablewrap"><table class="md-table">
+        <thead><tr><th>FILED ON</th><th>DOCUMENT</th><th>YEAR</th><th></th></tr></thead>
+        <tbody>
+          <tr><td>2026-08-13</td><td>Illinois IL-W-4</td><td>2026</td><td class="dl" onclick="eoToast('下载文件 (demo) · Download')">Download</td></tr>
+          <tr><td>2026-08-06</td><td>Illinois IL-W-4</td><td>2026</td><td class="dl" onclick="eoToast('下载文件 (demo) · Download')">Download</td></tr>
+          <tr><td>2026-08-06</td><td>Federal W-4</td><td>2026</td><td class="dl" onclick="eoToast('下载文件 (demo) · Download')">Download</td></tr>
+        </tbody>
+      </table></div>
+    </div>
+  </div>
+</div>
+
 <div class="toast" id="toast"><span class="tick">+</span><span id="toastMsg"></span></div>
 
 <script>
@@ -196,6 +369,111 @@
     document.getElementById('toastMsg').innerHTML=`<span class="zh">「${zh}」页面即将上线</span><span class="en">"${en}" is coming soon</span>`;
     t.classList.add('show'); clearTimeout(t._tm); t._tm=setTimeout(()=>t.classList.remove('show'),2600);
   }
+  /* ===== Check「员工入职」弹窗（内嵌 Check 组件，内容按原样英文） ===== */
+  let eoStep='';
+  function openEmpOnboard(){ eoStep=''; document.getElementById('eoOverlay').classList.add('open'); eoRender(); }
+  function closeEmpOnboard(){ document.getElementById('eoOverlay').classList.remove('open'); }
+  function eoGo(s){ eoStep=s; eoRender(); }
+  function eoToast(t){ const el=document.getElementById('toastMsg'); el.textContent=t; const tt=document.getElementById('toast'); tt.classList.add('show'); clearTimeout(tt._tm); tt._tm=setTimeout(()=>tt.classList.remove('show'),2400); }
+  function eoRender(){
+    document.querySelectorAll('#eoOverlay .co-step').forEach(el=>el.classList.toggle('active', el.dataset.step===eoStep));
+    const fn={personal:eoPersonal,payment:eoPayment,tax:eoTax}[eoStep];
+    const m=document.getElementById('eoMain'); m.innerHTML = fn?fn():eoDefault(); m.scrollTop=0;
+  }
+  function eoDefault(){ return `<div class="co-h1">Continue with setup</div><div class="co-sub">Select one of the steps to the left to continue setup.</div>`; }
+  function eoPersonal(){ return `
+    <div class="co-h1">Personal Information</div>
+    <div class="co-sub">We will need additional details in order to properly onboard you.</div>
+    <div class="co-hr"></div>
+    <div class="co-field"><label class="co-label">First Name</label><div class="co-flabel">Employee's first name</div><input class="co-input" value="Qiyi"></div>
+    <div class="co-field"><label class="co-label">Middle Name</label><div class="co-flabel">Employee's middle name, if available</div><input class="co-input" placeholder="Enter middle name"></div>
+    <div class="co-field"><label class="co-label">Last Name<span class="co-req">*</span></label><div class="co-flabel">Employee's last name</div><input class="co-input" value="Gong"></div>
+    <div class="co-field"><label class="co-label">Date of Birth<span class="co-req">*</span></label><div class="co-flabel">Employee's date of birth</div><input type="date" class="co-input" value="1977-04-25"></div>
+    <div class="co-field"><label class="co-label">Social Security Number<span class="co-req">*</span></label><div class="co-flabel">Employee's TIN (usually their Social Security Number)</div><input class="co-input" value="***-**-0000"></div>
+    <div class="co-field"><label class="co-label">Employee residence<span class="co-req">*</span></label>
+      <div class="co-flabel">Address line 1</div><input class="co-input" value="2227 S Wentworth Ave, Chicago, IL 60616" style="margin-bottom:12px;">
+      <div class="co-flabel">Address line 2</div><input class="co-input" placeholder="Enter address line 2" style="margin-bottom:12px;">
+      <div class="co-row3">
+        <div><div class="co-flabel">City</div><input class="co-input" value="Chicago"></div>
+        <div><div class="co-flabel">State</div><select class="co-select"><option>IL</option><option>CA</option><option>NY</option></select></div>
+        <div><div class="co-flabel">Postal code</div><input class="co-input" value="04114"></div>
+      </div>
+    </div>
+    <label class="co-consent"><input type="checkbox" checked> I wish to receive paperless W-2 statements and related tax information from my employer (the "company").</label>
+    <div class="co-ack">I acknowledge that:
+      <ol>
+        <li>If I do not consent by checking the box above, I will receive a paper W-2 statement.</li>
+        <li>My consent will be in effect indefinitely or until I withdraw consent by reaching out to the company's payroll administrator.</li>
+        <li>I have the option to request a paper W-2 at a later time by sending an email to the company's payroll administrator; this will not be considered withdrawing my consent to receive paperless statements.</li>
+        <li>I will receive my final W-2 as a paper copy should I no longer be employed by the company.</li>
+      </ol>
+    </div>
+    <div style="text-align:right;margin-top:18px;"><button class="co-btn" onclick="eoToast('Personal info saved (demo)')">Continue</button></div>`;
+  }
+  function eoPayment(){ return `
+    <div class="co-h1">Linked bank accounts</div>
+    <div class="co-sub">You can deposit and split your wages across multiple bank accounts (up to 7).</div>
+    <div class="co-actions">
+      <button class="co-btn-gray" onclick="eoToast('Add account (demo)')">Add account</button>
+      <button class="co-btn-gray" onclick="eoToast('Change payment method (demo)')">Change payment method</button>
+    </div>
+    <div class="co-bankrow"><span class="co-active">Active</span><span>Checking - 0000</span></div>
+    <div class="co-foot"><button class="co-btn co-btn-blue" onclick="eoToast('Finished (demo)')">Finished</button></div>`;
+  }
+  function eoTax(){ return `
+    <div class="co-h1">Withholding forms</div>
+    <div class="co-sub">Please complete the following payroll forms.</div>
+    <div class="co-formrow" onclick="eoToast('Open Federal W-4 (demo)')"><span class="co-chk">✓</span><div>Federal W-4</div><span class="arw">›</span></div>
+    <div class="co-formrow" onclick="eoToast('Open Illinois IL-W-4 (demo)')"><span class="co-chk">✓</span><div>Illinois IL-W-4</div><span class="arw">›</span></div>
+    <div class="co-foot"><button class="co-btn co-btn-blue" onclick="eoToast('Update SSN (demo)')">Update SSN</button></div>`;
+  }
+
+  /* ===== 员工资料（只读） ===== */
+  function openProfile(){ document.getElementById('pfOverlay').classList.add('open'); }
+  function closeProfile(){ document.getElementById('pfOverlay').classList.remove('open'); }
+
+  /* ===== 税后扣款 ===== */
+  let ptState={misc:false,child:false,garn:false};
+  function openPostTax(){ ptState={misc:false,child:false,garn:false}; document.getElementById('ptOverlay').classList.add('open'); renderPostTax(); }
+  function closePostTax(){ document.getElementById('ptOverlay').classList.remove('open'); }
+  function ptOpen(k){ ptState[k]=true; renderPostTax(); }
+  function ptClose(k){ ptState[k]=false; renderPostTax(); }
+  function ptSave(k){ ptState[k]=false; renderPostTax(); eoToast('扣款已保存 (demo) · Deduction saved'); }
+
+  function fText(label,req,w){return `<div class="dd-f" style="width:${w}px"><label>${label}${req?'<span class="req">*</span>':''}</label><input class="dd-inp"></div>`;}
+  function fMoney(label,w){return `<div class="dd-f" style="width:${w}px"><label>${label}</label><div class="dd-money"><span class="pfx">$</span><input class="dd-inp"></div></div>`;}
+  function fPct(label,w){return `<div class="dd-f" style="width:${w}px"><label>${label}</label><div class="dd-pct"><input class="dd-inp"><span class="sfx">%</span></div></div>`;}
+  function fDate(label,req,w){return `<div class="dd-f" style="width:${w}px"><label>${label}${req?'<span class="req">*</span>':''}</label><input type="date" class="dd-inp" placeholder="MM/DD/YYYY"></div>`;}
+  function fSelect(label,w,opts){return `<div class="dd-f" style="width:${w}px"><label>${label}</label><select class="dd-inp">${opts}</select></div>`;}
+  function fBtns(k){return `<div class="dd-f" style="flex-direction:row;align-items:center;gap:12px;"><button class="dd-save" onclick="ptSave('${k}')">Save</button><button class="dd-cancel" onclick="ptClose('${k}')">Cancel</button></div>`;}
+
+  function miscForm(){ return `<div class="dd-form">
+    ${fText('Description',true,300)}${fMoney('Total Amount',150)}${fMoney('Annual Limit',150)}
+    ${fMoney('Amount',150)}${fPct('Percent',130)}${fDate('Start Date',false,170)}${fDate('End Date',false,170)}${fBtns('misc')}</div>`; }
+  function childForm(){ return `<div class="dd-form">
+    ${fText('Description',true,300)}${fMoney('Amount',150)}${fPct('Max Percent (Disposable Income)',190)}
+    <div class="dd-managed"><input type="checkbox" checked> Managed (Payment remitted automatically)</div>
+    ${fSelect('Agency',180,'<option>Choose an option</option><option>State Disbursement Unit</option><option>Court</option>')}${fText('External ID',false,180)}${fDate('Issue Date',false,170)}${fDate('Effective Start',false,170)}${fDate('Effective End',false,170)}${fBtns('child')}</div>`; }
+  function garnForm(){ return `<div class="dd-form">
+    ${fText('Description',true,300)}${fMoney('Total Amount',150)}${fMoney('Annual Limit',150)}${fText('Priority',false,150)}${fPct('Max Percent (Disposable Income)',190)}
+    ${fMoney('Amount',150)}${fPct('Percent',130)}${fDate('Start Date',true,170)}${fDate('End Date',false,170)}${fBtns('garn')}</div>`; }
+
+  function ptSection(key,title,linkLabel,formHtml){
+    return `<div class="dd-sec"><h3>${title}</h3>${ptState[key]?formHtml:`<span class="dd-new" onclick="ptOpen('${key}')">＋ New ${linkLabel}</span>`}</div>`;
+  }
+  function renderPostTax(){
+    document.getElementById('ptBody').innerHTML =
+      ptSection('misc','Miscellaneous Deductions','Miscellaneous Deduction', miscForm()) +
+      ptSection('child','Child Support Deductions','Child Support Deduction', childForm()) +
+      ptSection('garn','Miscellaneous Garnishment Deductions','Miscellaneous Garnishment Deduction', garnForm());
+  }
+
+  /* ===== 工资单 / 税务文件 ===== */
+  function openPaystubs(){ document.getElementById('psOverlay').classList.add('open'); }
+  function closePaystubs(){ document.getElementById('psOverlay').classList.remove('open'); }
+  function openTaxDocs(){ document.getElementById('tdOverlay').classList.add('open'); }
+  function closeTaxDocs(){ document.getElementById('tdOverlay').classList.remove('open'); }
+
   function toggleLanguage(){const en=!document.body.classList.contains('lang-en');document.body.classList.toggle('lang-en',en);document.body.classList.toggle('lang-zh',!en);try{localStorage.setItem('cbLang',en?'en':'zh');}catch(e){}}
   (function(){try{if(localStorage.getItem('cbLang')==='en'){document.body.classList.remove('lang-zh');document.body.classList.add('lang-en');}}catch(e){}})();
 </script>

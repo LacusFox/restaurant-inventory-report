@@ -68,7 +68,7 @@
   .roles{display:flex;gap:8px;flex-wrap:wrap;}
   .role-pill{display:inline-flex;align-items:center;gap:5px;font-size:13px;font-weight:600;padding:4px 12px;border-radius:7px;background:#EEF0FE;color:#6D5AE6;}
   .role-pill.sec{background:#F1F3F5;color:#7A8494;}
-  .role-pill::before{content:"👤";font-size:11px;opacity:.65;}
+  .role-pill::before{content:"";}
   .role-pill.sec::before{content:"";}
   .status{display:inline-block;font-size:13px;font-weight:700;padding:6px 14px;border-radius:7px;color:#fff;}
   .status.ready{background:#22A353;}
@@ -108,6 +108,58 @@
     box-shadow:0 12px 32px rgba(0,0,0,.14);z-index:999;transition:all .35s cubic-bezier(.2,.8,.3,1);font-size:15px;font-weight:600;color:#166534;}
   .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
   .toast .tick{width:26px;height:26px;border-radius:50%;background:#22A353;color:#fff;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:900;flex:0 0 26px;}
+
+  /* Edit Pay 弹窗 */
+  .ep-overlay{position:fixed;inset:0;background:rgba(20,22,30,.45);display:none;z-index:600;align-items:center;justify-content:center;padding:20px;}
+  .ep-overlay.open{display:flex;}
+  .ep-modal{background:#fff;width:min(780px,96vw);max-height:90vh;overflow-y:auto;border-radius:16px;box-shadow:0 24px 70px rgba(0,0,0,.3);}
+  .ep-head{display:flex;align-items:center;padding:20px 24px;border-bottom:1px solid var(--border);}
+  .ep-head h2{font-size:19px;font-weight:800;}
+  .ep-head .x{margin-left:auto;font-size:22px;color:#9aa0aa;cursor:pointer;line-height:1;}
+  .ep-head .x:hover{color:#333;}
+  .ep-body{padding:24px;}
+  .ep-two{display:grid;grid-template-columns:110px 1fr;gap:16px;align-items:start;margin-bottom:24px;}
+  .ep-two:last-child{margin-bottom:0;}
+  .dw-label{font-size:14px;font-weight:700;color:#374151;padding-top:8px;}
+  .ep-name{font-size:18px;font-weight:800;color:#1a1a1a;padding-top:5px;}
+  .ep-field{margin-bottom:24px;}
+  .dw-header{display:flex;align-items:center;margin-bottom:18px;}
+  .dw-header .dw-label{padding-top:0;}
+  .seg{margin-left:auto;display:inline-flex;background:#F1F2F4;border-radius:11px;padding:4px;}
+  .seg-btn{border:none;background:transparent;font-size:14px;font-weight:700;color:#8a8f9a;padding:9px 20px;border-radius:8px;cursor:pointer;transition:.15s;}
+  .seg-btn:hover{color:#374151;}
+  .seg-btn.active{background:#fff;color:#1a1a1a;box-shadow:0 1px 4px rgba(0,0,0,.14);}
+  .ep-grid{display:grid;grid-template-columns:76px minmax(110px,160px) minmax(110px,160px) 130px;gap:10px;align-items:center;margin-bottom:12px;}
+  .ep-grid:last-child{margin-bottom:0;}
+  .ep-rlabel{font-size:14px;font-weight:600;color:#1a1a1a;}
+  .ep-sel{width:100%;padding:11px 13px;border:1px solid #DCDCE3;border-radius:10px;font-size:14px;background:#fff;color:#1f1f1f;appearance:none;cursor:pointer;padding-right:32px;
+    background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%239aa0aa' stroke-width='3'><path d='M6 9l6 6 6-6'/></svg>");background-repeat:no-repeat;background-position:right 11px center;}
+  .ep-sel:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 3px rgba(204,28,76,.10);}
+  .ep-sel:disabled{background-color:#F4F5F7;color:#9aa0aa;cursor:not-allowed;}
+  .ep-amt{display:flex;align-items:center;border:1px solid #DCDCE3;border-radius:10px;overflow:hidden;}
+  .ep-amt .dollar{background:#F1F2F4;padding:11px 13px;color:#6b7280;font-weight:700;}
+  .ep-amt input{border:none;outline:none;padding:11px 12px;width:100%;font-size:14px;}
+  .ep-foot{display:flex;justify-content:flex-end;gap:12px;padding:16px 24px;border-top:1px solid var(--border);}
+
+  /* 发送入职短信/邮件 弹窗 */
+  .so-overlay{position:fixed;inset:0;background:rgba(20,22,30,.45);display:none;z-index:600;align-items:center;justify-content:center;padding:20px;}
+  .so-overlay.open{display:flex;}
+  .so-modal{background:#fff;width:min(620px,96vw);border-radius:16px;box-shadow:0 24px 70px rgba(0,0,0,.3);}
+  .so-head{display:flex;align-items:center;padding:20px 24px;border-bottom:1px solid var(--border);}
+  .so-head h2{font-size:18px;font-weight:800;}
+  .so-head .x{margin-left:auto;font-size:22px;color:#9aa0aa;cursor:pointer;line-height:1;}
+  .so-head .x:hover{color:#333;}
+  .so-body{padding:22px 24px;}
+  .so-emp{font-size:14px;color:#374151;margin-bottom:18px;} .so-emp b{color:#1a1a1a;font-weight:800;font-size:15px;}
+  .so-cards{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+  .so-card{border:1.5px solid var(--border);border-radius:14px;padding:26px 20px;cursor:pointer;transition:.15s;min-height:130px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:9px;text-align:center;}
+  .so-card:hover:not(.disabled){border-color:var(--primary);background:#FDF2F4;box-shadow:0 8px 22px rgba(204,28,76,.08);}
+  .so-card .so-title{font-size:16px;font-weight:800;color:#1a1a1a;}
+  .so-card .so-sub{font-size:13px;color:var(--muted);word-break:break-all;}
+  .so-card.disabled{background:#F4F5F7;border-color:#E7E8EC;cursor:not-allowed;}
+  .so-card.disabled .so-title{color:#9aa0aa;}
+  .so-card.disabled .so-sub{color:#B4283F;font-weight:600;}
+  .so-foot{display:flex;justify-content:flex-end;padding:14px 24px;border-top:1px solid var(--border);}
 </style>
 <script>
   /* 首次进入「员工管理」→ 跳转到匹配导入页；之后再进入 → 正常显示本页。
@@ -172,7 +224,6 @@
 
     <!-- 通知栏:预留的提醒/通知位 -->
     <div class="notice" id="notice">
-      <span class="n-ic">🔔</span>
       <div class="n-body">
         <span class="zh">您新增了 <span id="ncZh">2</span> 名员工，请在「管理员工」中设置是否需要使用薪酬功能。</span>
         <span class="en">You've added <span id="ncEn">2</span> new <span id="nnEn">employees</span>. Please set payroll participation under "Manage Employees".</span>
@@ -211,34 +262,34 @@
             <td><span class="status ready"><span class="zh">可发薪</span><span class="en">Ready to pay</span></span></td>
             <td><span class="pay">$6,000<span class="unit zh">/月</span><span class="unit en">/mo</span></span></td>
             <td class="col-act"><div class="act-wrap"><button class="kebab" onclick="toggleMenu(event,this)">⋯</button><div class="act-menu">
-              <div class="mi" onclick="location.href='chowbus-payroll-employee-detail.html'"><span class="mic">👁</span><span class="zh">查看详情</span><span class="en">View details</span></div>
-              <div class="mi" onclick="act(event,'编辑薪资','Edit Pay')"><span class="mic">✏️</span><span class="zh">编辑薪资</span><span class="en">Edit Pay</span></div>
+              <div class="mi" onclick="location.href='chowbus-payroll-employee-detail.html'"><span class="zh">查看详情</span><span class="en">View details</span></div>
+              <div class="mi" onclick="openEditPayFromRow(event,this)"><span class="zh">编辑薪资</span><span class="en">Edit Pay</span></div>
             </div></div></td>
           </tr>
-          <tr>
+          <tr data-phone="(415) 555-0261" data-email="">
             <td class="name">Test Parse</td>
             <td><div class="roles"><span class="role-pill">Restaurant Owner</span></div></td>
             <td><span class="stat active"><i></i><span class="zh">在职</span><span class="en">Active</span></span></td>
             <td><span class="status incomplete"><span class="zh">设置未完成</span><span class="en">Setup incomplete</span></span></td>
             <td><span class="pay-none"><span class="zh">未设置</span><span class="en">Not set</span></span></td>
             <td class="col-act"><div class="act-wrap"><button class="kebab" onclick="toggleMenu(event,this)">⋯</button><div class="act-menu">
-              <div class="mi" onclick="location.href='chowbus-payroll-employee-detail.html'"><span class="mic">👁</span><span class="zh">查看详情</span><span class="en">View details</span></div>
-              <div class="mi" onclick="act(event,'编辑薪资','Edit Pay')"><span class="mic">✏️</span><span class="zh">编辑薪资</span><span class="en">Edit Pay</span></div>
+              <div class="mi" onclick="location.href='chowbus-payroll-employee-detail.html'"><span class="zh">查看详情</span><span class="en">View details</span></div>
+              <div class="mi" onclick="openEditPayFromRow(event,this)"><span class="zh">编辑薪资</span><span class="en">Edit Pay</span></div>
               <div class="sep"></div>
-              <div class="mi" onclick="act(event,'发送入职短信/邮件','Send onboarding SMS/Email')"><span class="mic">💬</span><span class="zh">发送入职短信/邮件</span><span class="en">Send onboarding SMS/Email</span></div>
+              <div class="mi" onclick="openSendFromRow(event,this)"><span class="zh">发送入职短信/邮件</span><span class="en">Send onboarding SMS/Email</span></div>
             </div></div></td>
           </tr>
-          <tr>
+          <tr data-phone="" data-email="test.parse@example.com">
             <td class="name">Test Parse</td>
             <td><div class="roles"><span class="role-pill">Manager</span><span class="role-pill sec">Waiter</span></div></td>
             <td><span class="stat active"><i></i><span class="zh">在职</span><span class="en">Active</span></span></td>
             <td><span class="status incomplete"><span class="zh">设置未完成</span><span class="en">Setup incomplete</span></span></td>
             <td><span class="pay-none"><span class="zh">未设置</span><span class="en">Not set</span></span></td>
             <td class="col-act"><div class="act-wrap"><button class="kebab" onclick="toggleMenu(event,this)">⋯</button><div class="act-menu">
-              <div class="mi" onclick="location.href='chowbus-payroll-employee-detail.html'"><span class="mic">👁</span><span class="zh">查看详情</span><span class="en">View details</span></div>
-              <div class="mi" onclick="act(event,'编辑薪资','Edit Pay')"><span class="mic">✏️</span><span class="zh">编辑薪资</span><span class="en">Edit Pay</span></div>
+              <div class="mi" onclick="location.href='chowbus-payroll-employee-detail.html'"><span class="zh">查看详情</span><span class="en">View details</span></div>
+              <div class="mi" onclick="openEditPayFromRow(event,this)"><span class="zh">编辑薪资</span><span class="en">Edit Pay</span></div>
               <div class="sep"></div>
-              <div class="mi" onclick="act(event,'发送入职短信/邮件','Send onboarding SMS/Email')"><span class="mic">💬</span><span class="zh">发送入职短信/邮件</span><span class="en">Send onboarding SMS/Email</span></div>
+              <div class="mi" onclick="openSendFromRow(event,this)"><span class="zh">发送入职短信/邮件</span><span class="en">Send onboarding SMS/Email</span></div>
             </div></div></td>
           </tr>
           <tr>
@@ -248,8 +299,8 @@
             <td><span class="status ready"><span class="zh">可发薪</span><span class="en">Ready to pay</span></span></td>
             <td><span class="pay">$16.50<span class="unit zh">/小时</span><span class="unit en">/hr</span></span></td>
             <td class="col-act"><div class="act-wrap"><button class="kebab" onclick="toggleMenu(event,this)">⋯</button><div class="act-menu">
-              <div class="mi" onclick="location.href='chowbus-payroll-employee-detail.html'"><span class="mic">👁</span><span class="zh">查看详情</span><span class="en">View details</span></div>
-              <div class="mi" onclick="act(event,'编辑薪资','Edit Pay')"><span class="mic">✏️</span><span class="zh">编辑薪资</span><span class="en">Edit Pay</span></div>
+              <div class="mi" onclick="location.href='chowbus-payroll-employee-detail.html'"><span class="zh">查看详情</span><span class="en">View details</span></div>
+              <div class="mi" onclick="openEditPayFromRow(event,this)"><span class="zh">编辑薪资</span><span class="en">Edit Pay</span></div>
             </div></div></td>
           </tr>
         </tbody>
@@ -265,6 +316,51 @@
     </div>
   </div>
 </main>
+
+<!-- Edit Pay 弹窗 -->
+<div class="ep-overlay" id="epOverlay">
+  <div class="ep-modal">
+    <div class="ep-head">
+      <h2><span class="zh">编辑薪资</span><span class="en">Edit Pay</span></h2>
+      <span class="x" onclick="closeEditPay()">&times;</span>
+    </div>
+    <div class="ep-body">
+      <div class="ep-two">
+        <div class="dw-label"><span class="zh">员工</span><span class="en">Employee</span></div>
+        <div class="ep-name" id="epNameVal"></div>
+      </div>
+      <div class="ep-field">
+        <div class="dw-header">
+          <div class="dw-label"><span class="zh">部门与薪资</span><span class="en">Department &amp; Wages</span></div>
+          <div class="seg">
+            <button class="seg-btn" id="segUniform" onclick="setEpMode('uniform')"><span class="zh">统一</span><span class="en">Uniform</span></button>
+            <button class="seg-btn" id="segRole" onclick="setEpMode('byrole')"><span class="zh">按角色</span><span class="en">By Role</span></button>
+          </div>
+        </div>
+        <div id="epRows"></div>
+      </div>
+    </div>
+    <div class="ep-foot">
+      <button class="btn-ghost" onclick="closeEditPay()"><span class="zh">取消</span><span class="en">Cancel</span></button>
+      <button class="btn-manage" onclick="saveEditPay()"><span class="zh">保存</span><span class="en">Save</span></button>
+    </div>
+  </div>
+</div>
+
+<!-- 发送入职短信/邮件 弹窗 -->
+<div class="so-overlay" id="soOverlay">
+  <div class="so-modal">
+    <div class="so-head">
+      <h2><span class="zh">发送入职短信 / 邮件</span><span class="en">Send onboarding SMS / Email</span></h2>
+      <span class="x" onclick="closeSend()">&times;</span>
+    </div>
+    <div class="so-body">
+      <div class="so-emp"><span class="zh">员工：</span><span class="en">Employee: </span><b id="soName"></b></div>
+      <div class="so-cards" id="soCards"></div>
+    </div>
+    <div class="so-foot"><button class="btn-ghost" onclick="closeSend()"><span class="zh">关闭</span><span class="en">Close</span></button></div>
+  </div>
+</div>
 
 <!-- Toast(从选择页跳转过来时显示) -->
 <div class="toast" id="toast">
@@ -293,7 +389,94 @@
     clearTimeout(_tt); _tt=setTimeout(()=>t.classList.remove('show'), 2200);
   }
 
-  function toggleLanguage(){const en=!document.body.classList.contains('lang-en');document.body.classList.toggle('lang-en',en);document.body.classList.toggle('lang-zh',!en);try{localStorage.setItem('cbLang',en?'en':'zh');}catch(e){}}
+  /* ===== Edit Pay 弹窗 ===== */
+  const ROLE_ZH = {'Super Admin':'超级管理员','Restaurant Owner':'餐馆老板','Manager':'经理','Waiter':'服务员','Server':'服务员','Cashier':'收银员','Host':'领位','Cook':'厨师','Line Cook':'配菜厨师','Dishwasher':'洗碗工','Bartender':'调酒师','Busser':'勤杂'};
+  let epName='', epRoles=[], epMode='uniform', epType='hourly';
+  function isZh(){return document.body.classList.contains('lang-zh');}
+
+  function openEditPayFromRow(ev, el){
+    ev.stopPropagation(); closeAllMenus();
+    const tr = el.closest('tr');
+    const name = tr.querySelector('.name').textContent.trim();
+    const roles = [...tr.querySelectorAll('.role-pill')].map(p=>p.textContent.trim());
+    openEditPay(name, roles);
+  }
+  function openEditPay(name, roles){
+    epName=name; epRoles=(roles&&roles.length)?roles:['—']; epMode='uniform'; epType='hourly';
+    renderEditPay();
+    document.getElementById('epOverlay').classList.add('open');
+  }
+  function closeEditPay(){ document.getElementById('epOverlay').classList.remove('open'); }
+  function setEpMode(m){ epMode=m; renderEditPay(); }
+  function setEpType(v){ epType=v; renderEditPay(); }
+
+  function deptSel(){
+    const opts=[['unassigned',isZh()?'未分配':'Unassigned'],['foh',isZh()?'前厅':'Front of House'],['boh',isZh()?'后厨':'Back of House']];
+    return `<select class="ep-sel">`+opts.map(([v,l])=>`<option value="${v}">${l}</option>`).join('')+`</select>`;
+  }
+  function typeSel(enabled){
+    const opts=[['hourly',isZh()?'时薪':'Hourly'],['weekly',isZh()?'周薪':'Weekly'],['biweekly',isZh()?'双周薪':'Bi-weekly'],['monthly',isZh()?'月薪':'Monthly'],['yearly',isZh()?'年薪':'Yearly']];
+    return `<select class="ep-sel" ${enabled?'onchange="setEpType(this.value)"':'disabled'}>`+
+      opts.map(([v,l])=>`<option value="${v}" ${v===epType?'selected':''}>${l}</option>`).join('')+`</select>`;
+  }
+  function amtInput(val){ return `<div class="ep-amt"><span class="dollar">$</span><input type="number" step="0.01" min="0" value="${val}"></div>`; }
+  function epRow(labelHtml, typeEnabled, amt){
+    return `<div class="ep-grid"><div class="ep-rlabel">${labelHtml}</div>${deptSel()}${typeSel(typeEnabled)}${amtInput(amt)}</div>`;
+  }
+  function renderEditPay(){
+    document.getElementById('epNameVal').textContent = epName;
+    document.getElementById('segUniform').classList.toggle('active', epMode==='uniform');
+    document.getElementById('segRole').classList.toggle('active', epMode==='byrole');
+    let rows='';
+    if(epMode==='uniform'){
+      rows = epRow(`<span class="zh">全局</span><span class="en">Global</span>`, true, '10.00');
+    }else{
+      // 支持多角色：至少列出两行，单角色员工补齐第二行（默认服务员/Waiter）
+      let roles = epRoles.filter(r=>r!=='—');
+      const fallback=['Waiter','Manager','Cashier','Server'];
+      for(const fb of fallback){ if(roles.length>=2) break; if(!roles.includes(fb)) roles.push(fb); }
+      rows = roles.map((r,i)=> epRow(`<span class="zh">${ROLE_ZH[r]||r}</span><span class="en">${r}</span>`, i===0, '10.00')).join('');
+    }
+    document.getElementById('epRows').innerHTML = rows;
+  }
+  function saveEditPay(){
+    const nm=epName; closeEditPay();
+    document.getElementById('toastMsg').innerHTML = `<span class="zh">已保存「${nm}」的薪资设置</span><span class="en">Saved pay settings for ${nm}</span>`;
+    const t=document.getElementById('toast'); t.classList.add('show');
+    clearTimeout(_tt); _tt=setTimeout(()=>t.classList.remove('show'), 2200);
+  }
+
+  /* ===== 发送入职短信/邮件 弹窗 ===== */
+  let soName='', soPhone='', soEmail='';
+  function openSendFromRow(ev, el){
+    ev.stopPropagation(); closeAllMenus();
+    const tr = el.closest('tr');
+    openSend(tr.querySelector('.name').textContent.trim(), tr.dataset.phone||'', tr.dataset.email||'');
+  }
+  function openSend(name, phone, email){ soName=name; soPhone=phone; soEmail=email; renderSend(); document.getElementById('soOverlay').classList.add('open'); }
+  function closeSend(){ document.getElementById('soOverlay').classList.remove('open'); }
+  function renderSend(){
+    document.getElementById('soName').textContent = soName;
+    const zh=isZh(), smsSet=!!soPhone, mailSet=!!soEmail;
+    const smsSub  = smsSet  ? (zh?'手机号已设置':'Phone on file') : (zh?'手机号未设置':'Phone not set');
+    const mailSub = mailSet ? soEmail : (zh?'邮箱未设置':'Email not set');
+    document.getElementById('soCards').innerHTML =
+      `<div class="so-card ${smsSet?'':'disabled'}" ${smsSet?`onclick="sendChannel('sms')"`:''}>
+         <div class="so-title"><span class="zh">发送短信</span><span class="en">Send SMS</span></div>
+         <div class="so-sub">${smsSub}</div></div>
+       <div class="so-card ${mailSet?'':'disabled'}" ${mailSet?`onclick="sendChannel('email')"`:''}>
+         <div class="so-title"><span class="zh">发送邮件</span><span class="en">Send Email</span></div>
+         <div class="so-sub">${mailSub}</div></div>`;
+  }
+  function sendChannel(ch){
+    const nm=soName; closeSend();
+    const zh = ch==='sms' ? `已向「${nm}」发送入职短信（示意）` : `已向「${nm}」发送入职邮件（示意）`;
+    const en = ch==='sms' ? `Onboarding SMS sent to ${nm} (demo)` : `Onboarding email sent to ${nm} (demo)`;
+    document.getElementById('toastMsg').innerHTML=`<span class="zh">${zh}</span><span class="en">${en}</span>`;
+    const t=document.getElementById('toast'); t.classList.add('show'); clearTimeout(_tt); _tt=setTimeout(()=>t.classList.remove('show'),2200);
+  }
+
+  function toggleLanguage(){const en=!document.body.classList.contains('lang-en');document.body.classList.toggle('lang-en',en);document.body.classList.toggle('lang-zh',!en);try{localStorage.setItem('cbLang',en?'en':'zh');}catch(e){}if(document.getElementById('epOverlay').classList.contains('open'))renderEditPay();if(document.getElementById('soOverlay').classList.contains('open'))renderSend();}
   (function(){try{if(localStorage.getItem('cbLang')==='en'){document.body.classList.remove('lang-zh');document.body.classList.add('lang-en');}}catch(e){}})();
 
   // 新增员工提醒:数量 + 英文单复数(1 与 >1 通用),0 则隐藏提示条

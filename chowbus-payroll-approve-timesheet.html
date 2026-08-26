@@ -151,7 +151,7 @@
       </div>
       <div class="card-body">
         <div class="ext-note">
-          🔗 <span><span class="zh">数据只读。如需修改工时或小费，请前往</span><span class="en">Read-only. To edit hours or tips, go to </span><a onclick="openTimesheets()"><span class="zh">员工考勤表</span><span class="en">Timesheets</span></a><span class="zh"> 进行修改。</span></span>
+          <span><span class="zh">数据只读。如需修改工时或小费，请前往</span><span class="en">Read-only. To edit hours or tips, go to </span><a onclick="openTimesheets()"><span class="zh">员工考勤表</span><span class="en">Timesheets</span></a><span class="zh"> 进行修改。</span></span>
         </div>
         <div class="row-tools">
           <span class="approve-progress"><span class="zh">已审批 <b id="apDone">0</b> / <span id="apTot">0</span></span><span class="en"><b id="apDoneEn">0</b> / <span id="apTotEn">0</span> approved</span></span>
@@ -186,9 +186,8 @@
   function setPeriodApproved(pid,v){ try{ v?localStorage.setItem('cbTsApproved_'+pid,'1'):localStorage.removeItem('cbTsApproved_'+pid);}catch(e){} }
 
   const PERIODS = [
-    {id:'p_0729', zh:'2026/7/29 – 8/11', en:'Jul 29 – Aug 11, 2026', pay:'8/19'},
-    {id:'p_0715', zh:'2026/7/15 – 7/28', en:'Jul 15 – 28, 2026',      pay:'8/26'},
-    {id:'p_0701', zh:'2026/7/1 – 7/14',  en:'Jul 1 – 14, 2026',       pay:'7/22'},
+    {id:'p_0729', zh:'2026/7/29 – 8/11', en:'Jul 29 – Aug 11, 2026', pay:'8/19', preApproved:false},
+    {id:'p_0715', zh:'2026/7/15 – 7/28', en:'Jul 15 – 28, 2026',      pay:'8/26', preApproved:true},
   ];
   const ROSTER = [
     {name:'Chen Wei',      role:'Cook',       reg:'80.0', ot:'4.0', tips:'$45.00'},
@@ -200,7 +199,9 @@
 
   let cur = PERIODS[0].id;
   const rowState = {};
-  PERIODS.forEach(p=>{ const done=isPeriodApproved(p.id); rowState[p.id]=ROSTER.map(()=>done); });
+  // 按各周期的 preApproved 初始化：已审批周期直接显示已审批，其余为待审批（按钮留给用户手动点）。
+  // 同步 localStorage，保证与「开始跑薪」的跳过逻辑一致（并清除上次遗留的标记）。
+  PERIODS.forEach(p=>{ rowState[p.id]=ROSTER.map(()=>!!p.preApproved); setPeriodApproved(p.id, !!p.preApproved); });
 
   function isZh(){return document.body.classList.contains('lang-zh');}
   function periodLabel(p){return isZh()?p.zh:p.en;}

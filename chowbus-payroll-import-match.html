@@ -246,7 +246,7 @@
       html += `<option value="${c.id}" ${String(cur)===String(c.id)?'selected':''}>${esc(c.name)} · ${esc(c.role)}</option>`;
     });
     html += `<option value="${NEW_VAL}" ${cur===NEW_VAL?'selected':''}>${isZh()?'＋ 新建员工账号':'＋ Create new employee'}</option>`;
-    html += `<option value="${ARCH_VAL}" ${cur===ARCH_VAL?'selected':''}>${isZh()?'📦 归档该员工（归入历史发薪）':'📦 Archive this employee (Past Employees)'}</option>`;
+    html += `<option value="${ARCH_VAL}" ${cur===ARCH_VAL?'selected':''}>${isZh()?'归档该员工（归入历史发薪）':'Archive this employee (Past Employees)'}</option>`;
     return html;
   }
   function isZh(){return document.body.classList.contains('lang-zh');}
@@ -278,7 +278,7 @@
               `</div>`;
       // 名字不一致 → 关联后更新系统中的姓名
       if(norm(c.name)!==norm(fullName(imp))){
-        html += `<div class="rename-note">✎ <div><span class="zh">关联后将把系统中的「<b>${esc(c.name)}</b>」更新为「<b>${esc(fullName(imp))}</b>」。</span>`+
+        html += `<div class="rename-note"><div><span class="zh">关联后将把系统中的「<b>${esc(c.name)}</b>」更新为「<b>${esc(fullName(imp))}</b>」。</span>`+
                 `<span class="en">After linking, "<b>${esc(c.name)}</b>" in Chowbus will be renamed to "<b>${esc(fullName(imp))}</b>".</span></div></div>`;
       }
     }
