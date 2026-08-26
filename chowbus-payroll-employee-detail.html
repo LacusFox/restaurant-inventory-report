@@ -53,6 +53,7 @@
   .pay-badge{font-size:12.5px;font-weight:800;color:#1a1a1a;background:#F4F5F7;border-radius:8px;padding:8px 14px;}
 
   .sec-label{font-size:13px;font-weight:700;color:#8a8f9a;margin:2px 0 14px;letter-spacing:.02em;}
+  .sub-h{font-size:22px;font-weight:800;color:#1a1a1a;margin:14px 0 18px;}
   .entry-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;}
   .entry-card{background:#fff;border:1px solid var(--border);border-radius:14px;padding:20px;display:flex;gap:15px;align-items:flex-start;cursor:pointer;transition:.18s;box-shadow:0 2px 12px rgba(0,0,0,.03);}
   .entry-card:hover{border-color:#E7A9B5;box-shadow:0 10px 26px rgba(204,28,76,.09);transform:translateY(-2px);}
@@ -60,7 +61,7 @@
   .entry-body{flex:1;}
   .entry-title{font-size:15px;font-weight:800;margin-bottom:5px;}
   .entry-desc{display:none;}
-  .entry-status{display:inline-block;font-size:11px;font-weight:700;padding:3px 9px;border-radius:999px;margin-top:10px;}
+  .entry-status{display:none;}
   .st-ok{background:#EAF7F0;color:#12905a;} .st-warn{background:#FBF1DC;color:#9a6a12;} .st-soon{background:#F1F2F4;color:#8a8f9a;}
   .entry-arrow{color:#c4c8cf;font-size:19px;align-self:center;}
 
@@ -220,9 +221,9 @@
       <span class="pay-badge">$10<span class="zh">/小时</span><span class="en">/hr</span></span>
     </div>
 
-    <div class="sec-label"><span class="zh">员工薪酬档案</span><span class="en">Employee payroll records</span></div>
-    <div class="entry-grid">
-      <div class="entry-card" onclick="openProfile()">
+    <div class="sec-label" id="empSecLabel"><span class="zh">员工薪酬档案</span><span class="en">Employee payroll records</span></div>
+    <div class="entry-grid" id="empGrid">
+      <div class="entry-card" onclick="showView('profile')">
         <div class="entry-ic">🪪</div>
         <div class="entry-body">
           <div class="entry-title"><span class="zh">员工资料</span><span class="en">Employee Profile</span></div>
@@ -242,7 +243,7 @@
         <span class="entry-arrow">›</span>
       </div>
 
-      <div class="entry-card" onclick="openPostTax()">
+      <div class="entry-card" onclick="showView('posttax')">
         <div class="entry-ic">➖</div>
         <div class="entry-body">
           <div class="entry-title"><span class="zh">税后扣款</span><span class="en">Post-Tax Deductions</span></div>
@@ -252,7 +253,7 @@
         <span class="entry-arrow">›</span>
       </div>
 
-      <div class="entry-card" onclick="openPaystubs()">
+      <div class="entry-card" onclick="showView('paystubs')">
         <div class="entry-ic">🧾</div>
         <div class="entry-body">
           <div class="entry-title"><span class="zh">工资单</span><span class="en">Paystubs</span></div>
@@ -262,7 +263,7 @@
         <span class="entry-arrow">›</span>
       </div>
 
-      <div class="entry-card" onclick="openTaxDocs()">
+      <div class="entry-card" onclick="showView('taxdocs')">
         <div class="entry-ic">📄</div>
         <div class="entry-body">
           <div class="entry-title"><span class="zh">税务文件</span><span class="en">Tax Docs</span></div>
@@ -272,6 +273,7 @@
         <span class="entry-arrow">›</span>
       </div>
     </div>
+    <div id="empSub" style="display:none;"></div>
   </div>
 </main>
 
@@ -290,74 +292,6 @@
       </div>
     </aside>
     <div class="co-main" id="eoMain"></div>
-  </div>
-</div>
-
-<!-- 员工资料 弹窗（只读） -->
-<div class="md-overlay" id="pfOverlay">
-  <div class="md-modal">
-    <div class="md-head"><h2><span class="zh">员工资料</span><span class="en">Employee Profile</span></h2><span class="x" onclick="closeProfile()">&times;</span></div>
-    <div class="md-body">
-      <div class="gi-card">
-        <div class="gi-hd">General Information</div>
-        <div class="gi-row"><div class="gi-k">Full Name</div><div class="gi-v">Qiyi Gong</div></div>
-        <div class="gi-row"><div class="gi-k">Date of Birth</div><div class="gi-v">4/25/1977</div></div>
-        <div class="gi-row"><div class="gi-k">SSN</div><div class="gi-v">XXX-XX-0000</div></div>
-        <div class="gi-row"><div class="gi-k">Email</div><div class="gi-v">qiyi.gong@chowbus.com</div></div>
-        <div class="gi-row"><div class="gi-k">Home Address</div><div class="gi-v">2227 S Wentworth Ave,<br>Chicago, IL 60616<br>Chicago, IL 04114</div></div>
-      </div>
-      <div class="gi-card">
-        <div class="gi-hd">Payment Information</div>
-        <div class="gi-row"><div class="gi-k">Payment Method</div><div class="gi-v">Direct Deposit</div></div>
-        <div class="gi-row"><div class="gi-k">Account Type</div><div class="gi-v">Checking</div></div>
-        <div class="gi-row"><div class="gi-k">Account Number Last Four</div><div class="gi-v">0000</div></div>
-      </div>
-      <div class="gi-card">
-        <div class="gi-hd">Workplaces</div>
-        <div class="gi-row"><div class="gi-k">Workplace Name</div><div class="gi-v">moli</div></div>
-        <div class="gi-row"><div class="gi-k">Workplace Address</div><div class="gi-v">2227 S Wentworth Ave,<br>Chicago, IL 60616<br>Port Vern, IL 60616</div></div>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- 税后扣款 弹窗 -->
-<div class="md-overlay" id="ptOverlay">
-  <div class="md-modal wide">
-    <div class="md-head"><h2><span class="zh">税后扣款</span><span class="en">Post-Tax Deductions</span></h2><span class="x" onclick="closePostTax()">&times;</span></div>
-    <div class="md-body" id="ptBody"></div>
-  </div>
-</div>
-
-<!-- 工资单 弹窗 -->
-<div class="md-overlay" id="psOverlay">
-  <div class="md-modal wide">
-    <div class="md-head"><h2><span class="zh">工资单</span><span class="en">Paystubs</span></h2><span class="x" onclick="closePaystubs()">&times;</span></div>
-    <div class="md-body">
-      <div class="md-tablewrap"><table class="md-table">
-        <thead><tr><th>DATE</th><th>TOTAL AMOUNT</th><th>TOTAL HOURS</th><th></th></tr></thead>
-        <tbody>
-          <tr><td>2026-09-01</td><td>$375.00</td><td>35</td><td class="dl" onclick="eoToast('下载工资单 (demo) · Download paystub')">Download</td></tr>
-        </tbody>
-      </table></div>
-    </div>
-  </div>
-</div>
-
-<!-- 税务文件 弹窗 -->
-<div class="md-overlay" id="tdOverlay">
-  <div class="md-modal wide">
-    <div class="md-head"><h2><span class="zh">税务文件</span><span class="en">Tax Docs</span></h2><span class="x" onclick="closeTaxDocs()">&times;</span></div>
-    <div class="md-body">
-      <div class="md-tablewrap"><table class="md-table">
-        <thead><tr><th>FILED ON</th><th>DOCUMENT</th><th>YEAR</th><th></th></tr></thead>
-        <tbody>
-          <tr><td>2026-08-13</td><td>Illinois IL-W-4</td><td>2026</td><td class="dl" onclick="eoToast('下载文件 (demo) · Download')">Download</td></tr>
-          <tr><td>2026-08-06</td><td>Illinois IL-W-4</td><td>2026</td><td class="dl" onclick="eoToast('下载文件 (demo) · Download')">Download</td></tr>
-          <tr><td>2026-08-06</td><td>Federal W-4</td><td>2026</td><td class="dl" onclick="eoToast('下载文件 (demo) · Download')">Download</td></tr>
-        </tbody>
-      </table></div>
-    </div>
   </div>
 </div>
 
@@ -428,14 +362,48 @@
     <div class="co-foot"><button class="co-btn co-btn-blue" onclick="eoToast('Update SSN (demo)')">Update SSN</button></div>`;
   }
 
-  /* ===== 员工资料（只读） ===== */
-  function openProfile(){ document.getElementById('pfOverlay').classList.add('open'); }
-  function closeProfile(){ document.getElementById('pfOverlay').classList.remove('open'); }
+  /* ===== 内嵌视图切换（员工资料 / 税后扣款 / 工资单 / 税务文件） ===== */
+  function showView(name){
+    const grid=document.getElementById('empGrid'), sl=document.getElementById('empSecLabel'), sub=document.getElementById('empSub');
+    if(name==='grid'){ grid.style.display=''; sl.style.display=''; sub.style.display='none'; sub.innerHTML=''; return; }
+    sl.style.display='none'; grid.style.display='none'; sub.style.display='';
+    const back=`<span class="crumb" onclick="showView('grid')"><span class="zh">← 返回员工薪酬档案</span><span class="en">← Back to records</span></span>`;
+    let c='';
+    if(name==='profile') c=profileHTML();
+    else if(name==='paystubs') c=paystubsHTML();
+    else if(name==='taxdocs') c=taxdocsHTML();
+    else if(name==='posttax'){ ptState={misc:false,child:false,garn:false}; c=`<h2 class="sub-h"><span class="zh">税后扣款</span><span class="en">Post-Tax Deductions</span></h2><div id="ptBody"></div>`; }
+    sub.innerHTML=back+c;
+    if(name==='posttax') renderPostTax();
+    window.scrollTo({top:0,behavior:'smooth'});
+  }
+  function profileHTML(){ return `<h2 class="sub-h"><span class="zh">员工资料</span><span class="en">Employee Profile</span></h2>
+    <div class="gi-card"><div class="gi-hd">General Information</div>
+      <div class="gi-row"><div class="gi-k">Full Name</div><div class="gi-v">Qiyi Gong</div></div>
+      <div class="gi-row"><div class="gi-k">Date of Birth</div><div class="gi-v">4/25/1977</div></div>
+      <div class="gi-row"><div class="gi-k">SSN</div><div class="gi-v">XXX-XX-0000</div></div>
+      <div class="gi-row"><div class="gi-k">Email</div><div class="gi-v">qiyi.gong@chowbus.com</div></div>
+      <div class="gi-row"><div class="gi-k">Home Address</div><div class="gi-v">2227 S Wentworth Ave,<br>Chicago, IL 60616<br>Chicago, IL 04114</div></div></div>
+    <div class="gi-card"><div class="gi-hd">Payment Information</div>
+      <div class="gi-row"><div class="gi-k">Payment Method</div><div class="gi-v">Direct Deposit</div></div>
+      <div class="gi-row"><div class="gi-k">Account Type</div><div class="gi-v">Checking</div></div>
+      <div class="gi-row"><div class="gi-k">Account Number Last Four</div><div class="gi-v">0000</div></div></div>
+    <div class="gi-card"><div class="gi-hd">Workplaces</div>
+      <div class="gi-row"><div class="gi-k">Workplace Name</div><div class="gi-v">moli</div></div>
+      <div class="gi-row"><div class="gi-k">Workplace Address</div><div class="gi-v">2227 S Wentworth Ave,<br>Chicago, IL 60616<br>Port Vern, IL 60616</div></div></div>`; }
+  function paystubsHTML(){ return `<h2 class="sub-h"><span class="zh">工资单</span><span class="en">Paystubs</span></h2>
+    <div class="md-tablewrap"><table class="md-table"><thead><tr><th>DATE</th><th>TOTAL AMOUNT</th><th>TOTAL HOURS</th><th></th></tr></thead>
+      <tbody><tr><td>2026-09-01</td><td>$375.00</td><td>35</td><td class="dl" onclick="eoToast('下载工资单 (demo) · Download paystub')">Download</td></tr></tbody></table></div>`; }
+  function taxdocsHTML(){ return `<h2 class="sub-h"><span class="zh">税务文件</span><span class="en">Tax Docs</span></h2>
+    <div class="md-tablewrap"><table class="md-table"><thead><tr><th>FILED ON</th><th>DOCUMENT</th><th>YEAR</th><th></th></tr></thead>
+      <tbody>
+        <tr><td>2026-08-13</td><td>Illinois IL-W-4</td><td>2026</td><td class="dl" onclick="eoToast('下载文件 (demo) · Download')">Download</td></tr>
+        <tr><td>2026-08-06</td><td>Illinois IL-W-4</td><td>2026</td><td class="dl" onclick="eoToast('下载文件 (demo) · Download')">Download</td></tr>
+        <tr><td>2026-08-06</td><td>Federal W-4</td><td>2026</td><td class="dl" onclick="eoToast('下载文件 (demo) · Download')">Download</td></tr>
+      </tbody></table></div>`; }
 
-  /* ===== 税后扣款 ===== */
+  /* ===== 税后扣款（表单逻辑，渲染进内嵌视图的 #ptBody） ===== */
   let ptState={misc:false,child:false,garn:false};
-  function openPostTax(){ ptState={misc:false,child:false,garn:false}; document.getElementById('ptOverlay').classList.add('open'); renderPostTax(); }
-  function closePostTax(){ document.getElementById('ptOverlay').classList.remove('open'); }
   function ptOpen(k){ ptState[k]=true; renderPostTax(); }
   function ptClose(k){ ptState[k]=false; renderPostTax(); }
   function ptSave(k){ ptState[k]=false; renderPostTax(); eoToast('扣款已保存 (demo) · Deduction saved'); }
@@ -467,12 +435,6 @@
       ptSection('child','Child Support Deductions','Child Support Deduction', childForm()) +
       ptSection('garn','Miscellaneous Garnishment Deductions','Miscellaneous Garnishment Deduction', garnForm());
   }
-
-  /* ===== 工资单 / 税务文件 ===== */
-  function openPaystubs(){ document.getElementById('psOverlay').classList.add('open'); }
-  function closePaystubs(){ document.getElementById('psOverlay').classList.remove('open'); }
-  function openTaxDocs(){ document.getElementById('tdOverlay').classList.add('open'); }
-  function closeTaxDocs(){ document.getElementById('tdOverlay').classList.remove('open'); }
 
   function toggleLanguage(){const en=!document.body.classList.contains('lang-en');document.body.classList.toggle('lang-en',en);document.body.classList.toggle('lang-zh',!en);try{localStorage.setItem('cbLang',en?'en':'zh');}catch(e){}}
   (function(){try{if(localStorage.getItem('cbLang')==='en'){document.body.classList.remove('lang-zh');document.body.classList.add('lang-en');}}catch(e){}})();

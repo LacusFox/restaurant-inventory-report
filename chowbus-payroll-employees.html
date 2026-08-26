@@ -109,6 +109,16 @@
   .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
   .toast .tick{width:26px;height:26px;border-radius:50%;background:#22A353;color:#fff;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:900;flex:0 0 26px;}
 
+  /* 首次进入提示弹窗 */
+  .pp-overlay{position:fixed;inset:0;background:rgba(20,22,30,.45);display:none;z-index:650;align-items:center;justify-content:center;padding:20px;}
+  .pp-overlay.open{display:flex;}
+  .pp-modal{background:#fff;border-radius:16px;box-shadow:0 24px 70px rgba(0,0,0,.3);width:min(460px,94vw);padding:30px;text-align:center;}
+  .pp-title{font-size:19px;font-weight:800;color:#1a1a1a;margin-bottom:10px;}
+  .pp-desc{font-size:14px;color:var(--muted);line-height:1.6;margin-bottom:24px;}
+  .pp-foot{display:flex;gap:12px;justify-content:center;}
+  .pp-later{background:#fff;border:1px solid #DCDCDC;border-radius:9px;padding:11px 22px;font-size:14px;font-weight:600;color:#444;cursor:pointer;}
+  .pp-go{background:var(--primary);color:#fff;border:none;border-radius:9px;padding:11px 26px;font-size:14px;font-weight:700;cursor:pointer;} .pp-go:hover{background:var(--primary-hover);}
+
   /* Edit Pay 弹窗 */
   .ep-overlay{position:fixed;inset:0;background:rgba(20,22,30,.45);display:none;z-index:600;align-items:center;justify-content:center;padding:20px;}
   .ep-overlay.open{display:flex;}
@@ -162,12 +172,10 @@
   .so-foot{display:flex;justify-content:flex-end;padding:14px 24px;border-top:1px solid var(--border);}
 </style>
 <script>
-  /* 首次进入「员工管理」→ 跳转到匹配导入页；之后再进入 → 正常显示本页。
-     标记存于 localStorage.cbEmployeesVisited。带 ?added=1（导入流程完成返回）时不跳转。 */
+  /* 首次进入「员工管理」→ 跳转到「历史发薪员工匹配」；完成匹配后返回本页正常显示。
+     标记存于 localStorage.cbEmployeesVisited。 */
   (function(){
     try{
-      var p = new URLSearchParams(location.search);
-      if(p.get('added')){ localStorage.setItem('cbEmployeesVisited','1'); return; }
       if(!localStorage.getItem('cbEmployeesVisited')){
         localStorage.setItem('cbEmployeesVisited','1');
         location.replace('chowbus-payroll-import-match.html');
@@ -228,7 +236,7 @@
         <span class="zh">您新增了 <span id="ncZh">2</span> 名员工，请在「管理员工」中设置是否需要使用薪酬功能。</span>
         <span class="en">You've added <span id="ncEn">2</span> new <span id="nnEn">employees</span>. Please set payroll participation under "Manage Employees".</span>
       </div>
-      <button class="n-cta" onclick="location.href='chowbus-payroll-manage-employees.html'"><span class="zh">去设置</span><span class="en">Set now</span></button>
+      <button class="n-cta" onclick="location.href='chowbus-payroll-manage-employees.html?tab=off'"><span class="zh">去设置</span><span class="en">Set now</span></button>
       <span class="n-close" onclick="document.getElementById('notice').style.display='none'">&times;</span>
     </div>
 
@@ -362,7 +370,19 @@
   </div>
 </div>
 
-<!-- Toast(从选择页跳转过来时显示) -->
+<!-- 首次进入提示弹窗 -->
+<div class="pp-overlay" id="ppOverlay">
+  <div class="pp-modal">
+    <div class="pp-title"><span class="zh">请先设置需要使用薪酬的员工</span><span class="en">Set which employees use payroll</span></div>
+    <div class="pp-desc"><span class="zh">选择需要算薪、报税的员工后即可开始使用薪酬功能。未选择的员工不受影响，之后可随时调整。</span><span class="en">Choose the employees who will be paid and filed for to start using payroll. You can adjust this anytime.</span></div>
+    <div class="pp-foot">
+      <button class="pp-later" onclick="closePayrollPrompt()"><span class="zh">稍后再说</span><span class="en">Later</span></button>
+      <button class="pp-go" onclick="location.href='chowbus-payroll-manage-employees.html?tab=off'"><span class="zh">去设置</span><span class="en">Set now</span></button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast -->
 <div class="toast" id="toast">
   <span class="tick">✓</span>
   <span id="toastMsg"><span class="zh">加入成功</span><span class="en">Added successfully</span></span>
@@ -488,12 +508,17 @@
     document.getElementById('ncEn').textContent = n;
     document.getElementById('nnEn').textContent = (n===1 ? 'employee' : 'employees');
   })();
-  // 若从选择页带 ?added=1 跳转过来,弹出成功 Toast
-  if(new URLSearchParams(location.search).get('added')){
-    const t=document.getElementById('toast');
-    setTimeout(()=>t.classList.add('show'),200);
-    setTimeout(()=>t.classList.remove('show'),3200);
-  }
+  /* 首次真正进入员工管理主页 → 弹窗引导设置使用薪酬的员工（仅一次）。
+     标记 localStorage.cbPayrollPrompted。首次会先被重定向到匹配页，故本段只在匹配完成返回主页时执行。 */
+  function closePayrollPrompt(){ document.getElementById('ppOverlay').classList.remove('open'); }
+  (function(){
+    try{
+      if(!localStorage.getItem('cbPayrollPrompted')){
+        localStorage.setItem('cbPayrollPrompted','1');
+        document.getElementById('ppOverlay').classList.add('open');
+      }
+    }catch(e){}
+  })();
 </script>
 </body>
 </html>

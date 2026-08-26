@@ -74,6 +74,36 @@
   .newemp-box{margin-top:8px;}
   .btn-newemp{background:#fff;color:#6D5AE6;border:1px dashed #B7ACF3;border-radius:9px;padding:9px 14px;font-size:13px;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;gap:7px;transition:.15s;}
   .btn-newemp:hover{background:#F6F4FE;border-color:#8f7fe8;}
+
+  /* 新建员工 弹窗 */
+  .ne-overlay{position:fixed;inset:0;background:rgba(20,22,30,.45);display:none;z-index:800;align-items:flex-start;justify-content:center;padding:40px 20px;overflow-y:auto;}
+  .ne-overlay.open{display:flex;}
+  .ne-modal{background:#fff;border-radius:16px;box-shadow:0 30px 80px rgba(0,0,0,.3);width:min(680px,96vw);padding:30px 34px 28px;margin:auto;}
+  .ne-title{text-align:center;font-size:22px;font-weight:800;color:#1a1a1a;margin-bottom:24px;}
+  .ne-row2{display:grid;grid-template-columns:1fr 1fr;gap:20px;}
+  .ne-f{margin-bottom:22px;} .ne-f>label{display:block;font-size:14px;font-weight:700;color:#1a1a1a;margin-bottom:10px;} .ne-f .req{color:var(--primary);} .ne-hint{color:#9aa0aa;font-weight:400;font-size:12.5px;}
+  .ne-inp{width:100%;padding:12px 14px;border:1px solid #DCDCE3;border-radius:10px;font-size:14px;background:#fff;color:#1f1f1f;}
+  .ne-inp:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 3px rgba(204,28,76,.1);}
+  .ne-chips{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:14px;}
+  .ne-chip{background:#fff;border:1px solid #DCDCE3;border-radius:999px;padding:9px 18px;font-size:14px;color:#374151;cursor:pointer;}
+  .ne-chip:hover{border-color:#c4c8cf;} .ne-chip.on{background:#FDF2F4;border-color:var(--primary);color:var(--primary);font-weight:700;}
+  .ne-expand{color:var(--primary);font-weight:700;font-size:14px;cursor:pointer;}
+  .ne-selbox{border:1.5px dashed #DCDCE3;border-radius:12px;padding:18px;min-height:64px;display:flex;flex-wrap:wrap;gap:10px;align-items:center;}
+  .ne-empty{width:100%;text-align:center;color:#9aa0aa;font-size:14px;}
+  .ne-selchip{display:inline-flex;align-items:center;gap:8px;background:#EEF0FE;color:#4b3fb0;border-radius:8px;padding:7px 12px;font-size:13.5px;font-weight:600;}
+  .ne-selchip .pri{background:var(--primary);color:#fff;font-size:11px;padding:1px 7px;border-radius:5px;} .ne-selchip .x{cursor:pointer;font-weight:800;}
+  .ne-access{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+  .ne-acc{display:flex;align-items:center;gap:14px;border:1px solid #DCDCE3;border-radius:12px;padding:18px 20px;cursor:pointer;}
+  .ne-acc.on{border-color:var(--primary);background:#FDF2F4;}
+  .ne-acc .ne-chk{width:20px;height:20px;border:2px solid #c4c8cf;border-radius:5px;flex:0 0 auto;position:relative;}
+  .ne-acc.on .ne-chk{background:var(--primary);border-color:var(--primary);}
+  .ne-acc.on .ne-chk::after{content:"✓";color:#fff;font-size:12px;font-weight:900;position:absolute;left:2.5px;top:-1px;}
+  .ne-acc .t{font-weight:700;font-size:15px;color:#1a1a1a;} .ne-acc .d{font-size:12.5px;color:#9aa0aa;margin-top:2px;}
+  .ne-pin{display:flex;gap:12px;} .ne-pin input{width:52px;height:52px;border:1px solid #DCDCE3;border-radius:10px;text-align:center;font-size:18px;}
+  .ne-optlink{color:var(--primary);font-weight:700;font-size:14px;cursor:pointer;margin:2px 0 22px;display:inline-block;}
+  .ne-foot{display:flex;justify-content:center;gap:16px;margin-top:8px;}
+  .ne-cancel{background:#fff;border:1px solid #DCDCDC;border-radius:10px;padding:12px 34px;font-size:15px;font-weight:600;cursor:pointer;}
+  .ne-save{background:var(--primary);color:#fff;border:none;border-radius:10px;padding:12px 40px;font-size:15px;font-weight:700;cursor:pointer;} .ne-save:hover{background:var(--primary-hover);}
   .newemp-done{display:flex;align-items:center;gap:6px;font-size:12.5px;color:#12905a;margin-top:9px;}
 
   /* 归档理由面板 */
@@ -169,12 +199,54 @@
       <div class="actions">
         <button class="btn-ghost" onclick="location.href='chowbus-payroll-employees.html'"><span class="zh">取消</span><span class="en">Cancel</span></button>
         <button class="btn-primary" id="confirmBtn" disabled onclick="confirmImport()">
-          <span class="zh">保存并下一步</span><span class="en">Save &amp; Next</span>
+          <span class="zh">完成</span><span class="en">Done</span>
         </button>
       </div>
     </div>
   </div>
 </main>
+
+<!-- 新建员工 弹窗 -->
+<div class="ne-overlay" id="neOverlay">
+  <div class="ne-modal">
+    <div class="ne-title"><span class="zh">新建员工</span><span class="en">Add New Employee</span></div>
+    <div class="ne-row2">
+      <div class="ne-f"><label><span class="zh">名</span><span class="en">First Name</span><span class="req">*</span></label><input id="neFirst" class="ne-inp"></div>
+      <div class="ne-f"><label><span class="zh">姓</span><span class="en">Last Name</span></label><input id="neLast" class="ne-inp"></div>
+    </div>
+    <div class="ne-f">
+      <label><span class="zh">分配角色</span><span class="en">Assign Roles</span><span class="req">*</span> <span class="ne-hint"><span class="zh">(第一个选中角色将作为主角色)</span><span class="en">(First selected will be Primary)</span></span></label>
+      <div class="ne-chips" id="neChips"></div>
+      <div class="ne-selbox" id="neSel"></div>
+    </div>
+    <div class="ne-f">
+      <label><span class="zh">产品访问权限</span><span class="en">Product Access</span><span class="req">*</span></label>
+      <div class="ne-access">
+        <div class="ne-acc" id="neAccPos" onclick="neToggleAcc('pos')"><span class="ne-chk"></span><div><div class="t"><span class="zh">POS 点餐终端</span><span class="en">POS Terminal</span></div><div class="d">(POS / Tablet)</div></div></div>
+        <div class="ne-acc" id="neAccAdmin" onclick="neToggleAcc('admin')"><span class="ne-chk"></span><div><div class="t"><span class="zh">管理终端</span><span class="en">Admin Portal</span></div><div class="d">(Dashboard / Go)</div></div></div>
+      </div>
+    </div>
+    <div class="ne-row2">
+      <div class="ne-f"><label>Pin <span class="ne-hint"><span class="zh">(POS 端必填)</span><span class="en">(Required for POS)</span></span></label><div class="ne-pin"><input maxlength="1"><input maxlength="1"><input maxlength="1"><input maxlength="1"></div></div>
+      <div class="ne-f"><label><span class="zh">邮箱</span><span class="en">Email</span> <span class="ne-hint"><span class="zh">(管理终端必填)</span><span class="en">(Required for Admin)</span></span></label><input class="ne-inp" placeholder="name@example.com"></div>
+    </div>
+    <span class="ne-optlink" onclick="neToggleOpt()">⊕ <span class="zh">显示可选字段</span><span class="en">Show Optional Fields</span> <span class="ne-hint"><span class="zh">(电话、生日、部门、薪资等)</span><span class="en">(Phone, Birthday, Department, Wages, etc.)</span></span></span>
+    <div id="neOpt" style="display:none;">
+      <div class="ne-row2">
+        <div class="ne-f"><label><span class="zh">电话</span><span class="en">Phone</span></label><input class="ne-inp"></div>
+        <div class="ne-f"><label><span class="zh">生日</span><span class="en">Birthday</span></label><input type="date" class="ne-inp"></div>
+      </div>
+      <div class="ne-row2">
+        <div class="ne-f"><label><span class="zh">部门</span><span class="en">Department</span></label><input class="ne-inp"></div>
+        <div class="ne-f"><label><span class="zh">薪资</span><span class="en">Wages</span></label><input class="ne-inp" placeholder="$"></div>
+      </div>
+    </div>
+    <div class="ne-foot">
+      <button class="ne-cancel" onclick="closeNewEmp()"><span class="zh">取消</span><span class="en">Cancel</span></button>
+      <button class="ne-save" onclick="saveNewEmp()"><span class="zh">保存</span><span class="en">Save</span></button>
+    </div>
+  </div>
+</div>
 
 <div class="toast" id="toast">
   <span class="tick">+</span>
@@ -342,17 +414,44 @@
     render();
   }
 
+  /* ===== 新建员工 弹窗 ===== */
+  const NE_ROLES=[{zh:'厨师',en:'Chef'},{zh:'经理',en:'Manager'},{zh:'服务员',en:'Server'},{zh:'收银员',en:'Cashier'},{zh:'调酒师',en:'Bartender'},{zh:'司机',en:'Driver'},{zh:'洗碗工',en:'Dishwasher'},{zh:'领位',en:'Host'},{zh:'配菜厨师',en:'Line Cook'},{zh:'前台',en:'Front Desk'}];
+  let neImpId=null, neRoles=[], neExpanded=false;
   function openNewEmp(impId){
-    // 调用系统中已有的「新建员工」弹窗（此处仅示意，弹窗不在本页绘制）
-    state[impId].created = true;
-    render();
-    const imp = IMPORTED.find(x=>x.id===impId);
-    showToast(`（打开系统「新建员工」弹窗，已预填「${fullName(imp)}」）`, `(Opens the built-in "New Employee" dialog, pre-filled with "${fullName(imp)}")`);
+    neImpId=impId; neRoles=[]; neExpanded=false;
+    const imp=IMPORTED.find(x=>x.id===impId);
+    document.getElementById('neFirst').value = imp?imp.first:'';
+    document.getElementById('neLast').value = imp?imp.last:'';
+    document.getElementById('neAccPos').classList.remove('on');
+    document.getElementById('neAccAdmin').classList.remove('on');
+    document.getElementById('neOpt').style.display='none';
+    neRenderRoles();
+    document.getElementById('neOverlay').classList.add('open');
+  }
+  function closeNewEmp(){ document.getElementById('neOverlay').classList.remove('open'); }
+  function neExpandToggle(){ neExpanded=!neExpanded; neRenderRoles(); }
+  function neToggleRole(i){ const p=neRoles.indexOf(i); if(p>=0)neRoles.splice(p,1); else neRoles.push(i); neRenderRoles(); }
+  function neToggleAcc(w){ document.getElementById(w==='pos'?'neAccPos':'neAccAdmin').classList.toggle('on'); }
+  function neToggleOpt(){ const o=document.getElementById('neOpt'); o.style.display = o.style.display==='none'?'':'none'; }
+  function neRenderRoles(){
+    document.getElementById('neChips').innerHTML =
+      NE_ROLES.map((r,gi)=> (gi<4||neExpanded)
+        ? `<button class="ne-chip ${neRoles.includes(gi)?'on':''}" onclick="neToggleRole(${gi})"><span class="zh">${r.zh}</span><span class="en">${r.en}</span></button>` : '').join('')
+      + `<span class="ne-expand" onclick="neExpandToggle()">${neExpanded?'<span class="zh">收起</span><span class="en">Collapse</span> ▴':'<span class="zh">展开</span><span class="en">Expand</span> ▾'}</span>`;
+    document.getElementById('neSel').innerHTML = neRoles.length
+      ? neRoles.map((idx,pos)=>`<span class="ne-selchip">${pos===0?'<span class="pri"><span class="zh">主</span><span class="en">Primary</span></span> ':''}<span class="zh">${NE_ROLES[idx].zh}</span><span class="en">${NE_ROLES[idx].en}</span> <span class="x" onclick="neToggleRole(${idx})">×</span></span>`).join('')
+      : `<div class="ne-empty"><span class="zh">请从上方角色中添加。</span><span class="en">Please add from the roles above.</span></div>`;
+  }
+  function saveNewEmp(){
+    if(neImpId){ state[neImpId].created=true; render(); }
+    closeNewEmp();
+    const imp=IMPORTED.find(x=>x.id===neImpId);
+    showToast(`已创建「${imp?fullName(imp):''}」的新员工账号`, `Created new employee account for ${imp?fullName(imp):''}`);
   }
 
   function confirmImport(){
-    // 保存后进入下一步：选择需要使用薪酬的员工
-    window.location.href='chowbus-payroll-select-employees.html';
+    // 完成匹配 → 直接进入员工管理主页（首次进入会弹窗引导设置使用薪酬的员工）
+    window.location.href='chowbus-payroll-employees.html';
   }
 
   function showToast(zh,en){

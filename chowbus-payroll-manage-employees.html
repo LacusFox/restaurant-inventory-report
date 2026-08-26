@@ -257,6 +257,8 @@
   (function(){try{if(localStorage.getItem('cbLang')==='en'){document.body.classList.remove('lang-zh');document.body.classList.add('lang-en');}}catch(e){}})();
 
   render();
+  // 从「去设置」带 ?tab=off 进入时，默认定位到「未使用薪酬」Tab
+  (function(){ try{ if(new URLSearchParams(location.search).get('tab')==='off') switchTab('off'); }catch(e){} })();
 </script>
 </body>
 </html>
