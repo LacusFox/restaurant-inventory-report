@@ -399,6 +399,13 @@ function setEnd(which,kind,val){
   if(kind==='dir'){ which===0?form.firstEndDir=val:form.secondEndDir=val; }
   renderStep1();
 }
+/* 说明：inline 事件处理器无法访问 let 声明的顶层变量 form，
+   因此凡是需要修改 form 的入口，一律走下面这些函数（闭包内可访问 form）。 */
+function setEndMode(m){ form.endMode=m; renderStep1(); }
+function setDayOfMonth(v){ form.dayOfMonth=+v; renderStep1(); }
+function setFirstPayday(v){ form.firstPayday=+v; renderStep1(); }
+function setSecondPayday(v){ form.secondPayday=+v; renderStep1(); }
+function setFirstPayDate(v){ form.firstPayDate=v; renderStep1(); }
 
 /* 月度/半月：日期与周期推算 */
 function monthAdd(y,m,delta){ let t=m+delta; let ny=y+Math.floor(t/12); let nm=((t%12)+12)%12; return [ny,nm]; }
@@ -537,35 +544,35 @@ function weeklyBlock(){
 function monthlyBlock(){
   const f=form;
   return `<div class="fld"><label>${bi('发薪日为每月几号','Day of the month payday is on')} <span class="info-i">i</span></label>
-      <select class="sel" onchange="form.dayOfMonth=+this.value;renderStep1()">${domOptions(f.dayOfMonth)}</select></div>
+      <select class="sel" onchange="setDayOfMonth(this.value)">${domOptions(f.dayOfMonth)}</select></div>
     <div class="fld"><label>${bi('你的发薪周期何时结束？','When do your pay periods end?')}</label>
       <div class="radios">
-        <label class="radio"><input type="radio" name="endmode" ${f.endMode==='same'?'checked':''} onchange="form.endMode='same';renderStep1()">${bi('每月相同日期','Same days every month')}</label>
-        <label class="radio"><input type="radio" name="endmode" ${f.endMode==='days'?'checked':''} onchange="form.endMode='days';renderStep1()">${bi('相对发薪日固定天数','Same number of days from payday')}</label>
+        <label class="radio"><input type="radio" name="endmode" ${f.endMode==='same'?'checked':''} onchange="setEndMode('same')">${bi('每月相同日期','Same days every month')}</label>
+        <label class="radio"><input type="radio" name="endmode" ${f.endMode==='days'?'checked':''} onchange="setEndMode('days')">${bi('相对发薪日固定天数','Same number of days from payday')}</label>
       </div>
       <div class="helper">${bi('你可以让发薪周期在每月的同一日期结束；或设置为发薪日前/后固定天数结束。','You can choose to have your pay periods end on the same date every month; or, set the pay periods to end on a fixed number of days before or after payday.')}</div></div>
     <div class="fld"><label>${bi('首个发薪周期结束于','First pay period ends on')} <span class="info-i">i</span></label>${endsRow(0)}</div>
     <div class="fld"><label>${bi('新方案的首个发薪日','First pay date on new schedule')} <span class="info-i">i</span></label>
-      <input type="date" class="dt" value="${f.firstPayDate||''}" onchange="form.firstPayDate=this.value;renderStep1()"></div>
+      <input type="date" class="dt" value="${f.firstPayDate||''}" onchange="setFirstPayDate(this.value)"></div>
     ${upcomingSection(f)}${defaultToggle()}`;
 }
 
 function semiBlock(){
   const f=form;
   return `<div class="fld"><label>${bi('每月第一次发薪日','First payday of the month')} <span class="info-i">i</span></label>
-      <select class="sel" onchange="form.firstPayday=+this.value;renderStep1()">${domOptions(f.firstPayday)}</select></div>
+      <select class="sel" onchange="setFirstPayday(this.value)">${domOptions(f.firstPayday)}</select></div>
     <div class="fld"><label>${bi('每月第二次发薪日','Second payday of the month')} <span class="info-i">i</span></label>
-      <select class="sel" onchange="form.secondPayday=+this.value;renderStep1()">${domOptions(f.secondPayday)}</select></div>
+      <select class="sel" onchange="setSecondPayday(this.value)">${domOptions(f.secondPayday)}</select></div>
     <div class="fld"><label>${bi('你的发薪周期何时结束？','When do your pay periods end?')}</label>
       <div class="radios">
-        <label class="radio"><input type="radio" name="endmode" ${f.endMode==='same'?'checked':''} onchange="form.endMode='same';renderStep1()">${bi('每月相同日期','Same days every month')}</label>
-        <label class="radio"><input type="radio" name="endmode" ${f.endMode==='days'?'checked':''} onchange="form.endMode='days';renderStep1()">${bi('相对发薪日固定天数','Same number of days from payday')}</label>
+        <label class="radio"><input type="radio" name="endmode" ${f.endMode==='same'?'checked':''} onchange="setEndMode('same')">${bi('每月相同日期','Same days every month')}</label>
+        <label class="radio"><input type="radio" name="endmode" ${f.endMode==='days'?'checked':''} onchange="setEndMode('days')">${bi('相对发薪日固定天数','Same number of days from payday')}</label>
       </div>
       <div class="helper">${bi('你可以让发薪周期在每月的同一日期结束；或设置为发薪日前/后固定天数结束。','You can choose to have your pay periods end on the same date every month; or, set the pay periods to end on a fixed number of days before or after payday.')}</div></div>
     <div class="fld"><label>${bi('首个发薪周期结束于','First pay period ends on')} <span class="info-i">i</span></label>${endsRow(0)}</div>
     <div class="fld"><label>${bi('第二个发薪周期结束于','Second pay period ends on')} <span class="info-i">i</span></label>${endsRow(1)}</div>
     <div class="fld"><label>${bi('新方案的首个发薪日','First pay date on new schedule')} <span class="info-i">i</span></label>
-      <input type="date" class="dt" value="${f.firstPayDate||''}" onchange="form.firstPayDate=this.value;renderStep1()"></div>
+      <input type="date" class="dt" value="${f.firstPayDate||''}" onchange="setFirstPayDate(this.value)"></div>
     ${upcomingSection(f)}${defaultToggle()}`;
 }
 
