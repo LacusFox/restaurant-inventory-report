@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chowbus Payroll · 跑薪记录</title>
+<style>
+  :root{--primary:#CC1C4C;--primary-hover:#A6123B;--bg:#F7F8FA;--border:#EDEEF1;--ink:#1F1F1F;--muted:#6B7280;--sidebar-w:250px;}
+  *{box-sizing:border-box;margin:0;padding:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"PingFang SC","Microsoft YaHei",Arial,sans-serif;}
+  body{display:flex;background:var(--bg);color:var(--ink);min-height:100vh;overflow-x:hidden;}
+  body.lang-zh .en{display:none!important;} body.lang-en .zh{display:none!important;}
+
+  aside.sidebar{width:var(--sidebar-w);background:#fff;border-right:1px solid var(--border);position:fixed;height:100vh;overflow-y:auto;z-index:100;}
+  .logo-area{padding:18px 22px;display:flex;align-items:center;gap:8px;border-bottom:1px solid var(--border);}
+  .logo-area .ic{font-size:22px;} .logo-area .tx{font-weight:900;font-size:19px;color:var(--primary);}
+  .menu-list{list-style:none;padding:10px 0;}
+  .menu-item{padding:11px 22px;display:flex;align-items:center;color:#374151;font-size:14px;cursor:pointer;transition:.15s;}
+  .menu-item:hover{background:#FDF2F4;color:var(--primary);}
+  .menu-icon{margin-right:12px;width:18px;text-align:center;opacity:.75;}
+  .caret{margin-left:auto;font-size:11px;color:#c4c8cf;}
+  .menu-group.open>.menu-item{color:var(--primary);font-weight:600;}
+  .submenu-list{list-style:none;padding:2px 0 6px;}
+  .submenu-item{padding:10px 22px 10px 50px;font-size:13.5px;color:var(--muted);cursor:pointer;transition:.15s;}
+  .submenu-item:hover{color:var(--primary);}
+  .submenu-item.active{color:var(--primary);font-weight:700;background:#FFF0F2;border-left:3px solid var(--primary);padding-left:47px;}
+
+  main{margin-left:var(--sidebar-w);flex:1;min-height:100vh;display:flex;flex-direction:column;}
+  header.top{height:58px;background:#fff;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;padding:0 28px;position:sticky;top:0;z-index:99;}
+  .hleft{display:flex;align-items:center;gap:16px;font-size:14px;color:#333;}
+  .collapse{font-size:18px;color:#888;cursor:pointer;}
+  .store{font-weight:600;cursor:pointer;} .store .ca{color:#aaa;font-size:11px;margin-left:4px;}
+  .usa{background:#EEE;padding:2px 8px;border-radius:4px;font-size:11px;color:#555;}
+  .hright{display:flex;align-items:center;gap:22px;font-size:13.5px;color:var(--muted);}
+  .langpill{display:inline-flex;border:1px solid #E3B8C4;border-radius:999px;overflow:hidden;cursor:pointer;font-size:12.5px;font-weight:600;}
+  .langpill span{padding:5px 15px;transition:.15s;}
+  body.lang-zh .langpill .lz, body.lang-en .langpill .le{background:var(--primary);color:#fff;}
+  body.lang-zh .langpill .le, body.lang-en .langpill .lz{background:#fff;color:#666;}
+
+  .content{padding:26px 34px 60px;flex:1;max-width:1200px;}
+  .crumb{font-size:12.5px;color:#9aa0aa;margin-bottom:12px;cursor:pointer;display:inline-block;}
+  .crumb:hover{color:var(--primary);}
+  .page-title{font-size:23px;font-weight:800;margin-bottom:18px;}
+
+  /* 列表 */
+  .rec-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:18px;max-width:1000px;}
+  .rec-card{background:#fff;border:1px solid var(--border);border-radius:14px;padding:22px 22px 16px;cursor:pointer;transition:.15s;box-shadow:0 2px 12px rgba(0,0,0,.03);}
+  .rec-card:hover{border-color:#E7A9B5;box-shadow:0 8px 22px rgba(204,28,76,.08);transform:translateY(-2px);}
+  .rec-preview{filter:blur(5px);opacity:.5;user-select:none;pointer-events:none;padding:6px 4px 14px;line-height:1.9;}
+  .rec-preview .a{font-weight:800;color:#111;} .rec-preview .b{color:#6b7280;font-size:14px;}
+  .rec-foot{display:flex;align-items:center;gap:12px;border:1px solid var(--border);border-radius:10px;padding:12px 16px;}
+  .rec-range{font-size:15px;color:#1a1a1a;font-variant-numeric:tabular-nums;}
+  .rec-paid{margin-left:auto;font-size:12.5px;font-weight:700;color:#12905a;background:#EAF7F0;border:1px solid #CBEBD9;border-radius:999px;padding:3px 12px;}
+
+  /* 详情（内嵌 Check Payroll summary） */
+  .pr-detail{background:#fff;border:1px solid var(--border);border-radius:16px;box-shadow:0 2px 12px rgba(0,0,0,.03);display:flex;overflow:hidden;min-height:520px;}
+  .pr-side{width:250px;flex:0 0 auto;border-right:1px solid #EFF0F3;padding:24px 22px;}
+  .pr-paid{display:inline-block;font-size:12.5px;font-weight:700;color:#12905a;background:#EAF7F0;border-radius:999px;padding:4px 12px;margin-bottom:14px;}
+  .pr-side h3{font-size:18px;font-weight:800;margin-bottom:18px;}
+  .pr-cash-l{font-size:12px;font-weight:700;color:#9aa0aa;letter-spacing:.04em;display:flex;align-items:center;gap:6px;}
+  .pr-cash-v{font-size:30px;font-weight:900;margin:6px 0 18px;}
+  .pr-hr{height:1px;background:#EFF0F3;margin:0 0 18px;}
+  .pr-kv{margin-bottom:16px;} .pr-kv .k{font-size:13px;color:#9aa0aa;margin-bottom:3px;} .pr-kv .v{font-size:15px;font-weight:700;color:#111;line-height:1.4;}
+  .pr-two{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+  .pr-main{flex:1;padding:22px 26px;overflow-x:auto;}
+  .pr-top{display:flex;align-items:center;gap:12px;margin-bottom:20px;}
+  .pr-back{display:inline-flex;align-items:center;gap:8px;font-size:16px;font-weight:700;color:#111;cursor:pointer;}
+  .pr-reopen{margin-left:auto;background:#fff;border:1px solid #DADCE0;border-radius:10px;padding:10px 18px;font-size:14px;font-weight:700;cursor:pointer;}
+  .pr-reopen:hover{background:#F7F8FA;}
+  .pr-tabs{display:inline-flex;background:#F4F5F7;border-radius:999px;padding:5px;margin-bottom:22px;flex-wrap:wrap;}
+  .pr-tab{font-size:13.5px;font-weight:700;color:#8a8f9a;padding:8px 16px;border-radius:999px;cursor:pointer;transition:.15s;white-space:nowrap;}
+  .pr-tab.active{background:#fff;color:#111;box-shadow:0 1px 4px rgba(0,0,0,.1);}
+  table.pr-table{width:100%;border-collapse:collapse;min-width:640px;}
+  .pr-table th{text-align:left;font-size:14px;font-weight:800;color:#111;padding:14px 12px;border-bottom:1px solid var(--border);}
+  .pr-table th.num,.pr-table td.num{text-align:right;}
+  .pr-table td{padding:16px 12px;border-bottom:1px solid #F1F2F4;font-size:15px;color:#111;}
+  .pr-table tr:last-child td{border-bottom:none;}
+  .pr-table .nm{font-weight:700;}
+  .pr-empty{padding:80px 10px;text-align:center;}
+  .pr-empty .t{font-size:20px;font-weight:800;color:#111;margin-bottom:10px;} .pr-empty .d{font-size:15px;color:#9aa0aa;}
+</style>
+</head>
+<body class="lang-zh">
+
+<aside class="sidebar">
+  <div class="logo-area"><span class="ic">🍜</span><span class="tx">chowbus</span></div>
+  <ul class="menu-list">
+    <li class="menu-item"><span class="menu-icon">🏠</span><span class="zh">首页</span><span class="en">Home</span></li>
+    <li class="menu-item"><span class="menu-icon">🧮</span><span class="zh">调整管理</span><span class="en">Adjustment Management</span></li>
+    <li class="menu-item"><span class="menu-icon">💳</span><span class="zh">交易</span><span class="en">Transactions</span></li>
+    <li class="menu-item"><span class="menu-icon">🤖</span><span class="zh">AI电话点餐</span><span class="en">AI Phone Ordering</span></li>
+    <li class="menu-item"><span class="menu-icon">🧾</span><span class="zh">订单</span><span class="en">Orders</span></li>
+    <li class="menu-item"><span class="menu-icon">📋</span><span class="zh">菜单</span><span class="en">Menu</span><span class="caret">▾</span></li>
+    <li class="menu-item"><span class="menu-icon">🎯</span><span class="zh">促销管理</span><span class="en">Promotion Management</span></li>
+    <li class="menu-item"><span class="menu-icon">👥</span><span class="zh">团队管理</span><span class="en">Team Management</span><span class="caret">▾</span></li>
+
+    <div class="menu-group open">
+      <li class="menu-item"><span class="menu-icon">💲</span><span class="zh">薪酬</span><span class="en">Payroll</span><span class="caret">▴</span></li>
+      <ul class="submenu-list">
+        <li class="submenu-item" onclick="location.href='chowbus-payroll-overview.html'"><span class="zh">概览</span><span class="en">Overview</span></li>
+        <li class="submenu-item active" onclick="location.href='chowbus-payroll-run-payroll.html'"><span class="zh">跑薪</span><span class="en">Run Payroll</span></li>
+        <li class="submenu-item" onclick="location.href='chowbus-payroll-company-setup.html'"><span class="zh">公司设置</span><span class="en">Company Setup</span></li>
+        <li class="submenu-item" onclick="location.href='chowbus-payroll-employees.html'"><span class="zh">员工管理</span><span class="en">Employees</span></li>
+        <li class="submenu-item" onclick="location.href='chowbus-payroll-taxes-filings.html'"><span class="zh">税务与申报</span><span class="en">Taxes &amp; Filings</span></li>
+      </ul>
+    </div>
+
+    <li class="menu-item"><span class="menu-icon">📟</span><span class="zh">设备</span><span class="en">Devices</span></li>
+    <li class="menu-item"><span class="menu-icon">👤</span><span class="zh">账户</span><span class="en">Account</span><span class="caret">▾</span></li>
+    <li class="menu-item"><span class="menu-icon">✅</span><span class="zh">智能点餐</span><span class="en">Smart Ordering</span><span class="caret">▾</span></li>
+  </ul>
+</aside>
+
+<main>
+  <header class="top">
+    <div class="hleft"><span class="collapse">≡</span><span class="store">may localserver -12555-Curry Flurry(12555)<span class="ca">▾</span></span><span class="usa">USA</span></div>
+    <div class="hright"><span>sisi.hu@chowbus.com</span><div class="langpill" onclick="toggleLanguage()"><span class="lz">中文</span><span class="le">EN</span></div></div>
+  </header>
+
+  <div class="content">
+    <span class="crumb" onclick="location.href='chowbus-payroll-run-payroll.html'"><span class="zh">← 返回跑薪</span><span class="en">← Back to Run Payroll</span></span>
+    <h1 class="page-title"><span class="zh">跑薪记录</span><span class="en">Payroll Records</span></h1>
+    <div id="recBody"></div>
+  </div>
+</main>
+
+<script>
+  /* 8 条历史跑薪，按时间倒序（内容英文，内嵌 Check Payroll summary） */
+  const RUNS=[
+    {range:'2026/8/11 – 8/17', pay:'2026/8/22', reopen:'2026/8/20 8:00 am PT'},
+    {range:'2026/8/4 – 8/10',  pay:'2026/8/15', reopen:'2026/8/13 8:00 am PT'},
+    {range:'2026/7/28 – 8/3',  pay:'2026/8/8',  reopen:'2026/8/6 8:00 am PT'},
+    {range:'2026/7/21 – 7/27', pay:'2026/8/1',  reopen:'2026/7/30 8:00 am PT'},
+    {range:'2026/7/14 – 7/20', pay:'2026/7/25', reopen:'2026/7/23 8:00 am PT'},
+    {range:'2026/7/7 – 7/13',  pay:'2026/7/18', reopen:'2026/7/16 8:00 am PT'},
+    {range:'2026/6/30 – 7/6',  pay:'2026/7/11', reopen:'2026/7/9 8:00 am PT'},
+    {range:'2026/6/23 – 6/29', pay:'2026/7/4',  reopen:'2026/7/2 8:00 am PT'},
+  ];
+  let prTab='pay';
+
+  function renderList(){
+    document.getElementById('recBody').innerHTML =
+      `<div class="rec-grid">` + RUNS.map((r,i)=>`
+        <div class="rec-card" onclick="openRun(${i})">
+          <div class="rec-preview"><div class="a">Net pay $327.92</div><div class="b">Qiyi Gong · Direct Deposit · 1 employee</div></div>
+          <div class="rec-foot"><span class="rec-range">${r.range}</span><span class="rec-paid">Paid</span></div>
+        </div>`).join('') + `</div>`;
+  }
+
+  function openRun(i){ prTab='pay'; renderDetail(RUNS[i]); window.scrollTo({top:0,behavior:'smooth'}); }
+
+  function prTabContent(){
+    if(prTab==='pay') return `<table class="pr-table">
+      <thead><tr><th>Employee</th><th>Payment Method</th><th class="num">Earnings</th><th class="num">Add'l earnings</th><th class="num">Total reimb.</th><th class="num">PTO/Sick leave</th><th class="num">Gross pay</th><th class="num">Net pay</th></tr></thead>
+      <tbody><tr><td class="nm">Qiyi Gong</td><td>Direct Deposit</td><td class="num">$375.00</td><td class="num">$0.00</td><td class="num">$0.00</td><td class="num">$0.00</td><td class="num">$375.00</td><td class="num">$327.92</td></tr></tbody></table>`;
+    if(prTab==='taxes') return `<table class="pr-table">
+      <thead><tr><th>Tax Description</th><th class="num">by Employees</th><th class="num">by Company</th></tr></thead>
+      <tbody>
+        <tr><td>Federal Unemployment Tax</td><td class="num">—</td><td class="num">$2.25</td></tr>
+        <tr><td>Employer Medicare Tax</td><td class="num">—</td><td class="num">$5.44</td></tr>
+        <tr><td>Illinois State Unemployment Tax</td><td class="num">—</td><td class="num">$7.50</td></tr>
+        <tr><td>Medicare</td><td class="num">$5.44</td><td class="num">—</td></tr>
+        <tr><td>Additional Medicare</td><td class="num">—</td><td class="num">—</td></tr>
+        <tr><td>Federal Income Tax</td><td class="num">$23.08</td><td class="num">—</td></tr>
+        <tr><td>Illinois State Tax</td><td class="num">$18.56</td><td class="num">—</td></tr>
+      </tbody></table>`;
+    if(prTab==='hourly') return `<table class="pr-table">
+      <thead><tr><th>Employee</th><th class="num">Regular</th><th class="num">OT</th><th class="num">Double OT</th><th class="num">PTO</th><th class="num">Sick</th></tr></thead>
+      <tbody><tr><td class="nm">Qiyi Gong</td><td class="num">30.00</td><td class="num">5.00</td><td class="num">0.00</td><td class="num">0.00</td><td class="num">0.00</td></tr></tbody></table>`;
+    if(prTab==='posttax') return `<div class="pr-empty"><div class="t">No post-tax deductions</div><div class="d">This payroll has no post-tax deductions to show.</div></div>`;
+    return `<div class="pr-empty"><div class="t">No benefits</div><div class="d">This payroll has no benefits to show.</div></div>`;
+  }
+  function setPrTab(t){ prTab=t; document.getElementById('prContent').innerHTML=prTabContent(); document.querySelectorAll('.pr-tab').forEach(el=>el.classList.toggle('active', el.dataset.t===t)); }
+
+  function renderDetail(r){
+    document.getElementById('recBody').innerHTML = `
+      <div class="pr-detail">
+        <aside class="pr-side">
+          <span class="pr-paid">Paid</span>
+          <h3>Payroll summary</h3>
+          <div class="pr-cash-l">CASH REQUIREMENT ›</div>
+          <div class="pr-cash-v">$390.19</div>
+          <div class="pr-hr"></div>
+          <div class="pr-kv"><div class="k">Pay period</div><div class="v">${r.range.replace(' – ','<br>– ')}</div></div>
+          <div class="pr-kv"><div class="k">Pay day</div><div class="v">${r.pay}</div></div>
+          <div class="pr-kv"><div class="k">Reopen deadline</div><div class="v">${r.reopen.replace(' ','<br>')}</div></div>
+          <div class="pr-two">
+            <div class="pr-kv"><div class="k">Employees</div><div class="v">1</div></div>
+            <div class="pr-kv"><div class="k">Contractors</div><div class="v">0</div></div>
+          </div>
+        </aside>
+        <div class="pr-main">
+          <div class="pr-top">
+            <span class="pr-back" onclick="renderList()">‹ View other payrolls</span>
+            <button class="pr-reopen" onclick="prToast('Reopen payroll (demo)')">Reopen payroll</button>
+          </div>
+          <div class="pr-tabs">
+            <span class="pr-tab active" data-t="pay" onclick="setPrTab('pay')">Pay breakdown</span>
+            <span class="pr-tab" data-t="taxes" onclick="setPrTab('taxes')">Taxes</span>
+            <span class="pr-tab" data-t="hourly" onclick="setPrTab('hourly')">Hourly breakdown</span>
+            <span class="pr-tab" data-t="posttax" onclick="setPrTab('posttax')">Post-tax deductions</span>
+            <span class="pr-tab" data-t="benefits" onclick="setPrTab('benefits')">Benefits</span>
+          </div>
+          <div id="prContent">${prTabContent()}</div>
+        </div>
+      </div>`;
+  }
+  function prToast(t){ alert(t); }
+
+  function toggleLanguage(){const en=!document.body.classList.contains('lang-en');document.body.classList.toggle('lang-en',en);document.body.classList.toggle('lang-zh',!en);try{localStorage.setItem('cbLang',en?'en':'zh');}catch(e){}}
+  (function(){try{if(localStorage.getItem('cbLang')==='en'){document.body.classList.remove('lang-zh');document.body.classList.add('lang-en');}}catch(e){}})();
+
+  renderList();
+</script>
+</body>
+</html>
