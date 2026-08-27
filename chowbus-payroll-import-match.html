@@ -407,6 +407,7 @@
     if(val!==NEW_VAL)  st.created=false;   // 离开"新建"则清除已建标记
     if(val!==ARCH_VAL) st.reason='';       // 离开"归档"则清除理由
     render();
+    if(val===NEW_VAL && !st.created) openNewEmp(impId);   // 选中「新建员工账号」直接弹窗
   }
 
   function onReason(impId, reason){
