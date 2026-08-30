@@ -4,39 +4,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Chowbus Payroll · 税务与申报</title>
+<link rel="stylesheet" href="cb-inter.css">
+<link rel="stylesheet" href="cb-shell.css">
 <style>
-  :root{--primary:#CC1C4C;--primary-hover:#A6123B;--bg:#F7F8FA;--border:#EDEEF1;--ink:#1F1F1F;--muted:#6B7280;--sidebar-w:250px;}
-  *{box-sizing:border-box;margin:0;padding:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"PingFang SC","Microsoft YaHei",Arial,sans-serif;}
-  body{display:flex;background:var(--bg);color:var(--ink);min-height:100vh;overflow-x:hidden;}
-  body.lang-zh .en{display:none!important;} body.lang-en .zh{display:none!important;}
-
-  aside.sidebar{width:var(--sidebar-w);background:#fff;border-right:1px solid var(--border);position:fixed;height:100vh;overflow-y:auto;z-index:100;}
-  .logo-area{padding:18px 22px;display:flex;align-items:center;gap:8px;border-bottom:1px solid var(--border);}
-  .logo-area .ic{font-size:22px;} .logo-area .tx{font-weight:900;font-size:19px;color:var(--primary);}
-  .menu-list{list-style:none;padding:10px 0;}
-  .menu-item{padding:11px 22px;display:flex;align-items:center;color:#374151;font-size:14px;cursor:pointer;transition:.15s;}
-  .menu-item:hover{background:#FDF2F4;color:var(--primary);}
-  .menu-icon{margin-right:12px;width:18px;text-align:center;opacity:.75;}
-  .caret{margin-left:auto;font-size:11px;color:#c4c8cf;}
-  .menu-group.open>.menu-item{color:var(--primary);font-weight:600;}
-  .submenu-list{list-style:none;padding:2px 0 6px;}
-  .submenu-item{padding:10px 22px 10px 50px;font-size:13.5px;color:var(--muted);cursor:pointer;transition:.15s;}
-  .submenu-item:hover{color:var(--primary);}
-  .submenu-item.active{color:var(--primary);font-weight:700;background:#FFF0F2;border-left:3px solid var(--primary);padding-left:47px;}
-
-  main{margin-left:var(--sidebar-w);flex:1;min-height:100vh;display:flex;flex-direction:column;}
-  header.top{height:58px;background:#fff;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;padding:0 28px;position:sticky;top:0;z-index:99;}
-  .hleft{display:flex;align-items:center;gap:16px;font-size:14px;color:#333;}
-  .collapse{font-size:18px;color:#888;cursor:pointer;}
-  .store{font-weight:600;cursor:pointer;} .store .ca{color:#aaa;font-size:11px;margin-left:4px;}
-  .usa{background:#EEE;padding:2px 8px;border-radius:4px;font-size:11px;color:#555;}
-  .hright{display:flex;align-items:center;gap:22px;font-size:13.5px;color:var(--muted);}
-  .langpill{display:inline-flex;border:1px solid #E3B8C4;border-radius:999px;overflow:hidden;cursor:pointer;font-size:12.5px;font-weight:600;}
-  .langpill span{padding:5px 15px;transition:.15s;}
-  body.lang-zh .langpill .lz, body.lang-en .langpill .le{background:var(--primary);color:#fff;}
-  body.lang-zh .langpill .le, body.lang-en .langpill .lz{background:#fff;color:#666;}
-
-  .content{padding:28px 34px;flex:1;max-width:1040px;}
   .page-title{font-size:24px;font-weight:800;margin-bottom:4px;}
   .tf-back{font-size:12.5px;color:#9aa0aa;cursor:pointer;display:inline-block;margin-bottom:16px;} .tf-back:hover{color:var(--primary);}
   .page-sub{font-size:13.5px;color:var(--muted);margin-bottom:24px;}
@@ -100,49 +70,10 @@
 </head>
 <body class="lang-zh">
 
-<aside class="sidebar">
-  <div class="logo-area"><span class="ic">🍜</span><span class="tx">chowbus</span></div>
-  <ul class="menu-list">
-    <li class="menu-item"><span class="menu-icon">🏠</span><span class="zh">首页</span><span class="en">Home</span></li>
-    <li class="menu-item"><span class="menu-icon">🧮</span><span class="zh">调整管理</span><span class="en">Adjustment Management</span></li>
-    <li class="menu-item"><span class="menu-icon">💳</span><span class="zh">交易</span><span class="en">Transactions</span></li>
-    <li class="menu-item"><span class="menu-icon">🤖</span><span class="zh">AI电话点餐</span><span class="en">AI Phone Ordering</span></li>
-    <li class="menu-item"><span class="menu-icon">🧾</span><span class="zh">订单</span><span class="en">Orders</span></li>
-    <li class="menu-item"><span class="menu-icon">📋</span><span class="zh">菜单</span><span class="en">Menu</span><span class="caret">▾</span></li>
-    <li class="menu-item"><span class="menu-icon">🎯</span><span class="zh">促销管理</span><span class="en">Promotion Management</span></li>
-    <li class="menu-item"><span class="menu-icon">👥</span><span class="zh">团队管理</span><span class="en">Team Management</span><span class="caret">▾</span></li>
-
-    <div class="menu-group open">
-      <li class="menu-item"><span class="menu-icon">💲</span><span class="zh">薪酬</span><span class="en">Payroll</span><span class="caret">▴</span></li>
-      <ul class="submenu-list">
-        <li class="submenu-item" onclick="location.href='chowbus-payroll-overview.html'"><span class="zh">概览</span><span class="en">Overview</span></li>
-        <li class="submenu-item" onclick="location.href='chowbus-payroll-run-payroll.html'"><span class="zh">跑薪</span><span class="en">Run Payroll</span></li>
-        <li class="submenu-item" onclick="location.href='chowbus-payroll-company-setup.html'"><span class="zh">公司设置</span><span class="en">Company Setup</span></li>
-        <li class="submenu-item" onclick="location.href='chowbus-payroll-employees.html'"><span class="zh">员工管理</span><span class="en">Employees</span></li>
-        <li class="submenu-item active" onclick="location.href='chowbus-payroll-taxes-filings.html'"><span class="zh">税务与申报</span><span class="en">Taxes &amp; Filings</span></li>
-      </ul>
-    </div>
-
-    <li class="menu-item"><span class="menu-icon">📟</span><span class="zh">设备</span><span class="en">Devices</span></li>
-    <li class="menu-item"><span class="menu-icon">👤</span><span class="zh">账户</span><span class="en">Account</span><span class="caret">▾</span></li>
-    <li class="menu-item"><span class="menu-icon">✅</span><span class="zh">智能点餐</span><span class="en">Smart Ordering</span><span class="caret">▾</span></li>
-  </ul>
-</aside>
-
-<main>
-  <header class="top">
-    <div class="hleft">
-      <span class="collapse">≡</span>
-      <span class="store">may localserver -12555-Curry Flurry(12555)<span class="ca">▾</span></span>
-      <span class="usa">USA</span>
-    </div>
-    <div class="hright">
-      <span>sisi.hu@chowbus.com</span>
-      <div class="langpill" onclick="toggleLanguage()"><span class="lz">中文</span><span class="le">EN</span></div>
-    </div>
-  </header>
-
-  <div class="content">
+<div class="cb-app">
+  <main class="cb-main">
+    <div class="cb-scroll">
+      <div class="cb-content">
     <h1 class="page-title"><span class="zh">税务与申报</span><span class="en">Taxes &amp; Filings</span></h1>
 
     <div class="entry-grid" id="tfGrid">
@@ -187,12 +118,16 @@
       </div>
     </div>
     <div id="tfSub" style="display:none;"></div>
-  </div>
-</main>
+      </div>
+    </div>
+  </main>
+</div>
 
 <div class="toast" id="toast"><span class="tick">+</span><span id="toastMsg"></span></div>
 
+<script src="cb-shell.js"></script>
 <script>
+  renderShell('taxes');
   function soon(en,zh){
     const t=document.getElementById('toast');
     document.getElementById('toastMsg').innerHTML=`<span class="zh">「${zh}」页面即将上线</span><span class="en">"${en}" is coming soon</span>`;
@@ -286,9 +221,6 @@
         </div>`:''}
       </div>`).join('');
   }
-
-  function toggleLanguage(){const en=!document.body.classList.contains('lang-en');document.body.classList.toggle('lang-en',en);document.body.classList.toggle('lang-zh',!en);try{localStorage.setItem('cbLang',en?'en':'zh');}catch(e){}}
-  (function(){try{if(localStorage.getItem('cbLang')==='en'){document.body.classList.remove('lang-zh');document.body.classList.add('lang-en');}}catch(e){}})();
 </script>
 </body>
 </html>

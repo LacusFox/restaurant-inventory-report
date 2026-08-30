@@ -4,39 +4,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Chowbus Payroll · 历史发薪员工</title>
+<link rel="stylesheet" href="cb-inter.css">
+<link rel="stylesheet" href="cb-shell.css">
 <style>
-  :root{--primary:#CC1C4C;--primary-hover:#A6123B;--bg:#F7F8FA;--border:#EDEEF1;--ink:#1F1F1F;--muted:#6B7280;--sidebar-w:250px;}
-  *{box-sizing:border-box;margin:0;padding:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"PingFang SC","Microsoft YaHei",Arial,sans-serif;}
-  body{display:flex;background:var(--bg);color:var(--ink);min-height:100vh;overflow-x:hidden;}
-  body.lang-zh .en{display:none!important;} body.lang-en .zh{display:none!important;}
-
-  aside.sidebar{width:var(--sidebar-w);background:#fff;border-right:1px solid var(--border);position:fixed;height:100vh;overflow-y:auto;z-index:100;}
-  .logo-area{padding:18px 22px;display:flex;align-items:center;gap:8px;border-bottom:1px solid var(--border);}
-  .logo-area .ic{font-size:22px;} .logo-area .tx{font-weight:900;font-size:19px;color:var(--primary);}
-  .menu-list{list-style:none;padding:10px 0;}
-  .menu-item{padding:11px 22px;display:flex;align-items:center;color:#374151;font-size:14px;cursor:pointer;transition:.15s;}
-  .menu-item:hover{background:#FDF2F4;color:var(--primary);}
-  .menu-icon{margin-right:12px;width:18px;text-align:center;opacity:.75;}
-  .caret{margin-left:auto;font-size:11px;color:#c4c8cf;}
-  .menu-group.open>.menu-item{color:var(--primary);font-weight:600;}
-  .submenu-list{list-style:none;padding:2px 0 6px;}
-  .submenu-item{padding:10px 22px 10px 50px;font-size:13.5px;color:var(--muted);cursor:pointer;transition:.15s;}
-  .submenu-item:hover{color:var(--primary);}
-  .submenu-item.active{color:var(--primary);font-weight:700;background:#FFF0F2;border-left:3px solid var(--primary);padding-left:47px;}
-
-  main{margin-left:var(--sidebar-w);flex:1;min-height:100vh;display:flex;flex-direction:column;}
-  header.top{height:58px;background:#fff;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;padding:0 28px;position:sticky;top:0;z-index:99;}
-  .hleft{display:flex;align-items:center;gap:16px;font-size:14px;color:#333;}
-  .collapse{font-size:18px;color:#888;cursor:pointer;}
-  .store{font-weight:600;cursor:pointer;} .store .ca{color:#aaa;font-size:11px;margin-left:4px;}
-  .usa{background:#EEE;padding:2px 8px;border-radius:4px;font-size:11px;color:#555;}
-  .hright{display:flex;align-items:center;gap:22px;font-size:13.5px;color:var(--muted);}
-  .langpill{display:inline-flex;border:1px solid #E3B8C4;border-radius:999px;overflow:hidden;cursor:pointer;font-size:12.5px;font-weight:600;}
-  .langpill span{padding:5px 15px;transition:.15s;}
-  body.lang-zh .langpill .lz, body.lang-en .langpill .le{background:var(--primary);color:#fff;}
-  body.lang-zh .langpill .le, body.lang-en .langpill .lz{background:#fff;color:#666;}
-
-  .content{padding:26px 34px;flex:1;max-width:1120px;}
   .crumb{font-size:12.5px;color:#9aa0aa;margin-bottom:10px;cursor:pointer;display:inline-block;}
   .crumb:hover{color:var(--primary);}
   .page-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;}
@@ -69,7 +39,7 @@
   .link-view{color:#5a6472;font-weight:600;font-size:13.5px;cursor:pointer;margin-right:16px;}
   .link-view:hover{color:var(--primary);}
   .btn-reenable{background:#fff;color:var(--primary);border:1px solid #F0C7CF;border-radius:8px;padding:7px 14px;font-size:13px;font-weight:700;cursor:pointer;transition:.15s;}
-  .btn-reenable:hover{background:#FDF2F4;border-color:#E7A9B5;}
+  .btn-reenable:hover{background:#fff0f5;border-color:#E7A9B5;}
 
   .pager{display:flex;justify-content:flex-end;align-items:center;gap:14px;margin-top:18px;font-size:13.5px;color:var(--muted);}
   .pager .pg-num{border:1px solid var(--primary);color:var(--primary);border-radius:6px;width:28px;height:28px;display:inline-flex;align-items:center;justify-content:center;}
@@ -85,134 +55,95 @@
 </head>
 <body class="lang-zh">
 
-<aside class="sidebar">
-  <div class="logo-area"><span class="ic">🍜</span><span class="tx">chowbus</span></div>
-  <ul class="menu-list">
-    <li class="menu-item"><span class="menu-icon">🏠</span><span class="zh">首页</span><span class="en">Home</span></li>
-    <li class="menu-item"><span class="menu-icon">🧮</span><span class="zh">调整管理</span><span class="en">Adjustment Management</span></li>
-    <li class="menu-item"><span class="menu-icon">💳</span><span class="zh">交易</span><span class="en">Transactions</span></li>
-    <li class="menu-item"><span class="menu-icon">🤖</span><span class="zh">AI电话点餐</span><span class="en">AI Phone Ordering</span></li>
-    <li class="menu-item"><span class="menu-icon">🧾</span><span class="zh">订单</span><span class="en">Orders</span></li>
-    <li class="menu-item"><span class="menu-icon">📋</span><span class="zh">菜单</span><span class="en">Menu</span><span class="caret">▾</span></li>
-    <li class="menu-item"><span class="menu-icon">🎯</span><span class="zh">促销管理</span><span class="en">Promotion Management</span></li>
-    <li class="menu-item"><span class="menu-icon">👥</span><span class="zh">团队管理</span><span class="en">Team Management</span><span class="caret">▾</span></li>
+<div class="cb-app">
+  <main class="cb-main">
+    <div class="cb-scroll">
+      <div class="cb-content">
+        <span class="crumb" onclick="location.href='chowbus-payroll-employees.html'">
+          <span class="zh">← 返回员工管理</span><span class="en">← Back to Employees</span>
+        </span>
+        <h1 class="page-title"><span class="zh">历史发薪员工</span><span class="en">Past Employees</span></h1>
+        <div class="infobar">
+          <span>
+            <span class="zh">员工离职满 30 天且薪酬结清后，会自动归档到这里。</span>
+            <span class="en">Employees are auto-archived here 30 days after termination once their pay is settled.</span>
+          </span>
+        </div>
 
-    <div class="menu-group open">
-      <li class="menu-item"><span class="menu-icon">💲</span><span class="zh">薪酬</span><span class="en">Payroll</span><span class="caret">▴</span></li>
-      <ul class="submenu-list">
-        <li class="submenu-item" onclick="location.href='chowbus-payroll-overview.html'"><span class="zh">概览</span><span class="en">Overview</span></li>
-        <li class="submenu-item" onclick="location.href='chowbus-payroll-run-payroll.html'"><span class="zh">跑薪</span><span class="en">Run Payroll</span></li>
-        <li class="submenu-item" onclick="location.href='chowbus-payroll-company-setup.html'"><span class="zh">公司设置</span><span class="en">Company Setup</span></li>
-        <li class="submenu-item active" onclick="location.href='chowbus-payroll-employees.html'"><span class="zh">员工管理</span><span class="en">Employees</span></li>
-        <li class="submenu-item" onclick="location.href='chowbus-payroll-taxes-filings.html'"><span class="zh">税务与申报</span><span class="en">Taxes &amp; Filings</span></li>
-      </ul>
-    </div>
+        <div class="card">
+          <table>
+            <thead>
+              <tr>
+                <th><span class="zh">姓名</span><span class="en">Name</span></th>
+                <th><span class="zh">角色</span><span class="en">Role</span></th>
+                <th><span class="zh">归档原因</span><span class="en">Reason</span></th>
+                <th><span class="zh">最后发薪</span><span class="en">Last paid</span></th>
+                <th class="col-act"><span class="zh">操作</span><span class="en">Action</span></th>
+              </tr>
+            </thead>
+            <tbody id="rows">
+              <tr>
+                <td class="name">Jenny Wu</td>
+                <td><div class="roles"><span class="role-pill">Server</span></div></td>
+                <td><span class="reason term"><i></i><span class="zh">离职</span><span class="en">Terminated</span></span></td>
+                <td class="lastpay">2026-06-15</td>
+                <td class="col-act">
+                  <span class="link-view" onclick="location.href='chowbus-payroll-employee-detail.html'"><span class="zh">查看记录</span><span class="en">View records</span></span>
+                </td>
+              </tr>
+              <tr>
+                <td class="name">Tom Baker</td>
+                <td><div class="roles"><span class="role-pill">Cook</span></div></td>
+                <td><span class="reason term"><i></i><span class="zh">离职</span><span class="en">Terminated</span></span></td>
+                <td class="lastpay">2026-05-20</td>
+                <td class="col-act">
+                  <span class="link-view" onclick="location.href='chowbus-payroll-employee-detail.html'"><span class="zh">查看记录</span><span class="en">View records</span></span>
+                </td>
+              </tr>
+              <tr>
+                <td class="name">Sarah Kim</td>
+                <td><div class="roles"><span class="role-pill">Cashier</span><span class="role-pill sec">Host</span></div></td>
+                <td><span class="reason removed"><i></i><span class="zh">手动停用</span><span class="en">Removed</span></span></td>
+                <td class="lastpay">2026-04-30</td>
+                <td class="col-act">
+                  <span class="link-view" onclick="location.href='chowbus-payroll-employee-detail.html'"><span class="zh">查看记录</span><span class="en">View records</span></span>
+                </td>
+              </tr>
+              <tr>
+                <td class="name">Marco Silva</td>
+                <td><div class="roles"><span class="role-pill">Dishwasher</span></div></td>
+                <td><span class="reason term"><i></i><span class="zh">离职</span><span class="en">Terminated</span></span></td>
+                <td class="lastpay">2026-03-12</td>
+                <td class="col-act">
+                  <span class="link-view" onclick="location.href='chowbus-payroll-employee-detail.html'"><span class="zh">查看记录</span><span class="en">View records</span></span>
+                </td>
+              </tr>
+              <tr>
+                <td class="name">Priya Nair</td>
+                <td><div class="roles"><span class="role-pill">Bartender</span></div></td>
+                <td><span class="reason term"><i></i><span class="zh">离职</span><span class="en">Terminated</span></span></td>
+                <td class="lastpay">2026-02-28</td>
+                <td class="col-act">
+                  <span class="link-view" onclick="location.href='chowbus-payroll-employee-detail.html'"><span class="zh">查看记录</span><span class="en">View records</span></span>
+                </td>
+              </tr>
+            </tbody>
+          </table>
 
-    <li class="menu-item"><span class="menu-icon">📟</span><span class="zh">设备</span><span class="en">Devices</span></li>
-    <li class="menu-item"><span class="menu-icon">👤</span><span class="zh">账户</span><span class="en">Account</span><span class="caret">▾</span></li>
-    <li class="menu-item"><span class="menu-icon">✅</span><span class="zh">智能点餐</span><span class="en">Smart Ordering</span><span class="caret">▾</span></li>
-  </ul>
-</aside>
-
-<main>
-  <header class="top">
-    <div class="hleft">
-      <span class="collapse">≡</span>
-      <span class="store">may localserver -12555-Curry Flurry(12555)<span class="ca">▾</span></span>
-      <span class="usa">USA</span>
-    </div>
-    <div class="hright">
-      <span>sisi.hu@chowbus.com</span>
-      <div class="langpill" onclick="toggleLanguage()"><span class="lz">中文</span><span class="le">EN</span></div>
-    </div>
-  </header>
-
-  <div class="content">
-    <span class="crumb" onclick="location.href='chowbus-payroll-employees.html'">
-      <span class="zh">← 返回员工管理</span><span class="en">← Back to Employees</span>
-    </span>
-    <h1 class="page-title"><span class="zh">历史发薪员工</span><span class="en">Past Employees</span></h1>
-    <div class="infobar">
-      <span>
-        <span class="zh">员工离职满 30 天且薪酬结清后，会自动归档到这里。</span>
-        <span class="en">Employees are auto-archived here 30 days after termination once their pay is settled.</span>
-      </span>
-    </div>
-
-    <div class="card">
-      <table>
-        <thead>
-          <tr>
-            <th><span class="zh">姓名</span><span class="en">Name</span></th>
-            <th><span class="zh">角色</span><span class="en">Role</span></th>
-            <th><span class="zh">归档原因</span><span class="en">Reason</span></th>
-            <th><span class="zh">最后发薪</span><span class="en">Last paid</span></th>
-            <th class="col-act"><span class="zh">操作</span><span class="en">Action</span></th>
-          </tr>
-        </thead>
-        <tbody id="rows">
-          <tr>
-            <td class="name">Jenny Wu</td>
-            <td><div class="roles"><span class="role-pill">Server</span></div></td>
-            <td><span class="reason term"><i></i><span class="zh">离职</span><span class="en">Terminated</span></span></td>
-            <td class="lastpay">2026-06-15</td>
-            <td class="col-act">
-              <span class="link-view" onclick="location.href='chowbus-payroll-employee-detail.html'"><span class="zh">查看记录</span><span class="en">View records</span></span>
-            </td>
-          </tr>
-          <tr>
-            <td class="name">Tom Baker</td>
-            <td><div class="roles"><span class="role-pill">Cook</span></div></td>
-            <td><span class="reason term"><i></i><span class="zh">离职</span><span class="en">Terminated</span></span></td>
-            <td class="lastpay">2026-05-20</td>
-            <td class="col-act">
-              <span class="link-view" onclick="location.href='chowbus-payroll-employee-detail.html'"><span class="zh">查看记录</span><span class="en">View records</span></span>
-            </td>
-          </tr>
-          <tr>
-            <td class="name">Sarah Kim</td>
-            <td><div class="roles"><span class="role-pill">Cashier</span><span class="role-pill sec">Host</span></div></td>
-            <td><span class="reason removed"><i></i><span class="zh">手动停用</span><span class="en">Removed</span></span></td>
-            <td class="lastpay">2026-04-30</td>
-            <td class="col-act">
-              <span class="link-view" onclick="location.href='chowbus-payroll-employee-detail.html'"><span class="zh">查看记录</span><span class="en">View records</span></span>
-            </td>
-          </tr>
-          <tr>
-            <td class="name">Marco Silva</td>
-            <td><div class="roles"><span class="role-pill">Dishwasher</span></div></td>
-            <td><span class="reason term"><i></i><span class="zh">离职</span><span class="en">Terminated</span></span></td>
-            <td class="lastpay">2026-03-12</td>
-            <td class="col-act">
-              <span class="link-view" onclick="location.href='chowbus-payroll-employee-detail.html'"><span class="zh">查看记录</span><span class="en">View records</span></span>
-            </td>
-          </tr>
-          <tr>
-            <td class="name">Priya Nair</td>
-            <td><div class="roles"><span class="role-pill">Bartender</span></div></td>
-            <td><span class="reason term"><i></i><span class="zh">离职</span><span class="en">Terminated</span></span></td>
-            <td class="lastpay">2026-02-28</td>
-            <td class="col-act">
-              <span class="link-view" onclick="location.href='chowbus-payroll-employee-detail.html'"><span class="zh">查看记录</span><span class="en">View records</span></span>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-
-      <div class="pager">
-        <span class="zh">共 5 条,第 1-5 条</span><span class="en">1-5 of 5 items</span>
-        <span class="arw">&lt;</span>
-        <span class="pg-num">1</span>
-        <span class="arw">&gt;</span>
-        <span class="pp">20 / page ▾</span>
+          <div class="pager">
+            <span class="zh">共 5 条,第 1-5 条</span><span class="en">1-5 of 5 items</span>
+            <span class="arw">&lt;</span>
+            <span class="pg-num">1</span>
+            <span class="arw">&gt;</span>
+            <span class="pp">20 / page ▾</span>
+          </div>
+        </div>
       </div>
     </div>
-  </div>
-</main>
+  </main>
+</div>
 
-<script>
-  function toggleLanguage(){const en=!document.body.classList.contains('lang-en');document.body.classList.toggle('lang-en',en);document.body.classList.toggle('lang-zh',!en);try{localStorage.setItem('cbLang',en?'en':'zh');}catch(e){}}
-  (function(){try{if(localStorage.getItem('cbLang')==='en'){document.body.classList.remove('lang-zh');document.body.classList.add('lang-en');}}catch(e){}})();
-</script>
+<script src="cb-shell.js"></script>
+<script>renderShell('employees');</script>
 </body>
 </html>
