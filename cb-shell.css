@@ -1,0 +1,69 @@
+/* ============================================================
+   Chowbus Payroll · 标准外壳样式（所有 payroll 页面共用）
+   设计令牌 / 布局外壳（顶栏 + 侧边栏 + 内容区）
+   配色、字体、间距对齐公司后台标准范本。
+   ============================================================ */
+:root{
+  /* 品牌 */
+  --brand:#e00051;--brand-hover:#b80042;--brand-pressed:#8f0034;--brand-sub:#fff0f5;--brand-muted:#ffd6e6;
+  /* 中性 / 表面 / 边框 */
+  --page:#f3f4f6;--surface:#ffffff;--border:#e5e7eb;--border-strong:#d1d5db;
+  /* 文本 */
+  --t1:#111827;--t2:#6b7280;--t3:#9ca3af;--tb:#374151;
+  /* 语义 */
+  --success:#16a34a;--warning:#d97706;--error:#dc2626;--info:#2563eb;
+  /* 字体 */
+  --font:'Inter',-apple-system,BlinkMacSystemFont,'PingFang SC','Microsoft YaHei','Helvetica Neue',Arial,sans-serif;
+
+  /* 旧变量别名（兼容各页面既有组件样式，令其自动继承标准配色） */
+  --primary:var(--brand);--primary-hover:var(--brand-hover);
+  --bg:var(--page);--border-c:var(--border);--ink:var(--t1);--muted:var(--t2);--sidebar-w:240px;--teal:#3E8E82;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html,body{height:100%;}
+body{font-family:var(--font);color:var(--t1);background:var(--page);-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;font-size:14px;line-height:1.5;}
+body.lang-zh .en{display:none!important;} body.lang-en .zh{display:none!important;}
+svg{display:block;}
+
+/* ===== 布局外壳 ===== */
+.cb-app{height:100vh;display:flex;flex-direction:column;overflow:hidden;background:var(--page);}
+
+/* 顶栏 56px */
+.cb-header{height:56px;flex-shrink:0;display:flex;align-items:center;background:var(--surface);border-bottom:1px solid var(--border);position:relative;z-index:30;}
+.cb-logo{width:240px;flex-shrink:0;height:100%;display:flex;align-items:center;gap:9px;padding:0 20px;border-right:1px solid var(--border);}
+.cb-logo .wm{font-size:23px;font-weight:700;letter-spacing:-0.035em;color:var(--t1);}
+.cb-hbar{display:flex;align-items:center;gap:16px;padding:0 20px;flex:1;min-width:0;}
+.cb-collapse{color:#1d2129;cursor:pointer;flex-shrink:0;}
+.cb-store{display:flex;align-items:center;gap:6px;cursor:pointer;font-size:15px;color:var(--t1);white-space:nowrap;}
+.cb-vsep{width:1px;height:18px;background:var(--border);}
+.cb-region{display:flex;align-items:center;gap:6px;font-size:15px;color:var(--t1);cursor:pointer;}
+.cb-hright{margin-left:auto;display:flex;align-items:center;gap:18px;font-size:14px;color:var(--t2);}
+.cb-lang{display:inline-flex;border:1px solid var(--border-strong);border-radius:999px;overflow:hidden;cursor:pointer;font-size:12.5px;font-weight:600;}
+.cb-lang span{padding:5px 14px;}
+body.lang-zh .cb-lang .lz, body.lang-en .cb-lang .le{background:var(--brand);color:#fff;}
+body.lang-zh .cb-lang .le, body.lang-en .cb-lang .lz{background:#fff;color:var(--t2);}
+
+/* 主体行 */
+.cb-row{flex:1;min-height:0;display:flex;}
+
+/* 侧边栏 240px（一级 / 二级菜单字号 13px） */
+.cb-sidebar{width:240px;flex-shrink:0;background:var(--surface);border-right:1px solid var(--border);overflow-y:auto;padding:8px 0 32px;}
+.cb-item{display:flex;align-items:center;gap:10px;margin:0 8px;padding:9px 9px;border-radius:8px;cursor:pointer;color:var(--t1);font-size:13px;}
+.cb-item:hover{background:#f9fafb;}
+.cb-item .lb{flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.cb-item .chev{color:var(--t3);flex-shrink:0;transition:transform .15s;}
+.cb-item.group-active{color:var(--brand);font-weight:500;background:var(--brand-sub);}
+.cb-item.group-active .chev{transform:rotate(180deg);}
+.cb-sub{display:flex;flex-direction:column;padding:2px 0;}
+.cb-subitem{position:relative;padding:9px 12px 9px 38px;margin:0 8px;border-radius:8px;font-size:13px;color:var(--tb);cursor:pointer;}
+.cb-subitem:hover{background:#f9fafb;}
+.cb-subitem.active{color:var(--brand);font-weight:500;background:var(--brand-sub);}
+.cb-subitem.active .bar{position:absolute;right:-8px;top:4px;bottom:4px;width:3px;border-radius:3px;background:var(--brand);}
+
+/* 内容区 */
+.cb-main{flex:1;min-width:0;display:flex;flex-direction:column;overflow:hidden;}
+.cb-scroll{flex:1;min-height:0;overflow:auto;}
+.cb-content{padding:20px 24px 44px;display:flex;flex-direction:column;gap:16px;max-width:1200px;}
+.cb-title{font-size:22px;font-weight:700;letter-spacing:-0.01em;color:var(--t1);}
+.cb-crumb{font-size:12.5px;color:var(--t3);cursor:pointer;display:inline-block;width:fit-content;}
+.cb-crumb:hover{color:var(--brand);}

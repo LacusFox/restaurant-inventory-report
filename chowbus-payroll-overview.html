@@ -5,62 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Chowbus Payroll · 概览</title>
 <link rel="stylesheet" href="cb-inter.css">
+<link rel="stylesheet" href="cb-shell.css">
 <style>
-  /* ===== Chowbus 标准设计令牌 ===== */
-  :root{
-    --brand:#e00051;--brand-hover:#b80042;--brand-pressed:#8f0034;--brand-sub:#fff0f5;--brand-muted:#ffd6e6;
-    --page:#f3f4f6;--surface:#ffffff;--border:#e5e7eb;--border-strong:#d1d5db;
-    --t1:#111827;--t2:#6b7280;--t3:#9ca3af;--tb:#374151;
-    --success:#16a34a;--warning:#d97706;--error:#dc2626;--info:#2563eb;
-    --font:'Inter',-apple-system,BlinkMacSystemFont,'PingFang SC','Microsoft YaHei','Helvetica Neue',Arial,sans-serif;
-  }
-  *{box-sizing:border-box;margin:0;padding:0;}
-  html,body{height:100%;}
-  body{font-family:var(--font);color:var(--t1);background:var(--page);-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;font-size:14px;line-height:1.5;}
-  body.lang-zh .en{display:none!important;} body.lang-en .zh{display:none!important;}
-  svg{display:block;}
-
-  /* ===== 布局外壳 ===== */
-  .cb-app{height:100vh;display:flex;flex-direction:column;overflow:hidden;background:var(--page);}
-
-  /* 顶栏 56px */
-  .cb-header{height:56px;flex-shrink:0;display:flex;align-items:center;background:var(--surface);border-bottom:1px solid var(--border);position:relative;z-index:30;}
-  .cb-logo{width:240px;flex-shrink:0;height:100%;display:flex;align-items:center;gap:9px;padding:0 20px;border-right:1px solid var(--border);}
-  .cb-logo .wm{font-size:23px;font-weight:700;letter-spacing:-0.035em;color:var(--t1);}
-  .cb-hbar{display:flex;align-items:center;gap:16px;padding:0 20px;flex:1;min-width:0;}
-  .cb-collapse{color:#1d2129;cursor:pointer;flex-shrink:0;}
-  .cb-store{display:flex;align-items:center;gap:6px;cursor:pointer;font-size:15px;color:var(--t1);white-space:nowrap;}
-  .cb-vsep{width:1px;height:18px;background:var(--border);}
-  .cb-region{display:flex;align-items:center;gap:6px;font-size:15px;color:var(--t1);cursor:pointer;}
-  .cb-hright{margin-left:auto;display:flex;align-items:center;gap:18px;font-size:14px;color:var(--t2);}
-  .cb-lang{display:inline-flex;border:1px solid var(--border-strong);border-radius:999px;overflow:hidden;cursor:pointer;font-size:12.5px;font-weight:600;}
-  .cb-lang span{padding:5px 14px;}
-  body.lang-zh .cb-lang .lz, body.lang-en .cb-lang .le{background:var(--brand);color:#fff;}
-  body.lang-zh .cb-lang .le, body.lang-en .cb-lang .lz{background:#fff;color:var(--t2);}
-
-  /* 主体行 */
-  .cb-row{flex:1;min-height:0;display:flex;}
-
-  /* 侧边栏 240px */
-  .cb-sidebar{width:240px;flex-shrink:0;background:var(--surface);border-right:1px solid var(--border);overflow-y:auto;padding:8px 0 32px;}
-  .cb-item{display:flex;align-items:center;gap:10px;margin:0 8px;padding:9px 9px;border-radius:8px;cursor:pointer;color:var(--t1);font-size:13px;}
-  .cb-item:hover{background:#f9fafb;}
-  .cb-item .lb{flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-  .cb-item .chev{color:var(--t3);flex-shrink:0;transition:transform .15s;}
-  .cb-item.group-active{color:var(--brand);font-weight:500;background:var(--brand-sub);}
-  .cb-item.group-active .chev{transform:rotate(180deg);}
-  .cb-sub{display:flex;flex-direction:column;padding:2px 0;}
-  .cb-subitem{position:relative;padding:9px 12px 9px 38px;margin:0 8px;border-radius:8px;font-size:13px;color:var(--tb);cursor:pointer;}
-  .cb-subitem:hover{background:#f9fafb;}
-  .cb-subitem.active{color:var(--brand);font-weight:500;background:var(--brand-sub);}
-  .cb-subitem.active .bar{position:absolute;right:-8px;top:4px;bottom:4px;width:3px;border-radius:3px;background:var(--brand);}
-
-  /* 内容区 */
-  .cb-main{flex:1;min-width:0;display:flex;flex-direction:column;overflow:hidden;}
-  .cb-scroll{flex:1;min-height:0;overflow:auto;}
-  .cb-content{padding:20px 24px 44px;display:flex;flex-direction:column;gap:16px;max-width:1200px;}
-  .cb-title{font-size:22px;font-weight:700;letter-spacing:-0.01em;color:var(--t1);}
-
   /* ===== 概览：三张提醒卡 ===== */
   .stat-row{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;}
   .stat{background:var(--surface);border-radius:12px;box-shadow:0 1px 3px rgba(0,0,0,.08);padding:18px 20px;display:flex;flex-direction:column;position:relative;overflow:hidden;}
@@ -78,128 +24,45 @@
   .stat.due .s-cta{background:var(--brand);color:#fff;} .stat.due .s-cta:hover{background:var(--brand-hover);}
   .stat.onb .s-cta{background:#fff7ed;color:var(--warning);} .stat.onb .s-cta:hover{background:#feefd8;}
   .stat.ts .s-cta{background:#eff6ff;color:var(--info);} .stat.ts .s-cta:hover{background:#dbeafe;}
-
-  .toast{position:fixed;left:50%;bottom:32px;transform:translateX(-50%) translateY(24px);opacity:0;pointer-events:none;background:#1f2937;color:#fff;border-radius:10px;padding:12px 18px;display:flex;align-items:center;gap:10px;box-shadow:0 12px 32px rgba(0,0,0,.28);z-index:999;transition:all .3s cubic-bezier(.2,.8,.3,1);font-size:14px;}
-  .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
 </style>
 </head>
 <body class="lang-zh">
 
 <div class="cb-app">
+  <main class="cb-main">
+    <div class="cb-scroll">
+      <div class="cb-content">
+        <h1 class="cb-title"><span class="zh">薪酬概览</span><span class="en">Payroll Overview</span></h1>
 
-  <!-- ===== 顶栏 ===== -->
-  <header class="cb-header">
-    <div class="cb-logo"><span class="wm">chowbus</span></div>
-    <div class="cb-hbar">
-      <svg class="cb-collapse" width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M7.6 4.4h9.4M7.6 10h9.4M7.6 15.6h9.4M5 6.6 2.4 10 5 13.4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
-      <span class="cb-store">may localserver -12555-Curry Flurry(12555)
-        <svg width="13" height="13" viewBox="0 0 14 14" fill="none" style="color:#374151"><path d="M3 5.5 7 9.5l4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-      </span>
-      <div class="cb-vsep"></div>
-      <span class="cb-region">USA
-        <svg width="13" height="13" viewBox="0 0 14 14" fill="none" style="color:#374151"><path d="M3 5.5 7 9.5l4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-      </span>
-      <div class="cb-hright">
-        <span>sisi.hu@chowbus.com</span>
-        <div class="cb-lang" onclick="toggleLanguage()"><span class="lz">中文</span><span class="le">EN</span></div>
-      </div>
-    </div>
-  </header>
-
-  <div class="cb-row">
-    <!-- ===== 侧边栏（标准格式，Payroll 置于最底部）===== -->
-    <nav class="cb-sidebar" id="cbSidebar"></nav>
-
-    <!-- ===== 内容 ===== -->
-    <main class="cb-main">
-      <div class="cb-scroll">
-        <div class="cb-content">
-          <h1 class="cb-title"><span class="zh">薪酬概览</span><span class="en">Payroll Overview</span></h1>
-
-          <div class="stat-row">
-            <div class="stat due">
-              <div class="s-label"><span class="zh">距离下次跑薪</span><span class="en">Next payroll in</span></div>
-              <div class="s-main"><span class="s-num">3</span><span class="s-unit zh">天</span><span class="s-unit en">days</span></div>
-              <div class="s-meta"><span class="zh">发薪日：2026年8月20日 · 周期 8/4–8/17</span><span class="en">Pay date: Aug 20, 2026 · Period Aug 4–17</span></div>
-              <button class="s-cta" onclick="location.href='chowbus-payroll-start-payroll.html'"><span class="zh">开始跑薪</span><span class="en">Run Payroll</span></button>
-            </div>
-
-            <div class="stat onb">
-              <div class="s-label"><span class="zh">未完成 Onboard</span><span class="en">Pending onboarding</span></div>
-              <div class="s-main"><span class="s-num">2</span><span class="s-unit zh">名员工</span><span class="s-unit en">employees</span></div>
-              <div class="s-meta"><span class="zh">需完成资料填写后才能发薪</span><span class="en">They must finish onboarding before they can be paid</span></div>
-              <button class="s-cta" onclick="location.href='chowbus-payroll-employees.html'"><span class="zh">去处理</span><span class="en">Resolve</span></button>
-            </div>
-
-            <div class="stat ts">
-              <div class="s-label"><span class="zh">待审批工时</span><span class="en">Timesheets to approve</span></div>
-              <div class="s-main"><span class="s-num">5</span><span class="s-unit zh">名员工</span><span class="s-unit en">employees</span></div>
-              <div class="s-meta"><span class="zh">本周期工时尚未确认，可提前单独审批</span><span class="en">This period's hours aren't approved yet — review anytime</span></div>
-              <button class="s-cta" onclick="location.href='chowbus-payroll-approve-timesheet.html'"><span class="zh">去审批</span><span class="en">Approve</span></button>
-            </div>
+        <div class="stat-row">
+          <div class="stat due">
+            <div class="s-label"><span class="zh">距离下次跑薪</span><span class="en">Next payroll in</span></div>
+            <div class="s-main"><span class="s-num">3</span><span class="s-unit zh">天</span><span class="s-unit en">days</span></div>
+            <div class="s-meta"><span class="zh">发薪日：2026年8月20日 · 周期 8/4–8/17</span><span class="en">Pay date: Aug 20, 2026 · Period Aug 4–17</span></div>
+            <button class="s-cta" onclick="location.href='chowbus-payroll-start-payroll.html'"><span class="zh">开始跑薪</span><span class="en">Run Payroll</span></button>
           </div>
 
+          <div class="stat onb">
+            <div class="s-label"><span class="zh">未完成 Onboard</span><span class="en">Pending onboarding</span></div>
+            <div class="s-main"><span class="s-num">2</span><span class="s-unit zh">名员工</span><span class="s-unit en">employees</span></div>
+            <div class="s-meta"><span class="zh">需完成资料填写后才能发薪</span><span class="en">They must finish onboarding before they can be paid</span></div>
+            <button class="s-cta" onclick="location.href='chowbus-payroll-employees.html'"><span class="zh">去处理</span><span class="en">Resolve</span></button>
+          </div>
+
+          <div class="stat ts">
+            <div class="s-label"><span class="zh">待审批工时</span><span class="en">Timesheets to approve</span></div>
+            <div class="s-main"><span class="s-num">5</span><span class="s-unit zh">名员工</span><span class="s-unit en">employees</span></div>
+            <div class="s-meta"><span class="zh">本周期工时尚未确认，可提前单独审批</span><span class="en">This period's hours aren't approved yet — review anytime</span></div>
+            <button class="s-cta" onclick="location.href='chowbus-payroll-approve-timesheet.html'"><span class="zh">去审批</span><span class="en">Approve</span></button>
+          </div>
         </div>
+
       </div>
-    </main>
-  </div>
+    </div>
+  </main>
 </div>
 
-<div class="toast" id="toast"><span id="toastMsg"></span></div>
-
-<script>
-/* ===== 标准侧边栏构建（所有 payroll 页复用；参数 = 当前激活的子菜单）===== */
-function cbSidebar(active){
-  const ic = {
-    home:'<path d="M4 9.2 10 4l6 5.2V16a1 1 0 0 1-1 1h-3v-4H8v4H5a1 1 0 0 1-1-1z"/>',
-    adjust:'<path d="M3.5 7h13M3.5 13h13M8 5.2v3.6M12.5 11.2v3.6"/>',
-    txn:'<path d="M3.5 6h13v8h-13zM3.5 9h13"/>',
-    ai:'<path d="M6.6 3.6h6.8v12.8H6.6zM8.8 14.6h2.4"/>',
-    orders:'<path d="M6 3.6h8v12.8l-2-1.2-2 1.2-2-1.2-2 1.2zM8 7.6h4M8 10.6h4"/>',
-    menu:'<path d="M5 5.6h10M5 10h10M5 14.4h6"/>',
-    promo:'<path d="M4 10.6 10.6 4l4.4 4.4L8.4 15zM12 7.1h.01"/>',
-    team:'<path d="M7.6 9.6a2.9 2.9 0 1 0 0-5.8 2.9 2.9 0 0 0 0 5.8Z"/><path d="M2.9 16.4c0-2.6 2.1-4.4 4.7-4.4s4.7 1.8 4.7 4.4M13.4 5.2a2.6 2.6 0 0 1 0 4.9M15 11.7c1.4.5 2.4 1.6 2.4 3.1"/>',
-    devices:'<path d="M3.5 5h13v8h-13zM7.5 16.4h5M10 13v3.4"/>',
-    account:'<path d="M10 10a3 3 0 1 0 0-6 3 3 0 0 0 0 6ZM4.6 16.4c0-3 2.6-4.8 5.4-4.8s5.4 1.8 5.4 4.8"/>',
-    smart:'<path d="M4.6 10.6 8.4 14.4 15.4 5.6"/>',
-    pay:'<path d="M10 4v12M12.6 6.6C12 5.8 11 5.4 10 5.4c-1.5 0-2.5.8-2.5 2 0 2.6 5 1.5 5 4.1 0 1.2-1 2-2.5 2-1.1 0-2.1-.5-2.7-1.3"/>'
-  };
-  const chev = '<svg class="chev" width="13" height="13" viewBox="0 0 14 14" fill="none"><path d="M3 5.5 7 9.5l4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>';
-  function item(key,zh,en,hasChev){
-    return `<div class="cb-item"><svg width="19" height="19" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.35" stroke-linecap="round" stroke-linejoin="round">${ic[key]}</svg><span class="lb"><span class="zh">${zh}</span><span class="en">${en}</span></span>${hasChev?chev:''}</div>`;
-  }
-  const subs = [
-    ['overview','概览','Overview','chowbus-payroll-overview.html'],
-    ['run','跑薪','Run Payroll','chowbus-payroll-run-payroll.html'],
-    ['company','公司设置','Company Setup','chowbus-payroll-company-setup.html'],
-    ['employees','员工管理','Employees','chowbus-payroll-employees.html'],
-    ['taxes','税务与申报','Taxes &amp; Filings','chowbus-payroll-taxes-filings.html'],
-  ];
-  const subHtml = subs.map(([k,zh,en,href])=>
-    `<div class="cb-subitem ${k===active?'active':''}" onclick="location.href='${href}'"><span class="zh">${zh}</span><span class="en">${en}</span>${k===active?'<span class="bar"></span>':''}</div>`
-  ).join('');
-
-  document.getElementById('cbSidebar').innerHTML =
-    item('home','首页','Home') +
-    item('adjust','调整管理','Adjustment Management') +
-    item('txn','交易','Transactions') +
-    item('ai','AI电话点餐','AI Phone Ordering') +
-    item('orders','订单','Orders') +
-    item('menu','菜单','Menu',true) +
-    item('promo','促销管理','Promotion Management') +
-    item('team','团队管理','Team Management',true) +
-    item('devices','设备','Devices') +
-    item('account','账户','Account',true) +
-    item('smart','智能点餐','Smart Ordering',true) +
-    // ===== Payroll 一级菜单 + 二级菜单：放在最底部 =====
-    `<div class="cb-item group-active"><svg width="19" height="19" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.35" stroke-linecap="round" stroke-linejoin="round">${ic.pay}</svg><span class="lb"><span class="zh">薪酬</span><span class="en">Payroll</span></span>${chev}</div>` +
-    `<div class="cb-sub">${subHtml}</div>`;
-}
-
-function toggleLanguage(){const en=!document.body.classList.contains('lang-en');document.body.classList.toggle('lang-en',en);document.body.classList.toggle('lang-zh',!en);try{localStorage.setItem('cbLang',en?'en':'zh');}catch(e){}}
-(function(){try{if(localStorage.getItem('cbLang')==='en'){document.body.classList.remove('lang-zh');document.body.classList.add('lang-en');}}catch(e){}})();
-
-cbSidebar('overview');
-</script>
+<script src="cb-shell.js"></script>
+<script>renderShell('overview');</script>
 </body>
 </html>
