@@ -7,40 +7,47 @@
 <link rel="stylesheet" href="cb-inter.css">
 <link rel="stylesheet" href="cb-shell.css">
 <style>
-  .page-title{font-size:24px;font-weight:800;margin-bottom:20px;}
+  /* 标题行 + Setup Flow 入口（仅仪表盘态显示） */
+  .cb-titlerow{display:flex;align-items:center;justify-content:space-between;gap:16px;}
+  .init-link{display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:600;color:var(--brand);background:var(--brand-sub);border:1px solid var(--brand-muted);border-radius:8px;padding:7px 14px;cursor:pointer;transition:.15s;white-space:nowrap;}
+  .init-link:hover{background:#ffe1ec;}
+  .init-link svg{flex-shrink:0;}
 
-  /* 演示开关（贴文档时可裁掉） */
-  .demo-bar{display:flex;gap:20px;align-items:center;background:#fff;border:1px dashed #D9DBE0;border-radius:10px;padding:11px 16px;margin-bottom:22px;font-size:13px;color:#6b7280;max-width:760px;flex-wrap:wrap;}
-  .demo-bar b{color:#374151;} .demo-bar label{display:flex;align-items:center;gap:7px;cursor:pointer;} .demo-bar input{width:16px;height:16px;accent-color:var(--primary);}
+  /* 演示开关（贴文档时可裁掉；仅引导态显示） */
+  .demo-bar{display:flex;gap:20px;align-items:center;background:#fff;border:1px dashed #D9DBE0;border-radius:10px;padding:11px 16px;font-size:13px;color:#6b7280;max-width:760px;flex-wrap:wrap;}
+  .demo-bar b{color:#374151;} .demo-bar label{display:flex;align-items:center;gap:7px;cursor:pointer;} .demo-bar input{width:16px;height:16px;accent-color:var(--brand);}
 
-  /* ===== 初始化引导 ===== */
-  .guide-card{background:#fff;border:1px solid var(--border);border-radius:16px;padding:28px 30px;max-width:760px;box-shadow:0 2px 12px rgba(0,0,0,.03);}
+  /* ===== 初始化引导（串行） ===== */
+  .guide-card{background:#fff;border:1px solid var(--border);border-radius:16px;padding:28px 30px;max-width:760px;box-shadow:0 1px 3px rgba(0,0,0,.08);}
   .guide-h{font-size:19px;font-weight:800;margin-bottom:6px;}
-  .guide-sub{font-size:14px;color:var(--muted);margin-bottom:20px;line-height:1.6;}
+  .guide-sub{font-size:14px;color:var(--muted);margin-bottom:12px;line-height:1.6;}
   .guide-row{display:flex;align-items:center;gap:16px;padding:18px 2px;border-top:1px solid #F1F2F4;}
   .guide-row:first-of-type{border-top:none;}
+  .guide-row.locked{opacity:.5;}
   .g-num{width:28px;height:28px;border-radius:50%;background:#e5e7eb;color:#9aa0aa;font-weight:800;font-size:14px;display:flex;align-items:center;justify-content:center;flex:0 0 auto;}
   .g-num.done{background:#22A353;color:#fff;}
   .g-t{font-size:16px;font-weight:700;color:#1a1a1a;}
   .g-status{margin-left:auto;font-size:12.5px;font-weight:700;padding:5px 12px;border-radius:999px;}
   .g-status.idle{background:#FBF1DC;color:#9a6a12;} .g-status.done{background:#EAF7F0;color:#12905a;}
-  .g-btn{border:none;border-radius:9px;padding:10px 20px;font-size:14px;font-weight:700;cursor:pointer;}
-  .g-btn.primary{background:var(--primary);color:#fff;} .g-btn.primary:hover{background:var(--primary-hover);}
-  .g-btn.ghost{background:#fff;color:#444;border:1px solid #DCDCDC;}
+  /* 底部统一「去设置」按钮（串行：只作用于当前待完成的那一步） */
+  .guide-foot{display:flex;justify-content:center;margin-top:22px;max-width:760px;}
+  .g-btn{border:none;border-radius:10px;padding:12px 40px;font-size:15px;font-weight:700;cursor:pointer;background:var(--brand);color:#fff;transition:.15s;}
+  .g-btn:hover{background:var(--brand-hover);}
 
-  /* ===== 完成后仪表盘（3 卡） ===== */
-  .stat-row{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;}
-  .stat{background:#fff;border:1px solid var(--border);border-radius:14px;padding:20px 22px;box-shadow:0 2px 12px rgba(0,0,0,.03);display:flex;flex-direction:column;position:relative;overflow:hidden;}
-  .stat::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;}
-  .stat.due::before{background:var(--primary);} .stat.onb::before{background:#D6A53B;} .stat.ts::before{background:#3B82F6;}
-  .stat .s-label{font-size:13px;color:var(--muted);font-weight:600;margin-bottom:12px;}
-  .stat .s-main{display:flex;align-items:baseline;gap:8px;}
-  .stat .s-num{font-size:34px;font-weight:900;line-height:1;font-variant-numeric:tabular-nums;}
-  .stat.due .s-num{color:var(--primary);} .stat.onb .s-num{color:#B9861F;} .stat.ts .s-num{color:#2563EB;}
-  .stat .s-unit{font-size:14px;color:#4b5563;font-weight:600;}
-  .stat .s-meta{font-size:12.5px;color:var(--muted);margin-top:10px;line-height:1.6;}
-  .stat .s-cta{margin-top:16px;align-self:flex-start;border:none;border-radius:8px;padding:8px 16px;font-size:13px;font-weight:700;cursor:pointer;}
-  .stat.due .s-cta{background:var(--primary);color:#fff;} .stat.onb .s-cta{background:#FBF1DC;color:#9a6a12;} .stat.ts .s-cta{background:#EAF1FF;color:#2563EB;}
+  /* ===== 完成后仪表盘（3 卡，与标准概览一致） ===== */
+  .stat-row{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;}
+  .stat{background:var(--surface);border-radius:12px;box-shadow:0 1px 3px rgba(0,0,0,.08);padding:18px 20px;display:flex;flex-direction:column;position:relative;overflow:hidden;}
+  .stat::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;}
+  .stat.due::before{background:var(--brand);} .stat.onb::before{background:var(--warning);} .stat.ts::before{background:var(--info);}
+  .s-label{font-size:13px;color:var(--t2);font-weight:500;margin-bottom:12px;}
+  .s-main{display:flex;align-items:baseline;gap:8px;}
+  .s-num{font-size:32px;font-weight:700;line-height:1;letter-spacing:-0.01em;font-variant-numeric:tabular-nums;}
+  .stat.due .s-num{color:var(--brand);} .stat.onb .s-num{color:var(--warning);} .stat.ts .s-num{color:var(--info);}
+  .s-unit{font-size:14px;color:var(--tb);font-weight:500;}
+  .s-meta{font-size:12.5px;color:var(--t2);margin-top:10px;line-height:1.6;}
+  .s-cta{margin-top:16px;align-self:flex-start;border:none;border-radius:8px;padding:8px 16px;font-size:13px;font-weight:600;cursor:pointer;transition:.15s;}
+  .stat.due .s-cta{background:var(--brand);color:#fff;} .stat.due .s-cta:hover{background:var(--brand-hover);}
+  .stat.onb .s-cta{background:#fff7ed;color:var(--warning);} .stat.ts .s-cta{background:#eff6ff;color:var(--info);}
 </style>
 </head>
 <body class="lang-zh">
@@ -49,9 +56,16 @@
   <main class="cb-main">
     <div class="cb-scroll">
       <div class="cb-content">
-        <h1 class="page-title"><span class="zh">薪酬概览</span><span class="en">Payroll Overview</span></h1>
+        <div class="cb-titlerow">
+          <h1 class="cb-title"><span class="zh">薪酬概览</span><span class="en">Payroll Overview</span></h1>
+          <button class="init-link" id="setupFlowBtn" style="display:none;" onclick="location.href='chowbus-payroll-overview-init.html'" title="仅用于研发查看初始化交互">
+            <svg width="14" height="14" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 12.4a2.4 2.4 0 1 0 0-4.8 2.4 2.4 0 0 0 0 4.8Z"/><path d="M10 3.5v1.8M10 14.7v1.8M16.5 10h-1.8M5.3 10H3.5M14.6 5.4l-1.3 1.3M6.7 13.3l-1.3 1.3M14.6 14.6l-1.3-1.3M6.7 6.7 5.4 5.4"/></svg>
+            <span class="zh">初始化流程</span><span class="en">Setup Flow</span>
+          </button>
+        </div>
 
-        <div class="demo-bar">
+        <!-- 演示开关（仅引导态显示） -->
+        <div class="demo-bar" id="demoBar">
           <b>演示开关：</b>
           <label><input type="checkbox" id="d-company" onchange="setStep('company',this.checked)"> 公司登录完成</label>
           <label><input type="checkbox" id="d-schedule" onchange="setStep('schedule',this.checked)"> 发薪周期完成</label>
@@ -65,22 +79,22 @@
         <div id="dashView" style="display:none;">
           <div class="stat-row">
             <div class="stat due">
-              <div class="s-label">⏰ <span class="zh">距离下次跑薪</span><span class="en">Next payroll in</span></div>
+              <div class="s-label"><span class="zh">距离下次跑薪</span><span class="en">Next payroll in</span></div>
               <div class="s-main"><span class="s-num">3</span><span class="s-unit zh">天</span><span class="s-unit en">days</span></div>
               <div class="s-meta"><span class="zh">发薪日：2026年8月20日 · 周期 8/4–8/17</span><span class="en">Pay date: Aug 20, 2026 · Period Aug 4–17</span></div>
-              <button class="s-cta"><span class="zh">开始跑薪</span><span class="en">Run Payroll</span></button>
+              <button class="s-cta" onclick="location.href='chowbus-payroll-start-payroll.html'"><span class="zh">开始跑薪</span><span class="en">Run Payroll</span></button>
             </div>
             <div class="stat onb">
               <div class="s-label"><span class="zh">未完成 Onboard</span><span class="en">Pending onboarding</span></div>
               <div class="s-main"><span class="s-num">2</span><span class="s-unit zh">名员工</span><span class="s-unit en">employees</span></div>
               <div class="s-meta"><span class="zh">需完成资料填写后才能发薪</span><span class="en">Must finish onboarding before they can be paid</span></div>
-              <button class="s-cta"><span class="zh">去处理</span><span class="en">Resolve</span></button>
+              <button class="s-cta" onclick="location.href='chowbus-payroll-employees.html'"><span class="zh">去处理</span><span class="en">Resolve</span></button>
             </div>
             <div class="stat ts">
               <div class="s-label"><span class="zh">待审批工时</span><span class="en">Timesheets to approve</span></div>
               <div class="s-main"><span class="s-num">5</span><span class="s-unit zh">名员工</span><span class="s-unit en">employees</span></div>
               <div class="s-meta"><span class="zh">本周期工时尚未确认，可提前单独审批</span><span class="en">This period's hours aren't approved yet</span></div>
-              <button class="s-cta"><span class="zh">去审批</span><span class="en">Approve</span></button>
+              <button class="s-cta" onclick="location.href='chowbus-payroll-approve-timesheet.html'"><span class="zh">去审批</span><span class="en">Approve</span></button>
             </div>
           </div>
         </div>
@@ -92,32 +106,44 @@
 <script src="cb-shell.js"></script>
 <script>
   renderShell('overview');
-  const st={company:false, schedule:false, onboard:false};
+  const st={company:false, schedule:false};
   const STEPS=[
-    {key:'company',  zh:'完成公司登录', en:'Company onboarding'},
-    {key:'schedule', zh:'设置发薪周期', en:'Set up pay schedule'},
+    {key:'company',  zh:'完成公司登录', en:'Company onboarding', href:'chowbus-payroll-company-setup.html'},
+    {key:'schedule', zh:'设置发薪周期', en:'Set up pay schedule', href:'chowbus-payroll-pay-schedule.html'},
   ];
   function setStep(k,v){ st[k]=v; render(); }
+  function currentStep(){ return STEPS.find(s=>!st[s.key]) || null; }   // 串行：第一个未完成的步骤
+  function goCurrent(){ const c=currentStep(); if(c) location.href=c.href; }
+
   function render(){
-    const ready = st.company && st.schedule;   // 仅「公司登录 + 发薪周期」都完成才显示仪表盘
+    const ready = st.company && st.schedule;   // 仅「公司登录 + 发薪周期」都完成 → 仪表盘
     document.getElementById('initView').style.display = ready?'none':'';
     document.getElementById('dashView').style.display = ready?'':'none';
+    document.getElementById('demoBar').style.display  = ready?'none':'';     // 仪表盘态隐藏演示开关
+    document.getElementById('setupFlowBtn').style.display = ready?'':'none'; // 仪表盘态显示 Setup Flow 入口
     if(ready) return;
+
+    let prevDone = true;   // 串行锁：前一步未完成则当前步锁定置灰
+    const rows = STEPS.map((s,i)=>{
+      const done=st[s.key];
+      const locked = !done && !prevDone;
+      const row = `<div class="guide-row ${locked?'locked':''}">
+        <span class="g-num ${done?'done':''}">${done?'✓':(i+1)}</span>
+        <div class="g-body"><div class="g-t"><span class="zh">${s.zh}</span><span class="en">${s.en}</span></div></div>
+        <span class="g-status ${done?'done':'idle'}">${done?'<span class="zh">已完成</span><span class="en">Done</span>':'<span class="zh">未完成</span><span class="en">Not set</span>'}</span>
+      </div>`;
+      prevDone = done;
+      return row;
+    }).join('');
+
     document.getElementById('initView').innerHTML = `
       <div class="guide-card">
         <div class="guide-h"><span class="zh">请先完成薪资初始化设置</span><span class="en">Finish payroll setup first</span></div>
-        <div class="guide-sub"><span class="zh">完成以下步骤后即可开始使用薪酬功能。</span><span class="en">Complete the steps below to start using payroll.</span></div>
-        ${STEPS.map((s,i)=>{
-          const done=st[s.key];
-          return `<div class="guide-row">
-            <span class="g-num ${done?'done':''}">${done?'✓':(i+1)}</span>
-            <div class="g-body"><div class="g-t"><span class="zh">${s.zh}</span><span class="en">${s.en}</span></div></div>
-            <span class="g-status ${done?'done':'idle'}">${done?'<span class="zh">已完成</span><span class="en">Done</span>':'<span class="zh">未完成</span><span class="en">Not set</span>'}</span>
-            ${done
-              ? `<button class="g-btn ghost"><span class="zh">查看</span><span class="en">View</span></button>`
-              : `<button class="g-btn primary"><span class="zh">去设置</span><span class="en">Set now</span></button>`}
-          </div>`;
-        }).join('')}
+        <div class="guide-sub"><span class="zh">请按顺序依次完成以下步骤后即可开始使用薪酬功能。</span><span class="en">Complete the steps below in order to start using payroll.</span></div>
+        ${rows}
+      </div>
+      <div class="guide-foot">
+        <button class="g-btn" onclick="goCurrent()"><span class="zh">去设置</span><span class="en">Set now</span></button>
       </div>`;
   }
   render();
