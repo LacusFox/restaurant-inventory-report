@@ -151,17 +151,13 @@
 
   /* 发薪方案（店内可能有多个）；选不同方案筛出对应的发薪周期 */
   const SCHEDULES = [
-    {id:'bw1', zh:'双周发薪方案',   en:'Bi-weekly Schedule'},
-    {id:'bw2', zh:'双周发薪方案 2', en:'Bi-weekly Schedule'},
-    {id:'wk',  zh:'每周发薪方案',   en:'Weekly Schedule'},
+    {id:'bw1', zh:'双周发薪方案', en:'Bi-weekly Schedule'},
+    {id:'wk',  zh:'每周发薪方案', en:'Weekly Schedule'},
   ];
   const PERIODS = [
     // 双周发薪方案
     {id:'p_0729', sched:'bw1', zh:'2026/7/29 – 8/11', en:'Jul 29 – Aug 11, 2026', pay:'8/19', preApproved:false},
     {id:'p_0715', sched:'bw1', zh:'2026/7/15 – 7/28', en:'Jul 15 – 28, 2026',      pay:'8/26', preApproved:true},
-    // 双周发薪方案 2
-    {id:'p_bw2a', sched:'bw2', zh:'2026/7/22 – 8/4',  en:'Jul 22 – Aug 4, 2026',   pay:'8/12', preApproved:false},
-    {id:'p_bw2b', sched:'bw2', zh:'2026/7/8 – 7/21',  en:'Jul 8 – 21, 2026',       pay:'8/19', preApproved:true},
     // 每周发薪方案
     {id:'p_wk1',  sched:'wk',  zh:'2026/8/5 – 8/11',  en:'Aug 5 – 11, 2026',       pay:'8/15', preApproved:false},
     {id:'p_wk2',  sched:'wk',  zh:'2026/7/29 – 8/4',  en:'Jul 29 – Aug 4, 2026',   pay:'8/8',  preApproved:true},
