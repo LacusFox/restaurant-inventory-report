@@ -272,9 +272,9 @@ function renderPdCalendar(periods, cur, key, idx){
     const d=addDays(winStart,i), iso=fmtISO(d);
     let cls='cal-cell';
     if(iso<cur.start || iso>cur.pay) cls+=' out';                   // 窗口两端补白日置灰
-    if(periods.some(p=> iso>=p.start && iso<=p.end)) cls+=' rng';
-    if(periods.some(p=> p.submit===iso)) cls+=' sub';
-    if(periods.some(p=> p.pay===iso))    cls+=' pay';
+    if(iso>=cur.start && iso<=cur.end) cls+=' rng';                 // 仅高亮「当前」发薪周期
+    if(periods.some(p=> p.submit===iso)) cls+=' sub';               // 标出窗口内所有提交日
+    if(periods.some(p=> p.pay===iso))    cls+=' pay';               // 标出窗口内所有发薪日
     cells+=`<div class="${cls}">${d.getDate()}</div>`;
   }
   const a=cur.startD, b=cur.payD;
