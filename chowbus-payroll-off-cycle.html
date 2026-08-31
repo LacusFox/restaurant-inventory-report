@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chowbus Payroll · 临时跑薪</title>
+<link rel="stylesheet" href="cb-inter.css">
+<link rel="stylesheet" href="cb-shell.css">
+<style>
+  :root{--ck:#2b4eff;--ck-hover:#2140db;}
+  .crumb{font-size:12.5px;color:#9aa0aa;margin-bottom:12px;cursor:pointer;display:inline-block;}
+  .crumb:hover{color:var(--brand);}
+  .page-title{font-size:23px;font-weight:800;margin-bottom:18px;color:#111;}
+
+  /* ===== Check 组件（英文） ===== */
+  .oc-create{max-width:520px;}
+  .oc-tab{display:inline-flex;background:#f1f2f4;border-radius:10px;padding:4px;margin-bottom:22px;}
+  .oc-tab .t{padding:8px 16px;border-radius:8px;font-size:14px;font-weight:700;color:#111;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.12);}
+  .oc-field{margin-bottom:18px;}
+  .oc-label{font-size:15px;font-weight:700;color:#111;margin-bottom:8px;display:block;}
+  .oc-req{color:#e0455e;}
+  .oc-input,.oc-select{width:100%;padding:12px 14px;border:1px solid #DADCE0;border-radius:10px;font-size:15px;color:#111;background:#fff;font-family:var(--font);}
+  .oc-input::placeholder{color:#9aa0aa;}
+  .oc-input:focus,.oc-select:focus{outline:none;border-color:var(--ck);box-shadow:0 0 0 3px rgba(43,78,255,.12);}
+  select.oc-select{appearance:none;cursor:pointer;padding-right:34px;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%239aa0aa' stroke-width='3'><path d='M6 9l6 6 6-6'/></svg>");background-repeat:no-repeat;background-position:right 12px center;}
+  .oc-help{font-size:13px;color:#8a8f9a;margin-top:8px;line-height:1.55;}
+  .oc-check{display:flex;align-items:center;gap:11px;font-size:15px;color:#111;margin:13px 0;cursor:pointer;}
+  .oc-check input{width:18px;height:18px;accent-color:var(--ck);}
+  .oc-hr{height:1px;background:#EFF0F3;margin:20px 0;}
+  .oc-btn{background:var(--ck);color:#fff;border:none;border-radius:10px;padding:14px;font-size:15px;font-weight:700;cursor:pointer;width:100%;}
+  .oc-btn:hover{background:var(--ck-hover);}
+
+  /* ===== Run 视图 ===== */
+  .oc-run-head{display:flex;align-items:center;gap:12px;padding-bottom:16px;border-bottom:1px solid #EFF0F3;margin-bottom:22px;}
+  .oc-back{font-size:20px;cursor:pointer;color:#111;line-height:1;}
+  .oc-badge{background:#F1F2F4;color:#555;font-size:12.5px;font-weight:700;padding:4px 10px;border-radius:6px;}
+  .oc-range{font-size:15px;font-weight:700;color:#111;}
+  .oc-gear{color:#9aa0aa;cursor:pointer;font-size:16px;}
+  .oc-run-actions{margin-left:auto;display:flex;gap:10px;}
+  .oc-ghost{background:#fff;border:1px solid #DADCE0;border-radius:9px;padding:10px 18px;font-size:14px;font-weight:700;color:#111;cursor:pointer;}
+  .oc-ghost:hover{background:#f7f8fa;}
+  .oc-primary{background:var(--ck);color:#fff;border:none;border-radius:9px;padding:10px 18px;font-size:14px;font-weight:700;cursor:pointer;}
+  .oc-primary:hover{background:var(--ck-hover);}
+  .oc-sec-title{font-size:20px;font-weight:800;color:#111;margin-bottom:14px;}
+  .oc-link{color:var(--ck);font-weight:700;font-size:15px;cursor:pointer;display:inline-flex;gap:8px;align-items:center;}
+  .oc-link:hover{color:var(--ck-hover);}
+
+  .oc-emp-card{border:1px solid #E7E8EC;border-radius:14px;padding:22px 24px;}
+  .oc-emp-head{display:flex;align-items:center;gap:12px;margin-bottom:18px;}
+  .oc-emp-name{font-size:18px;font-weight:800;color:#111;}
+  .oc-total{margin-left:auto;background:#F1F2F4;color:#555;font-weight:700;font-size:13px;padding:5px 12px;border-radius:8px;}
+  .oc-emp-meta{display:flex;align-items:center;gap:26px;margin-bottom:14px;font-size:14px;color:#6b7280;flex-wrap:wrap;}
+  .oc-emp-meta label{display:flex;align-items:center;gap:10px;}
+  .oc-mini{padding:8px 12px;border:1px solid #DADCE0;border-radius:9px;font-size:14px;background:#fff;color:#111;appearance:none;cursor:pointer;padding-right:30px;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%239aa0aa' stroke-width='3'><path d='M6 9l6 6 6-6'/></svg>");background-repeat:no-repeat;background-position:right 10px center;}
+
+  .oc-earn{border-top:1px solid #EFF0F3;padding-top:6px;}
+  .oc-grid{display:grid;grid-template-columns:1.25fr 1.5fr 0.95fr 1.4fr 1fr 1fr 82px;gap:12px;align-items:center;}
+  .oc-eh{font-size:14px;font-weight:800;color:#111;padding:14px 2px;}
+  .oc-eh.r{text-align:right;}
+  .oc-erow{padding:14px 2px;border-top:1px solid #F1F2F4;font-size:15px;color:#111;}
+  .oc-erow .muted{color:#9aa0aa;}
+  .oc-erow.right{text-align:right;}
+  .oc-cell-in,.oc-cell-sel{width:100%;padding:9px 11px;border:1px solid #DADCE0;border-radius:9px;font-size:14px;background:#fff;color:#111;font-family:var(--font);}
+  .oc-cell-in:focus,.oc-cell-sel:focus{outline:none;border-color:var(--ck);box-shadow:0 0 0 3px rgba(43,78,255,.12);}
+  select.oc-cell-sel{appearance:none;cursor:pointer;padding-right:28px;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='11' height='11' viewBox='0 0 24 24' fill='none' stroke='%239aa0aa' stroke-width='3'><path d='M6 9l6 6 6-6'/></svg>");background-repeat:no-repeat;background-position:right 10px center;}
+  .oc-newrate{display:inline-block;margin-top:8px;color:var(--ck);font-weight:700;font-size:13.5px;cursor:pointer;}
+  .oc-add{background:var(--ck);color:#fff;border:none;border-radius:8px;padding:9px 16px;font-size:14px;font-weight:700;cursor:pointer;}
+  .oc-add:hover{background:var(--ck-hover);}
+  .oc-x{color:#9aa0aa;cursor:pointer;font-size:16px;margin-left:8px;}
+  .oc-x:hover{color:#333;}
+  .oc-newearn{margin-top:16px;display:inline-flex;}
+
+  .toast{position:fixed;left:50%;bottom:32px;transform:translateX(-50%) translateY(24px);opacity:0;pointer-events:none;background:#1f2937;color:#fff;border-radius:10px;padding:12px 18px;box-shadow:0 12px 32px rgba(0,0,0,.28);z-index:1000;transition:all .3s cubic-bezier(.2,.8,.3,1);font-size:14px;}
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+</style>
+</head>
+<body class="lang-zh">
+
+<div class="cb-app">
+  <main class="cb-main">
+    <div class="cb-scroll">
+      <div class="cb-content">
+        <span class="crumb" onclick="location.href='chowbus-payroll-run-payroll.html'"><span class="zh">← 返回跑薪</span><span class="en">← Back to Run Payroll</span></span>
+        <h1 class="page-title">Run off-cycle payroll</h1>
+        <div id="ocApp"></div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<div class="toast" id="toast"><span id="toastMsg"></span></div>
+
+<script src="cb-shell.js"></script>
+<script>
+  renderShell('run');
+
+  let ocView='create';
+  const oc={start:'',end:'',pay:'',freq:'',supp:false,benefits:false,posttax:false};
+  let ocEmp=null;                 // 员工是否已加入
+  let ocEarnings=[];              // 已添加的收入项
+  let ocRowOpen=false;            // 是否显示可编辑的收入行
+  let ocRow={type:'',desc:'',workplace:'moli',rate:'',hours:'',amount:''};
+  const EARN_TYPES=['Hourly','Salary','Bonus','Commission','Overtime','Reimbursement','Tips'];
+
+  function fmtMDY(iso){ if(!iso) return ''; const [y,m,d]=iso.split('-'); return `${+m}/${+d}/${y}`; }
+  function money(n){ return '$'+(Math.round(n*100)/100).toFixed(2); }
+  function ocTotal(){ return ocEarnings.reduce((s,e)=>s+(parseFloat(e.amount)||0),0); }
+
+  /* ---- create 视图字段 ---- */
+  function ocSet(k,v){ oc[k]=v; }                          // 无需重渲染（保持焦点）
+  function ocCreate(){
+    if(!oc.start||!oc.end||!oc.pay){ showToast('Please fill start / end / pay date'); return; }
+    ocView='run'; render();
+  }
+
+  /* ---- run 视图：员工与收入项 ---- */
+  function ocAddEmp(){ ocEmp={name:'Qiyi Gong'}; ocRowOpen=true; ocRow={type:'',desc:'',workplace:'moli',rate:'',hours:'',amount:''}; render(); }
+  function ocNewEarning(){ ocRowOpen=true; ocRow={type:'',desc:'',workplace:'moli',rate:'',hours:'',amount:''}; render(); }
+  function ocRowSet(k,v){ ocRow[k]=v; }                    // 文本框：不重渲染
+  function ocRowType(v){ ocRow.type=v; if(v==='Hourly'&&!ocRow.rate) ocRow.rate='hour'; render(); }
+  function ocCancelRow(){ ocRowOpen=false; render(); }
+  function ocAddEarning(){
+    if(!ocRow.type){ showToast('Choose an earning type'); return; }
+    let amt=parseFloat(ocRow.amount);
+    if(!amt && ocRow.hours) amt=parseFloat(ocRow.hours)*10;   // 时薪示例：$10/hr
+    ocEarnings.push({type:ocRow.type, desc:ocRow.desc||'—', workplace:ocRow.workplace||'moli', rate:ocRow.rate||'', hours:ocRow.hours||'0', amount:(amt||0).toFixed(2)});
+    ocRowOpen=false; render();
+  }
+  function ocDelEarning(i){ ocEarnings.splice(i,1); render(); }
+
+  function render(){
+    document.getElementById('ocApp').innerHTML = ocView==='create' ? renderCreate() : renderRun();
+  }
+
+  function renderCreate(){
+    return `<div class="oc-create">
+      <div class="oc-tab"><span class="t">Off-cycle payroll</span></div>
+      <div class="oc-field"><label class="oc-label">Pay period start date <span class="oc-req">*</span></label>
+        <input type="date" class="oc-input" value="${oc.start}" onchange="ocSet('start',this.value)"></div>
+      <div class="oc-field"><label class="oc-label">Pay period end date <span class="oc-req">*</span></label>
+        <input type="date" class="oc-input" value="${oc.end}" onchange="ocSet('end',this.value)"></div>
+      <div class="oc-field"><label class="oc-label">Pay date <span class="oc-req">*</span></label>
+        <input type="date" class="oc-input" value="${oc.pay}" onchange="ocSet('pay',this.value)"></div>
+      <div class="oc-field"><label class="oc-label">Pay frequency</label>
+        <select class="oc-select" onchange="ocSet('freq',this.value)">
+          <option value="" ${oc.freq===''?'selected':''}>Choose a pay frequency (optional)</option>
+          ${['Weekly','Biweekly','Semi-monthly','Monthly'].map(f=>`<option ${oc.freq===f?'selected':''}>${f}</option>`).join('')}
+        </select>
+        <div class="oc-help">Impacts tax calculation. Defaults to the company's pay frequency if left blank.</div></div>
+      <label class="oc-check"><input type="checkbox" ${oc.supp?'checked':''} onchange="ocSet('supp',this.checked)"> Tax all earnings as supplemental earnings</label>
+      <label class="oc-check"><input type="checkbox" ${oc.benefits?'checked':''} onchange="ocSet('benefits',this.checked)"> Apply benefits</label>
+      <label class="oc-check"><input type="checkbox" ${oc.posttax?'checked':''} onchange="ocSet('posttax',this.checked)"> Apply post-tax deductions</label>
+      <div class="oc-field" style="margin-top:18px;"><label class="oc-label">Bank account</label>
+        <select class="oc-select"><option>Tartan Bank checking ••0000</option></select></div>
+      <div class="oc-hr"></div>
+      <button class="oc-btn" onclick="ocCreate()">Create payroll</button>
+    </div>`;
+  }
+
+  function renderRun(){
+    const range = `${fmtMDY(oc.start)} - ${fmtMDY(oc.end)}`;
+    let emp;
+    if(!ocEmp){
+      emp = `<span class="oc-link" onclick="ocAddEmp()">＋ Add employee</span>`;
+    } else {
+      const rows = ocEarnings.map((e,i)=>`
+        <div class="oc-grid oc-erow">
+          <div>${e.type}</div>
+          <div class="${e.desc==='—'?'muted':''}">${e.desc}</div>
+          <div>${e.workplace}</div>
+          <div class="muted">${e.rate||'—'}</div>
+          <div class="right">${e.hours}</div>
+          <div class="right">${money(parseFloat(e.amount))}</div>
+          <div class="right"><span class="oc-x" onclick="ocDelEarning(${i})">✕</span></div>
+        </div>`).join('');
+      const editable = ocRowOpen ? `
+        <div class="oc-grid oc-erow">
+          <div><select class="oc-cell-sel" onchange="ocRowType(this.value)">
+            <option value="" ${!ocRow.type?'selected':''}>Choose an earning type</option>
+            ${EARN_TYPES.map(t=>`<option ${ocRow.type===t?'selected':''}>${t}</option>`).join('')}
+          </select></div>
+          <div><input class="oc-cell-in" placeholder="e.g. Description..." value="${ocRow.desc.replace(/"/g,'&quot;')}" oninput="ocRowSet('desc',this.value)"></div>
+          <div><select class="oc-cell-sel" onchange="ocRowSet('workplace',this.value)"><option ${ocRow.workplace==='moli'?'selected':''}>moli</option></select></div>
+          <div><select class="oc-cell-sel" onchange="ocRowSet('rate',this.value)">
+              <option value="" ${!ocRow.rate?'selected':''}>Select earning rate (optional)</option>
+              <option ${ocRow.rate==='hour'?'selected':''}>hour</option>
+            </select><span class="oc-newrate" onclick="showToast('New earning rate (demo)')">+ New earning rate</span></div>
+          <div><input class="oc-cell-in" placeholder="0 hrs" value="${ocRow.hours}" oninput="ocRowSet('hours',this.value)"></div>
+          <div><input class="oc-cell-in" placeholder="$ 0" value="${ocRow.amount}" oninput="ocRowSet('amount',this.value)"></div>
+          <div class="right"><button class="oc-add" onclick="ocAddEarning()">Add</button><span class="oc-x" onclick="ocCancelRow()">✕</span></div>
+        </div>` : '';
+      const newBtn = (!ocRowOpen && ocEarnings.length) ? `<div class="oc-newearn"><span class="oc-link" onclick="ocNewEarning()">＋ New earning</span></div>` : '';
+      emp = `<div class="oc-emp-card">
+        <div class="oc-emp-head"><span class="oc-emp-name">Qiyi Gong</span><span class="oc-total">Total: ${money(ocTotal())}</span></div>
+        <div class="oc-emp-meta">
+          <label>Payment Method: <select class="oc-mini"><option>Direct Deposit</option><option>Manual Check</option></select></label>
+          <label>Supplemental tax: <select class="oc-mini"><option>Aggregate</option><option>Flat</option></select></label>
+        </div>
+        <div class="oc-earn">
+          <div class="oc-grid">
+            <div class="oc-eh">Earning items (${ocEarnings.length})</div>
+            <div class="oc-eh">Description</div>
+            <div class="oc-eh">Workplace</div>
+            <div class="oc-eh">Earning rate</div>
+            <div class="oc-eh r">Hours / units</div>
+            <div class="oc-eh r">Amount</div>
+            <div class="oc-eh"></div>
+          </div>
+          ${rows}${editable}${newBtn}
+        </div>
+      </div>`;
+    }
+    return `<div class="oc-run-head">
+        <span class="oc-back" onclick="ocView='create';render()">‹</span>
+        <span class="oc-badge">Unsaved</span>
+        <span class="oc-range">${range} (Off-cycle)</span>
+        <span class="oc-gear">⚙</span>
+        <div class="oc-run-actions">
+          <button class="oc-ghost" onclick="showToast('Draft saved (demo)')">Save Draft</button>
+          <button class="oc-primary" onclick="showToast('Preview payroll (demo)')">Preview payroll</button>
+        </div>
+      </div>
+      <div class="oc-sec-title">Employees</div>
+      ${emp}`;
+  }
+
+  function showToast(t){ const el=document.getElementById('toast'); document.getElementById('toastMsg').textContent=t; el.classList.add('show'); clearTimeout(el._tm); el._tm=setTimeout(()=>el.classList.remove('show'),2400); }
+
+  render();
+</script>
+</body>
+</html>
