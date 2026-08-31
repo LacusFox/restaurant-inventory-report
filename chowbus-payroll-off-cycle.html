@@ -70,6 +70,46 @@
   .oc-x:hover{color:#333;}
   .oc-newearn{margin-top:16px;display:inline-flex;}
 
+  /* ===== Preview：Payroll summary ===== */
+  .oc-summary{display:flex;border:1px solid #EFF0F3;border-radius:14px;overflow:hidden;min-height:520px;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.06);}
+  .oc-sum-side{width:270px;flex:0 0 auto;border-right:1px solid #EFF0F3;padding:22px 24px;}
+  .oc-draft{display:inline-block;background:#F1F2F4;color:#555;font-size:12.5px;font-weight:700;padding:4px 12px;border-radius:999px;margin-bottom:14px;}
+  .oc-sum-title{font-size:18px;font-weight:800;margin-bottom:18px;color:#111;}
+  .oc-cash-l{font-size:12px;font-weight:700;color:#9aa0aa;letter-spacing:.04em;}
+  .oc-cash-v{font-size:30px;font-weight:900;margin:6px 0 18px;color:#111;}
+  .oc-sum-hr{height:1px;background:#EFF0F3;margin:0 0 18px;}
+  .oc-kv{margin-bottom:16px;} .oc-kv .k{font-size:13px;color:#9aa0aa;margin-bottom:3px;} .oc-kv .v{font-size:15px;font-weight:700;color:#111;}
+  .oc-two{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+  .oc-sum-main{flex:1;min-width:0;padding:22px 26px;overflow-x:auto;}
+  .oc-sum-top{display:flex;align-items:center;gap:12px;margin-bottom:20px;}
+  .oc-edit-back{font-size:16px;font-weight:700;color:#111;cursor:pointer;display:inline-flex;align-items:center;gap:6px;}
+  .oc-submit-top{margin-left:auto;background:var(--ck);color:#fff;border:none;border-radius:9px;padding:11px 20px;font-size:14px;font-weight:700;cursor:pointer;}
+  .oc-submit-top:hover{background:var(--ck-hover);}
+  .oc-tabs{display:inline-flex;background:#F4F5F7;border-radius:999px;padding:5px;margin-bottom:22px;flex-wrap:wrap;}
+  .oc-tab2{font-size:13.5px;font-weight:700;color:#8a8f9a;padding:8px 16px;border-radius:999px;cursor:pointer;white-space:nowrap;}
+  .oc-tab2.active{background:#fff;color:#111;box-shadow:0 1px 4px rgba(0,0,0,.1);}
+  table.oc-pt{width:100%;border-collapse:collapse;min-width:680px;}
+  .oc-pt th{text-align:left;font-size:14px;font-weight:800;color:#111;padding:14px 10px;border-bottom:1px solid #EDEEF1;}
+  .oc-pt th.n,.oc-pt td.n{text-align:right;}
+  .oc-pt td{padding:16px 10px;border-bottom:1px solid #F1F2F4;font-size:15px;color:#111;}
+  .oc-pt tr:last-child td{border-bottom:none;}
+  .oc-empty{padding:70px 10px;text-align:center;} .oc-empty .t{font-size:19px;font-weight:800;color:#111;} .oc-empty .d{font-size:15px;color:#9aa0aa;margin-top:8px;}
+
+  /* 确认弹窗 */
+  .oc-modal-ov{position:fixed;inset:0;background:rgba(20,22,30,.45);display:none;z-index:800;align-items:center;justify-content:center;padding:24px;}
+  .oc-modal-ov.open{display:flex;}
+  .oc-modal{background:#fff;width:min(520px,96vw);border-radius:14px;box-shadow:0 30px 80px rgba(0,0,0,.3);padding:24px 26px;}
+  .oc-modal-head{display:flex;align-items:center;justify-content:space-between;font-size:18px;font-weight:800;color:#111;margin-bottom:12px;}
+  .oc-modal-x{color:#9aa0aa;cursor:pointer;font-size:18px;}
+  .oc-modal-body{font-size:15px;color:#4b5563;line-height:1.6;margin-bottom:22px;}
+  .oc-modal-foot{display:flex;justify-content:flex-end;gap:10px;}
+
+  /* 成功页 */
+  .oc-done{text-align:center;padding:60px 20px;}
+  .oc-done-ic{width:56px;height:56px;border-radius:50%;background:#EAF7F0;color:#12905a;font-size:28px;font-weight:900;display:flex;align-items:center;justify-content:center;margin:0 auto 18px;}
+  .oc-done-h{font-size:22px;font-weight:800;color:#111;margin-bottom:8px;}
+  .oc-done-d{font-size:15px;color:#6b7280;margin-bottom:24px;}
+
   .toast{position:fixed;left:50%;bottom:32px;transform:translateX(-50%) translateY(24px);opacity:0;pointer-events:none;background:#1f2937;color:#fff;border-radius:10px;padding:12px 18px;box-shadow:0 12px 32px rgba(0,0,0,.28);z-index:1000;transition:all .3s cubic-bezier(.2,.8,.3,1);font-size:14px;}
   .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
 </style>
@@ -86,6 +126,15 @@
       </div>
     </div>
   </main>
+</div>
+
+<!-- 提交确认弹窗 -->
+<div class="oc-modal-ov" id="ocConfirm">
+  <div class="oc-modal">
+    <div class="oc-modal-head"><span>Submit this payroll?</span><span class="oc-modal-x" onclick="ocCloseConfirm()">✕</span></div>
+    <div class="oc-modal-body">Employees will be paid on <b id="ocPayDay"></b>. This action cannot be undone.</div>
+    <div class="oc-modal-foot"><button class="oc-ghost" onclick="ocCloseConfirm()">Cancel</button><button class="oc-primary" onclick="ocSubmit()">Submit payroll</button></div>
+  </div>
 </div>
 
 <div class="toast" id="toast"><span id="toastMsg"></span></div>
@@ -129,7 +178,76 @@
   function ocDelEarning(i){ ocEarnings.splice(i,1); render(); }
 
   function render(){
-    document.getElementById('ocApp').innerHTML = ocView==='create' ? renderCreate() : renderRun();
+    const app=document.getElementById('ocApp');
+    app.innerHTML = ocView==='create' ? renderCreate()
+      : ocView==='run' ? renderRun()
+      : ocView==='preview' ? renderPreview()
+      : renderDone();
+  }
+
+  /* ---- preview / submit ---- */
+  let prTab='pay';
+  function parseISO(s){const [y,m,d]=s.split('-').map(Number);return new Date(y,m-1,d);}
+  function subBiz(d,n){let x=new Date(d),c=0;while(c<n){x.setDate(x.getDate()-1);const w=x.getDay();if(w!==0&&w!==6)c++;}return x;}
+  function ocPreview(){ if(!ocEarnings.length){ showToast('Add at least one earning first'); return; } prTab='pay'; ocView='preview'; render(); }
+  function setPrTab(t){ prTab=t; render(); }
+  function ocSubmitClick(){ document.getElementById('ocPayDay').textContent=fmtMDY(oc.pay); document.getElementById('ocConfirm').classList.add('open'); }
+  function ocCloseConfirm(){ document.getElementById('ocConfirm').classList.remove('open'); }
+  function ocSubmit(){ ocCloseConfirm(); ocView='done'; render(); }
+
+  function prContent(gross, net){
+    if(prTab==='pay') return `<table class="oc-pt">
+      <thead><tr><th>Employee</th><th>Payment Method</th><th class="n">Earnings</th><th class="n">Add'l earnings</th><th class="n">Total reimb.</th><th class="n">PTO/Sick leave</th><th class="n">Gross pay</th><th class="n">Net pay</th></tr></thead>
+      <tbody><tr><td>Qiyi Gong</td><td>Direct Deposit</td><td class="n">${money(gross)}</td><td class="n">$0.00</td><td class="n">$0.00</td><td class="n">$0.00</td><td class="n">${money(gross)}</td><td class="n">${money(net)}</td></tr></tbody></table>`;
+    if(prTab==='taxes'){ const med=gross*0.0145, futa=gross*0.006, suta=gross*0.02; return `<table class="oc-pt">
+      <thead><tr><th>Tax Description</th><th class="n">by Employees</th><th class="n">by Company</th></tr></thead>
+      <tbody>
+        <tr><td>Medicare</td><td class="n">${money(med)}</td><td class="n">${money(med)}</td></tr>
+        <tr><td>Federal Unemployment Tax</td><td class="n">—</td><td class="n">${money(futa)}</td></tr>
+        <tr><td>State Unemployment Tax</td><td class="n">—</td><td class="n">${money(suta)}</td></tr>
+      </tbody></table>`; }
+    if(prTab==='hourly'){ const hrs=ocEarnings.filter(e=>e.type==='Hourly').reduce((s,e)=>s+(parseFloat(e.hours)||0),0); return `<table class="oc-pt">
+      <thead><tr><th>Employee</th><th class="n">Regular</th><th class="n">OT</th><th class="n">Double OT</th><th class="n">PTO</th><th class="n">Sick</th></tr></thead>
+      <tbody><tr><td>Qiyi Gong</td><td class="n">${hrs.toFixed(2)}</td><td class="n">0.00</td><td class="n">0.00</td><td class="n">0.00</td><td class="n">0.00</td></tr></tbody></table>`; }
+    if(prTab==='posttax') return `<div class="oc-empty"><div class="t">No post-tax deductions</div><div class="d">This payroll has no post-tax deductions to show.</div></div>`;
+    return `<div class="oc-empty"><div class="t">No benefits</div><div class="d">This payroll has no benefits to show.</div></div>`;
+  }
+
+  function renderPreview(){
+    const gross=ocTotal(), net=gross*0.98547, cash=gross*1.04053;
+    const dl=subBiz(parseISO(oc.pay),3);
+    const dlStr=`${dl.getMonth()+1}/${dl.getDate()}/${dl.getFullYear()} 12:00 pm PT`;
+    const tabs=[['pay','Pay breakdown'],['taxes','Taxes'],['hourly','Hourly breakdown'],['posttax','Post-tax deductions'],['benefits','Benefits']];
+    return `<div class="oc-summary">
+      <aside class="oc-sum-side">
+        <span class="oc-draft">Draft</span>
+        <div class="oc-sum-title">Payroll summary</div>
+        <div class="oc-cash-l">CASH REQUIREMENT ›</div>
+        <div class="oc-cash-v">${money(cash)}</div>
+        <div class="oc-sum-hr"></div>
+        <div class="oc-kv"><div class="k">Pay period</div><div class="v">${fmtMDY(oc.start)} – ${fmtMDY(oc.end)}</div></div>
+        <div class="oc-kv"><div class="k">Pay day</div><div class="v">${fmtMDY(oc.pay)}</div></div>
+        <div class="oc-kv"><div class="k">Approval deadline</div><div class="v">${dlStr}</div></div>
+        <div class="oc-two"><div class="oc-kv"><div class="k">Employees</div><div class="v">1</div></div><div class="oc-kv"><div class="k">Contractors</div><div class="v">0</div></div></div>
+      </aside>
+      <div class="oc-sum-main">
+        <div class="oc-sum-top">
+          <span class="oc-edit-back" onclick="ocView='run';render()">‹ Edit payroll</span>
+          <button class="oc-submit-top" onclick="ocSubmitClick()">Submit payroll</button>
+        </div>
+        <div class="oc-tabs">${tabs.map(([k,l])=>`<span class="oc-tab2 ${prTab===k?'active':''}" onclick="setPrTab('${k}')">${l}</span>`).join('')}</div>
+        <div id="ocPrContent">${prContent(gross,net)}</div>
+      </div>
+    </div>`;
+  }
+
+  function renderDone(){
+    return `<div class="oc-done">
+      <div class="oc-done-ic">✓</div>
+      <div class="oc-done-h">Payroll submitted</div>
+      <div class="oc-done-d">Employees will be paid on ${fmtMDY(oc.pay)}.</div>
+      <button class="oc-btn" style="max-width:260px;margin:0 auto;" onclick="location.href='chowbus-payroll-run-payroll.html'">Back to Run Payroll</button>
+    </div>`;
   }
 
   function renderCreate(){
@@ -217,7 +335,7 @@
         <span class="oc-gear">⚙</span>
         <div class="oc-run-actions">
           <button class="oc-ghost" onclick="showToast('Draft saved (demo)')">Save Draft</button>
-          <button class="oc-primary" onclick="showToast('Preview payroll (demo)')">Preview payroll</button>
+          <button class="oc-primary" onclick="ocPreview()">Preview payroll</button>
         </div>
       </div>
       <div class="oc-sec-title">Employees</div>
