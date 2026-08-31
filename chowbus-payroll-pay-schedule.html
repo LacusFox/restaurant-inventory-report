@@ -238,8 +238,13 @@ function genPeriods(freq, payISO, endBefore, count){
 function renderCal(y, m0, marks, key, idx){
   const first=new Date(y,m0,1), startDow=first.getDay();
   const gridStart=new Date(y,m0,1-startDow);
+  // 动态行数：确保发薪日/提交日/周期结束（即使落在下个月）都能在日历里显示
+  let lastShow=new Date(y,m0+1,0);   // 默认到当月最后一天
+  [marks.pay, marks.submit, (marks.range&&marks.range[1])].forEach(s=>{ if(s){ const d=parseISO(s); if(d>lastShow) lastShow=d; } });
+  const totalDays=Math.round((lastShow-gridStart)/86400000)+1;
+  const cellCount=Math.max(42, Math.ceil(totalDays/7)*7);
   let cells='';
-  for(let i=0;i<42;i++){
+  for(let i=0;i<cellCount;i++){
     const d=addDays(gridStart,i), iso=fmtISO(d), inM=d.getMonth()===m0;
     let cls='cal-cell'; if(!inM)cls+=' out';
     if(marks.range && iso>=marks.range[0] && iso<=marks.range[1]) cls+=' rng';
