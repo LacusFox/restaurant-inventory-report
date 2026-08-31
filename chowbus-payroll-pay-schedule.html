@@ -106,9 +106,13 @@
   /* 每月一次：双月并排（窄屏自动上下排） */
   .pd-cal2{flex:1;min-width:0;}
   .pd-cal2-head{display:flex;justify-content:flex-end;margin-bottom:4px;}
-  .pd-cal2-grids{display:flex;gap:16px;flex-wrap:wrap;}
-  .pd-cal2-grids .cal{flex:1 1 200px;min-width:0;}
-  .pd-cal2-grids .cal-cell{padding:7px 0;font-size:12.5px;}
+  .pd-cal2-grids{display:flex;gap:20px;flex-wrap:wrap;}
+  .pd-cal2-grids .cal{flex:1 1 260px;min-width:0;}
+  /* 每月一次：图例放上方一行，双月并排占满整卡宽度 */
+  .pd-card-2m{flex-direction:column;}
+  .pd-card-2m .pd-legend{width:auto;display:flex;gap:28px;flex-wrap:wrap;margin-bottom:2px;}
+  .pd-card-2m .pd-legend .lg{margin-bottom:0;}
+  .pd-card-2m .pd-cal2{width:100%;}
   .cal-head{display:flex;align-items:center;gap:10px;margin-bottom:10px;} .cal-head b{font-size:15.5px;}
   .cal-nav{margin-left:auto;display:inline-flex;gap:4px;}
   .cal-nav button{background:none;border:1px solid transparent;color:#9aa0aa;font-size:16px;cursor:pointer;width:26px;height:26px;border-radius:8px;line-height:1;display:inline-flex;align-items:center;justify-content:center;}
@@ -333,7 +337,8 @@ function pdInner(p, idx, key){
 function pdCard(p, idx){
   idx = idx==null ? 0 : idx;
   const key = ++_pdKey;
-  return `<div class="pd-card" id="pd-${key}">${pdInner(p, idx, key)}</div>`;
+  const cls = form.freq==='monthly' ? 'pd-card pd-card-2m' : 'pd-card';  // 每月一次：图例在上、双月并排在下
+  return `<div class="${cls}" id="pd-${key}">${pdInner(p, idx, key)}</div>`;
 }
 /* 取第 n 个（从当前发薪日起）发薪周期 */
 function periodAt(n){ if(n<0) return null; const arr=currentPeriods(n+1); return arr[n]||null; }
