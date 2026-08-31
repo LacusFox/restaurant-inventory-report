@@ -74,6 +74,10 @@
   .radio{display:flex;align-items:center;gap:8px;font-size:13.5px;color:#374151;cursor:pointer;}
   .radio input{accent-color:var(--primary);width:16px;height:16px;}
   .row2{display:grid;grid-template-columns:1fr 1.5fr;gap:12px;}
+  /* 发薪日结束日 + 回显 */
+  .ends-row{display:flex;align-items:center;gap:16px;flex-wrap:wrap;}
+  .ends-row .sel{flex:0 0 auto;width:280px;max-width:100%;}
+  .ends-echo{font-size:14px;color:#374151;line-height:1.5;} .ends-echo b{color:#111;font-weight:700;}
   .hr{height:1px;background:var(--border);margin:22px 0;}
 
   .toggle{display:inline-flex;align-items:center;gap:12px;cursor:pointer;font-size:14px;color:#1a1a1a;font-weight:600;margin-top:6px;}
@@ -289,8 +293,8 @@ function defaultForm(freq){
   const base={freq, name:autoName(freq), isDefault:false, workers:new Set()};
   if(freq==='weekly')      Object.assign(base,{payDate:'', endBefore:null, endDate:''});
   if(freq==='biweekly')    Object.assign(base,{payDate:'', endBefore:null, endDate:''});
-  if(freq==='monthly')     Object.assign(base,{dayOfMonth:1, endMode:'same', firstEndDay:1, firstEndOffset:'same', firstEndDays:0, firstEndDir:'before', firstPayDate:''});
-  if(freq==='semimonthly') Object.assign(base,{firstPayday:1, secondPayday:15, endMode:'same', firstEndDay:1, firstEndOffset:'same', secondEndDay:15, secondEndOffset:'same', firstEndDays:0, firstEndDir:'before', secondEndDays:0, secondEndDir:'before', firstPayDate:''});
+  if(freq==='monthly')     Object.assign(base,{dayOfMonth:null, firstEndDay:null, firstPayDate:''});
+  if(freq==='semimonthly') Object.assign(base,{firstPayday:null, firstEndDay:null, secondPayday:null, secondEndDay:null, firstPayDate:''});
   return base;
 }
 function autoName(freq){ const base=FREQ[freq].base; const n=groups.filter(g=>g.freq===freq).length; return n>0? base+' ('+(n+1)+')' : base; }
@@ -318,6 +322,10 @@ function wizBack(){ if(wizStep===2){wizStep=1;renderWizard();} }
 /* ---- Step 1 ---- */
 function daysBeforeOptions(sel){ let o=`<option value="" ${sel==null?'selected':''} disabled hidden>${isZh()?'请选择周期结束':'Select period end'}</option>`; for(let n=0;n<=13;n++){o+=`<option value="${n}" ${n===sel?'selected':''}>${n} ${isZh()?'天前(相对发薪日)':'days before payday'}</option>`;} return o; }
 function domOptions(sel){ let o=''; for(let n=1;n<=28;n++){o+=`<option value="${n}" ${n===sel?'selected':''}>${ordinal(n)}</option>`;} o+=`<option value="99" ${sel===99?'selected':''}>${isZh()?'当月最后一天':'Last day'}</option>`; return o; }
+/* 带占位符的日号下拉（未选时为「请选择」，用于分步显现） */
+function domSelectOptions(sel){ let o=`<option value="" ${sel==null?'selected':''} disabled hidden>${isZh()?'请选择':'Select…'}</option>`; for(let n=1;n<=28;n++){o+=`<option value="${n}" ${n===sel?'selected':''}>${ordinal(n)}</option>`;} o+=`<option value="99" ${sel===99?'selected':''}>${isZh()?'当月最后一天':'Last day'}</option>`; return o; }
+function domLabel(d){ return d===99?(isZh()?'最后一天':'last day'):ordinal(d); }
+function nextDom(d){ return d===99?1:d+1; }   // 周期起始 = 相邻周期结束日的次日
 function offsetOptions(sel){ const opt=[['same', isZh()?'当月':'day of the same month'],['prev', isZh()?'上月':'day of the previous month'],['next', isZh()?'下月':'day of the next month']];
   return opt.map(([v,l])=>`<option value="${v}" ${v===sel?'selected':''}>${l}</option>`).join(''); }
 function daysNumOptions(sel){ let o=''; for(let n=0;n<=15;n++){ const lab=isZh()?(n+' 天'):(n===1?'1 day':n+' days'); o+=`<option value="${n}" ${n===sel?'selected':''}>${lab}</option>`;} return o; }
@@ -343,23 +351,32 @@ function setEnd(which,kind,val){
 /* 说明：inline 事件处理器无法访问 let 声明的顶层变量 form，
    因此凡是需要修改 form 的入口，一律走下面这些函数（闭包内可访问 form）。 */
 function setEndMode(m){ form.endMode=m; renderStep1(); }
-function setDayOfMonth(v){ form.dayOfMonth=+v; renderStep1(); }
-function setFirstPayday(v){ form.firstPayday=+v; renderStep1(); }
-function setSecondPayday(v){ form.secondPayday=+v; renderStep1(); }
-function setFirstPayDate(v){ form.firstPayDate=v; renderStep1(); }
+function setDayOfMonth(v){ form.dayOfMonth=+v; form.firstPayDate=''; renderStep1(); }
+function setFirstPayday(v){ form.firstPayday=+v; form.firstPayDate=''; renderStep1(); }
+function setSecondPayday(v){ form.secondPayday=+v; form.firstPayDate=''; renderStep1(); }
+function setEndDay(which,v){ which===0?form.firstEndDay=+v:form.secondEndDay=+v; renderStep1(); }
+/* 新方案首个发薪日：monthly/semi 只能选设定的发薪日（对应的每月几号），否则拒绝 */
+function allowedPayDoms(){ return form.freq==='monthly'?[form.dayOfMonth]:[form.firstPayday,form.secondPayday]; }
+function setFirstPayDate(v){
+  if(v && (form.freq==='monthly'||form.freq==='semimonthly')){
+    const d=parseISO(v), dom=d.getDate(), last=new Date(d.getFullYear(),d.getMonth()+1,0).getDate();
+    const allowed=allowedPayDoms().filter(a=>a!=null);
+    const ok=allowed.some(a=> a===99 ? dom===last : dom===a);
+    if(!ok){ showToast('只能选择设定的发薪日（每月 '+allowed.map(domLabel).join(' 或 ')+'）','Pick a configured payday ('+allowed.map(domLabel).join(' or ')+')'); return; }
+  }
+  form.firstPayDate=v; renderStep1();
+}
 
 /* 月度/半月：日期与周期推算 */
 function monthAdd(y,m,delta){ let t=m+delta; let ny=y+Math.floor(t/12); let nm=((t%12)+12)%12; return [ny,nm]; }
 function domToDate(y,m,dom){ const last=new Date(y,m+1,0).getDate(); return new Date(y,m, dom===99?last:Math.min(dom,last)); }
 function periodEndFor(form,pay,which){
-  const y=pay.getFullYear(), m=pay.getMonth();
-  if(form.endMode==='same'){
-    const day=which===0?form.firstEndDay:form.secondEndDay, off=which===0?form.firstEndOffset:form.secondEndOffset;
-    const [ey,em]=monthAdd(y,m, off==='prev'?-1:off==='next'?1:0);
-    return domToDate(ey,em,day);
-  }
-  const days=which===0?form.firstEndDays:form.secondEndDays, dir=which===0?form.firstEndDir:form.secondEndDir;
-  return addDays(pay, dir==='before'?-days:days);
+  const y=pay.getFullYear(), m=pay.getMonth(), payDom=pay.getDate();
+  const day = which===0?form.firstEndDay:form.secondEndDay;
+  const endVal = day===99?31:day;
+  // 结束日在发薪日当天或之前 → 同月；否则 → 上月（周期结束早于发薪日）
+  const [ey,em] = (endVal<=payDom) ? [y,m] : monthAdd(y,m,-1);
+  return domToDate(ey,em,day);
 }
 function paydayList(form,count){
   const doms=form.freq==='monthly'?[form.dayOfMonth]:[form.firstPayday,form.secondPayday];
@@ -408,11 +425,8 @@ function errBox(errs){
 /* 月度/半月的「即将到来的发薪日」区块（含校验 → 错误框 / 卡片） */
 function upcomingSection(form){
   if(!form.firstPayDate) return '';
-  const invalid = form.freq==='semimonthly' && semiErrors(form).length>0;
-  let inner;
-  if(invalid) inner = errBox(semiErrors(form));
-  else { inner = genMonthlyLike(form, form.freq==='monthly'?1:2).map(pdCard).join(''); }
-  return `<div class="hr"></div><div class="upcoming-head"><h3>${bi('即将到来的发薪日','Upcoming paydays')}</h3>${invalid?'':`<span class="see-all" onclick="openPreview()">${bi('查看全部','See all')}</span>`}</div>${inner}`;
+  const inner = genMonthlyLike(form, form.freq==='monthly'?1:2).map(pdCard).join('');
+  return `<div class="hr"></div><div class="upcoming-head"><h3>${bi('即将到来的发薪日','Upcoming paydays')}</h3><span class="see-all" onclick="openPreview()">${bi('查看全部','See all')}</span></div>${inner}`;
 }
 
 function renderStep1(){
@@ -488,37 +502,58 @@ function weeklyBlock(){
 
 function monthlyBlock(){
   const f=form;
-  return `<div class="fld"><label>${bi('发薪日为每月几号','Day of the month payday is on')} <span class="info-i">i</span></label>
-      <select class="sel" onchange="setDayOfMonth(this.value)">${domOptions(f.dayOfMonth)}</select></div>
-    <div class="fld"><label>${bi('你的发薪周期何时结束？','When do your pay periods end?')}</label>
-      <div class="radios">
-        <label class="radio"><input type="radio" name="endmode" ${f.endMode==='same'?'checked':''} onchange="setEndMode('same')">${bi('每月相同日期','Same days every month')}</label>
-        <label class="radio"><input type="radio" name="endmode" ${f.endMode==='days'?'checked':''} onchange="setEndMode('days')">${bi('相对发薪日固定天数','Same number of days from payday')}</label>
-      </div>
-      <div class="helper">${bi('你可以让发薪周期在每月的同一日期结束；或设置为发薪日前/后固定天数结束。','You can choose to have your pay periods end on the same date every month; or, set the pay periods to end on a fixed number of days before or after payday.')}</div></div>
-    <div class="fld"><label>${bi('首个发薪周期结束于','First pay period ends on')} <span class="info-i">i</span></label>${endsRow(0)}</div>
-    <div class="fld"><label>${bi('新方案的首个发薪日','First pay date on new schedule')} <span class="info-i">i</span></label>
-      <input type="date" class="dt" value="${f.firstPayDate||''}" onchange="setFirstPayDate(this.value)"></div>
-    ${upcomingSection(f)}${defaultToggle()}`;
+  // ① 发薪日
+  let h = `<div class="fld"><label>${bi('发薪日为每月几号','Day of the month payday is on')} <span class="info-i">i</span></label>
+      <select class="sel" onchange="setDayOfMonth(this.value)">${domSelectOptions(f.dayOfMonth)}</select></div>`;
+  if(f.dayOfMonth==null) return h;
+  // ② 首个发薪周期结束于（选完立即回显）
+  const echo = f.firstEndDay!=null ? `<span class="ends-echo">${bi(
+      '发薪周期为每月 <b>'+domLabel(nextDom(f.firstEndDay))+'</b> 至 <b>'+domLabel(f.firstEndDay)+'</b>。',
+      'The pay period is from <b>'+domLabel(nextDom(f.firstEndDay))+'</b> to <b>'+domLabel(f.firstEndDay)+'</b>.')}</span>` : '';
+  h += `<div class="fld"><label>${bi('首个发薪周期结束于','First pay period ends on')} <span class="info-i">i</span></label>
+      <div class="ends-row"><select class="sel" onchange="setEndDay(0,this.value)">${domSelectOptions(f.firstEndDay)}</select>${echo}</div></div>`;
+  if(f.firstEndDay==null) return h;
+  // ③ 新方案首个发薪日（仅能选设定的发薪日）
+  h += `<div class="fld"><label>${bi('新方案的首个发薪日','First pay date on new schedule')} <span class="info-i">i</span></label>
+      <input type="date" class="dt" value="${f.firstPayDate||''}" onchange="setFirstPayDate(this.value)">
+      <div class="helper">${bi('只能选择每月 <b>'+domLabel(f.dayOfMonth)+'</b>。','Only the <b>'+domLabel(f.dayOfMonth)+'</b> of the month can be selected.')}</div></div>`;
+  h += upcomingSection(f) + defaultToggle();
+  return h;
 }
 
 function semiBlock(){
   const f=form;
-  return `<div class="fld"><label>${bi('每月第一次发薪日','First payday of the month')} <span class="info-i">i</span></label>
-      <select class="sel" onchange="setFirstPayday(this.value)">${domOptions(f.firstPayday)}</select></div>
-    <div class="fld"><label>${bi('每月第二次发薪日','Second payday of the month')} <span class="info-i">i</span></label>
-      <select class="sel" onchange="setSecondPayday(this.value)">${domOptions(f.secondPayday)}</select></div>
-    <div class="fld"><label>${bi('你的发薪周期何时结束？','When do your pay periods end?')}</label>
-      <div class="radios">
-        <label class="radio"><input type="radio" name="endmode" ${f.endMode==='same'?'checked':''} onchange="setEndMode('same')">${bi('每月相同日期','Same days every month')}</label>
-        <label class="radio"><input type="radio" name="endmode" ${f.endMode==='days'?'checked':''} onchange="setEndMode('days')">${bi('相对发薪日固定天数','Same number of days from payday')}</label>
-      </div>
-      <div class="helper">${bi('你可以让发薪周期在每月的同一日期结束；或设置为发薪日前/后固定天数结束。','You can choose to have your pay periods end on the same date every month; or, set the pay periods to end on a fixed number of days before or after payday.')}</div></div>
-    <div class="fld"><label>${bi('首个发薪周期结束于','First pay period ends on')} <span class="info-i">i</span></label>${endsRow(0)}</div>
-    <div class="fld"><label>${bi('第二个发薪周期结束于','Second pay period ends on')} <span class="info-i">i</span></label>${endsRow(1)}</div>
-    <div class="fld"><label>${bi('新方案的首个发薪日','First pay date on new schedule')} <span class="info-i">i</span></label>
-      <input type="date" class="dt" value="${f.firstPayDate||''}" onchange="setFirstPayDate(this.value)"></div>
-    ${upcomingSection(f)}${defaultToggle()}`;
+  const allSet = f.firstPayday!=null && f.firstEndDay!=null && f.secondPayday!=null && f.secondEndDay!=null;
+  // 两个回显仅在 4 项都选完后出现（首个周期的起始依赖第二个周期结束日）
+  const echo1 = allSet ? `<span class="ends-echo">${bi(
+      '第一个发薪周期为每月 <b>'+domLabel(nextDom(f.secondEndDay))+'</b> 至 <b>'+domLabel(f.firstEndDay)+'</b>。',
+      'The first pay period is from <b>'+domLabel(nextDom(f.secondEndDay))+'</b> to <b>'+domLabel(f.firstEndDay)+'</b>.')}</span>` : '';
+  const echo2 = allSet ? `<span class="ends-echo">${bi(
+      '第二个发薪周期为每月 <b>'+domLabel(nextDom(f.firstEndDay))+'</b> 至 <b>'+domLabel(f.secondEndDay)+'</b>。',
+      'The second pay period is from <b>'+domLabel(nextDom(f.firstEndDay))+'</b> to <b>'+domLabel(f.secondEndDay)+'</b>.')}</span>` : '';
+
+  // ① 第一次发薪日
+  let h = `<div class="fld"><label>${bi('每月第一次发薪日','First payday of the month')} <span class="info-i">i</span></label>
+      <select class="sel" onchange="setFirstPayday(this.value)">${domSelectOptions(f.firstPayday)}</select></div>`;
+  if(f.firstPayday==null) return h;
+  // ② 第一个周期结束于
+  h += `<div class="fld"><label>${bi('首个发薪周期结束于','First pay period ends on')} <span class="info-i">i</span></label>
+      <div class="ends-row"><select class="sel" onchange="setEndDay(0,this.value)">${domSelectOptions(f.firstEndDay)}</select>${echo1}</div></div>`;
+  if(f.firstEndDay==null) return h;
+  // ③ 第二次发薪日
+  h += `<div class="fld"><label>${bi('每月第二次发薪日','Second payday of the month')} <span class="info-i">i</span></label>
+      <select class="sel" onchange="setSecondPayday(this.value)">${domSelectOptions(f.secondPayday)}</select></div>`;
+  if(f.secondPayday==null) return h;
+  // ④ 第二个周期结束于
+  h += `<div class="fld"><label>${bi('第二个发薪周期结束于','Second pay period ends on')} <span class="info-i">i</span></label>
+      <div class="ends-row"><select class="sel" onchange="setEndDay(1,this.value)">${domSelectOptions(f.secondEndDay)}</select>${echo2}</div></div>`;
+  if(f.secondEndDay==null) return h;
+  // ⑤ 新方案首个发薪日（仅能选第一/第二发薪日对应的每月几号）
+  h += `<div class="fld"><label>${bi('新方案的首个发薪日','First pay date on new schedule')} <span class="info-i">i</span></label>
+      <input type="date" class="dt" value="${f.firstPayDate||''}" onchange="setFirstPayDate(this.value)">
+      <div class="helper">${bi('只能选择每月 <b>'+[f.firstPayday,f.secondPayday].map(domLabel).join('</b> 或 <b>')+'</b>。','Only the <b>'+[f.firstPayday,f.secondPayday].map(domLabel).join('</b> or <b>')+'</b> of the month can be selected.')}</div></div>`;
+  h += upcomingSection(f) + defaultToggle();
+  return h;
 }
 
 function onFreq(v){ const keepWorkers=form.workers, keepDefault=form.isDefault; form=defaultForm(v); form.workers=keepWorkers; form.isDefault=keepDefault; renderStep1(); }
@@ -545,6 +580,7 @@ function wizNext(){
   if(!form.freq){ showToast('请先选择发薪频率','Please select a pay frequency'); return; }
   if((form.freq==='weekly'||form.freq==='biweekly') && !form.payDate){ showToast('请填写发薪日','Please set the pay date'); return; }
   if((form.freq==='weekly'||form.freq==='biweekly') && form.endBefore==null){ showToast('请选择首个发薪周期结束','Please select when the first pay period ends'); return; }
+  if((form.freq==='monthly'||form.freq==='semimonthly') && !form.firstPayDate){ showToast('请完成发薪周期设置','Please complete the schedule setup'); return; }
   wizStep=2; renderWizard();
 }
 
