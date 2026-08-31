@@ -13,6 +13,22 @@
   .page-title{font-size:23px;font-weight:800;margin-bottom:6px;}
   .page-sub{font-size:13.5px;color:var(--muted);margin-bottom:20px;}
 
+  /* 发薪方案筛选器 */
+  .sched-block{margin-bottom:22px;max-width:460px;}
+  .sched-label{font-size:12.5px;font-weight:700;color:#8a8f9a;margin-bottom:10px;}
+  .sched-dd{position:relative;}
+  .sched-select{display:flex;align-items:center;justify-content:space-between;gap:10px;border:1px solid var(--border-strong);border-radius:10px;background:#fff;padding:12px 14px;font-size:14.5px;color:#1a1a1a;cursor:pointer;transition:.15s;}
+  .sched-select:hover{border-color:#b9bdc7;}
+  .sched-select .cv{color:#6b7280;flex-shrink:0;transition:transform .15s;}
+  .sched-block.open .sched-select .cv{transform:rotate(180deg);}
+  .sched-menu{position:absolute;top:calc(100% + 6px);left:0;right:0;background:#fff;border:1px solid var(--border);border-radius:12px;box-shadow:0 12px 32px rgba(0,0,0,.16);padding:6px;z-index:40;display:none;}
+  .sched-block.open .sched-menu{display:block;}
+  .sched-opt{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:11px 12px;border-radius:8px;font-size:14.5px;color:#1a1a1a;cursor:pointer;}
+  .sched-opt:hover{background:#f3f4f6;}
+  .sched-opt.sel{background:#f3f4f6;font-weight:600;}
+  .sched-opt .ck{color:#111;font-weight:900;visibility:hidden;}
+  .sched-opt.sel .ck{visibility:visible;}
+
   /* 周期选择 */
   .sec-label{font-size:12.5px;font-weight:700;color:#8a8f9a;margin-bottom:10px;}
   .period-tabs{display:flex;gap:12px;margin-bottom:22px;flex-wrap:wrap;}
@@ -73,6 +89,17 @@
         <h1 class="page-title"><span class="zh">审批工时</span><span class="en">Approve Timesheet</span></h1>
         <p class="page-sub"><span class="zh">选择发薪周期，逐一确认员工的工时与小费。可分别审批多个周期。</span><span class="en">Pick a pay period and approve each employee's hours and tips. Multiple periods supported.</span></p>
 
+        <div class="sched-block" id="schedBlock">
+          <div class="sched-label"><span class="zh">发薪方案</span><span class="en">Pay schedule</span></div>
+          <div class="sched-dd">
+            <div class="sched-select" onclick="toggleSchedMenu(event)">
+              <span id="schedCurrent"></span>
+              <svg class="cv" width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M3 5.5 7 9.5l4-4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+            <div class="sched-menu" id="schedMenu"></div>
+          </div>
+        </div>
+
         <div class="sec-label"><span class="zh">选择发薪周期</span><span class="en">Select a pay period</span></div>
         <div class="period-tabs" id="periodTabs"></div>
 
@@ -122,9 +149,22 @@
   function isPeriodApproved(pid){ try{return localStorage.getItem('cbTsApproved_'+pid)==='1';}catch(e){return false;} }
   function setPeriodApproved(pid,v){ try{ v?localStorage.setItem('cbTsApproved_'+pid,'1'):localStorage.removeItem('cbTsApproved_'+pid);}catch(e){} }
 
+  /* 发薪方案（店内可能有多个）；选不同方案筛出对应的发薪周期 */
+  const SCHEDULES = [
+    {id:'bw1', zh:'双周发薪方案',   en:'Bi-weekly Schedule'},
+    {id:'bw2', zh:'双周发薪方案 2', en:'Bi-weekly Schedule'},
+    {id:'wk',  zh:'每周发薪方案',   en:'Weekly Schedule'},
+  ];
   const PERIODS = [
-    {id:'p_0729', zh:'2026/7/29 – 8/11', en:'Jul 29 – Aug 11, 2026', pay:'8/19', preApproved:false},
-    {id:'p_0715', zh:'2026/7/15 – 7/28', en:'Jul 15 – 28, 2026',      pay:'8/26', preApproved:true},
+    // 双周发薪方案
+    {id:'p_0729', sched:'bw1', zh:'2026/7/29 – 8/11', en:'Jul 29 – Aug 11, 2026', pay:'8/19', preApproved:false},
+    {id:'p_0715', sched:'bw1', zh:'2026/7/15 – 7/28', en:'Jul 15 – 28, 2026',      pay:'8/26', preApproved:true},
+    // 双周发薪方案 2
+    {id:'p_bw2a', sched:'bw2', zh:'2026/7/22 – 8/4',  en:'Jul 22 – Aug 4, 2026',   pay:'8/12', preApproved:false},
+    {id:'p_bw2b', sched:'bw2', zh:'2026/7/8 – 7/21',  en:'Jul 8 – 21, 2026',       pay:'8/19', preApproved:true},
+    // 每周发薪方案
+    {id:'p_wk1',  sched:'wk',  zh:'2026/8/5 – 8/11',  en:'Aug 5 – 11, 2026',       pay:'8/15', preApproved:false},
+    {id:'p_wk2',  sched:'wk',  zh:'2026/7/29 – 8/4',  en:'Jul 29 – Aug 4, 2026',   pay:'8/8',  preApproved:true},
   ];
   const ROSTER = [
     {name:'Chen Wei',      role:'Cook',       reg:'80.0', ot:'4.0', tips:'$45.00'},
@@ -134,6 +174,7 @@
     {name:'Sofia Rossi',   role:'Bartender',  reg:'70.0', ot:'2.0', tips:'$220.00'},
   ];
 
+  let curSched = SCHEDULES[0].id;
   let cur = PERIODS[0].id;
   const rowState = {};
   // 按各周期的 preApproved 初始化：已审批周期直接显示已审批，其余为待审批（按钮留给用户手动点）。
@@ -142,10 +183,29 @@
 
   function isZh(){return document.body.classList.contains('lang-zh');}
   function periodLabel(p){return isZh()?p.zh:p.en;}
+  function schedLabel(s){return isZh()?s.zh:s.en;}
   function allDone(pid){ return rowState[pid].every(Boolean); }
+  function periodsForSched(){ return PERIODS.filter(p=>p.sched===curSched); }
+
+  /* 发薪方案下拉 */
+  function renderSched(){
+    document.getElementById('schedCurrent').textContent = schedLabel(SCHEDULES.find(s=>s.id===curSched));
+    document.getElementById('schedMenu').innerHTML = SCHEDULES.map(s=>
+      `<div class="sched-opt ${s.id===curSched?'sel':''}" onclick="pickSched('${s.id}')">${schedLabel(s)}<span class="ck">✓</span></div>`
+    ).join('');
+  }
+  function toggleSchedMenu(e){ e.stopPropagation(); document.getElementById('schedBlock').classList.toggle('open'); }
+  function pickSched(id){
+    curSched=id;
+    const ps=periodsForSched();
+    cur = ps.length ? ps[0].id : null;              // 切换方案 → 默认选中该方案的第一个周期
+    document.getElementById('schedBlock').classList.remove('open');
+    renderAll();
+  }
+  document.addEventListener('click', ()=>{ const b=document.getElementById('schedBlock'); if(b) b.classList.remove('open'); });
 
   function renderTabs(){
-    document.getElementById('periodTabs').innerHTML = PERIODS.map(p=>{
+    document.getElementById('periodTabs').innerHTML = periodsForSched().map(p=>{
       const done = allDone(p.id);
       return `<div class="ptab ${p.id===cur?'active':''}" onclick="selectPeriod('${p.id}')">
         <div class="pl">${periodLabel(p)}</div>
@@ -180,7 +240,7 @@
     document.getElementById('doneBanner').style.display = finished ? '' : 'none';
   }
 
-  function renderAll(){ renderTabs(); renderTable(); }
+  function renderAll(){ renderSched(); renderTabs(); renderTable(); }
 
   function selectPeriod(pid){ cur=pid; renderAll(); }
 
