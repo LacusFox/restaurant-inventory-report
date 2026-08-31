@@ -60,7 +60,8 @@
   .nameline{display:flex;align-items:center;gap:10px;}
   .nameval{font-size:14.5px;color:#1a1a1a;border-bottom:1px dashed #c4c8cf;padding-bottom:2px;}
   .name-pen{color:var(--primary);cursor:pointer;font-size:15px;}
-  .name-input{font-size:14.5px;padding:6px 10px;border:1px solid var(--primary);border-radius:8px;box-shadow:0 0 0 3px rgba(204,28,76,.10);outline:none;}
+  .name-input{width:100%;padding:12px 14px;font-size:14px;border:1px solid #DCDCE3;border-radius:10px;background:#fff;color:#1f1f1f;font-family:var(--font);}
+  .name-input:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 3px rgba(224,0,81,.10);}
   .infobox{display:flex;gap:10px;background:#EAF1FB;border:1px solid #CFE0F5;border-radius:10px;padding:12px 14px;font-size:13px;color:#2c4a72;line-height:1.55;margin:-4px 0 18px;}
   .infobox .ib-ic{color:#2563EB;font-weight:900;flex:0 0 auto;}
   .helper{font-size:12.5px;color:var(--muted);margin:-6px 0 4px;line-height:1.55;} .helper b{color:#374151;}
@@ -427,9 +428,7 @@ function renderStep1(){
   if(f.freq){
     // 名称
     body += `<div class="fld"><label>${bi('发薪组名称','Pay group name')}</label>
-      <div class="nameline" id="nameLine">
-        <span class="nameval" onclick="editName()" style="cursor:pointer">${f.name}</span>
-      </div></div>`;
+      <input class="name-input" value="${(f.name||'').replace(/"/g,'&quot;')}" oninput="setName(this.value)" placeholder="${isZh()?'请输入发薪组名称':'Enter pay group name'}"></div>`;
   }
 
   if(f.freq==='weekly'||f.freq==='biweekly'){
@@ -515,13 +514,8 @@ function onFreq(v){ const keepWorkers=form.workers, keepDefault=form.isDefault; 
 function onPayDate(v){ form.payDate=v; renderStep1(); }
 function onEndBefore(v){ form.endBefore=+v; renderStep1(); }
 function toggleDefault(){ form.isDefault=!form.isDefault; renderStep1(); }
-function editName(){
-  const line=document.getElementById('nameLine');
-  line.innerHTML=`<input class="name-input" id="nameInput" value="${form.name.replace(/"/g,'&quot;')}">`;
-  const inp=document.getElementById('nameInput'); inp.focus(); inp.select();
-  inp.addEventListener('blur',()=>{ form.name=inp.value.trim()||form.name; renderStep1(); });
-  inp.addEventListener('keydown',e=>{ if(e.key==='Enter')inp.blur(); });
-}
+/* 常驻可编辑：直接改 form.name，不触发 renderStep1 以保持输入焦点 */
+function setName(v){ form.name=v; }
 
 function wizNext(){
   if(!form.freq){ showToast('请先选择发薪频率','Please select a pay frequency'); return; }
