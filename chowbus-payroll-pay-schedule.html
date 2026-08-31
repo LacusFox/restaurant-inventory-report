@@ -103,6 +103,11 @@
   .pd-legend .v{font-size:14.5px;font-weight:700;color:#1a1a1a;font-variant-numeric:tabular-nums;}
 
   .cal{flex:1;min-width:0;}
+  /* 每月一次：双月并排（窄屏自动上下排） */
+  .pd-cal2{flex:1;min-width:0;}
+  .pd-cal2-head{display:flex;justify-content:flex-end;margin-bottom:4px;}
+  .pd-cal2-grids{display:flex;gap:20px;flex-wrap:wrap;}
+  .pd-cal2-grids .cal{flex:1 1 220px;min-width:200px;}
   .cal-head{display:flex;align-items:center;gap:10px;margin-bottom:10px;} .cal-head b{font-size:15.5px;}
   .cal-nav{margin-left:auto;display:inline-flex;gap:4px;}
   .cal-nav button{background:none;border:1px solid transparent;color:#9aa0aa;font-size:16px;cursor:pointer;width:26px;height:26px;border-radius:8px;line-height:1;display:inline-flex;align-items:center;justify-content:center;}
@@ -287,9 +292,37 @@ function renderPdCalendar(periods, cur, key, idx){
     <div class="cal-grid cal-dow"><div>SU</div><div>MO</div><div>TU</div><div>WE</div><div>TH</div><div>FR</div><div>SA</div></div>
     <div class="cal-grid">${cells}</div></div>`;
 }
+/* 标准单月网格（用于每月一次的双月视图）：高亮当前周期 + 标出所有 submit/pay */
+function monthGrid(y, m0, cur, periods){
+  const first=new Date(y,m0,1), startDow=first.getDay();
+  const gridStart=new Date(y,m0,1-startDow);
+  let cells='';
+  for(let i=0;i<42;i++){
+    const d=addDays(gridStart,i), iso=fmtISO(d), inM=d.getMonth()===m0;
+    let cls='cal-cell'; if(!inM)cls+=' out';
+    if(iso>=cur.start && iso<=cur.end) cls+=' rng';
+    if(periods.some(p=>p.submit===iso)) cls+=' sub';
+    if(periods.some(p=>p.pay===iso))    cls+=' pay';
+    cells+=`<div class="${cls}">${d.getDate()}</div>`;
+  }
+  return `<div class="cal">
+    <div class="cal-head"><b>${MON_EN[m0]} ${y}</b></div>
+    <div class="cal-grid cal-dow"><div>SU</div><div>MO</div><div>TU</div><div>WE</div><div>TH</div><div>FR</div><div>SA</div></div>
+    <div class="cal-grid">${cells}</div></div>`;
+}
 function pdInner(p, idx, key){
   const periods = currentPeriods(idx+4);   // 覆盖窗口，用于标注所有 submit/pay/range
-  const cal = renderPdCalendar(periods, p, key, idx);
+  let cal;
+  if(form.freq==='monthly'){
+    // 每月一次：并排展示两个月（周期起始月 + 发薪日月），跨月周期一目了然
+    let mA=[p.startD.getFullYear(), p.startD.getMonth()];
+    let mB=[p.payD.getFullYear(), p.payD.getMonth()];
+    if(mA[0]===mB[0] && mA[1]===mB[1]) mB=monthAdd(mA[0],mA[1],1);
+    const nav=`<span class="cal-nav"><button type="button" title="${isZh()?'上一个发薪周期':'Previous pay period'}" onclick="pdPeriodNav(${key},${idx},-1)">‹</button><button type="button" title="${isZh()?'下一个发薪周期':'Next pay period'}" onclick="pdPeriodNav(${key},${idx},1)">›</button></span>`;
+    cal=`<div class="pd-cal2"><div class="pd-cal2-head">${nav}</div><div class="pd-cal2-grids">${monthGrid(mA[0],mA[1],p,periods)}${monthGrid(mB[0],mB[1],p,periods)}</div></div>`;
+  } else {
+    cal = renderPdCalendar(periods, p, key, idx);
+  }
   return `<div class="pd-legend">
       <div class="lg"><div class="k"><span class="sq rng"></span>${bi('发薪周期','Pay period')}</div><div class="v">${p.start}–${p.end}</div></div>
       <div class="lg"><div class="k"><span class="sq sub"></span>${bi('提交日','Submit date')}</div><div class="v">${p.submit}</div></div>
