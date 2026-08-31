@@ -261,9 +261,35 @@ function renderCal(y, m0, marks, key, idx){
     <div class="cal-grid">${cells}</div></div>`;
 }
 let _pdKey=0;
+/* 以「当前发薪周期」为窗口渲染日历：从周期起始那周的周日 → 发薪日那周的周六，
+   保证一个日历内能完整看到「周期 + 提交日 + 发薪日」；并标出窗口内所有周期的 range/submit/pay。 */
+function renderPdCalendar(periods, cur, key, idx){
+  const winStart = addDays(cur.startD, -cur.startD.getDay());       // 周期起始那周的周日
+  const winEnd   = addDays(cur.payD,   6 - cur.payD.getDay());      // 发薪日那周的周六
+  const nCells   = Math.round((winEnd-winStart)/86400000)+1;
+  let cells='';
+  for(let i=0;i<nCells;i++){
+    const d=addDays(winStart,i), iso=fmtISO(d);
+    let cls='cal-cell';
+    if(iso<cur.start || iso>cur.pay) cls+=' out';                   // 窗口两端补白日置灰
+    if(periods.some(p=> iso>=p.start && iso<=p.end)) cls+=' rng';
+    if(periods.some(p=> p.submit===iso)) cls+=' sub';
+    if(periods.some(p=> p.pay===iso))    cls+=' pay';
+    cells+=`<div class="${cls}">${d.getDate()}</div>`;
+  }
+  const a=cur.startD, b=cur.payD;
+  const hdr = (a.getMonth()===b.getMonth() && a.getFullYear()===b.getFullYear())
+    ? `${MON_EN[a.getMonth()]} ${a.getFullYear()}`
+    : `${MON_EN[a.getMonth()]} – ${MON_EN[b.getMonth()]} ${b.getFullYear()}`;
+  const nav = `<span class="cal-nav"><button type="button" title="${isZh()?'上一个发薪周期':'Previous pay period'}" onclick="pdPeriodNav(${key},${idx},-1)">‹</button><button type="button" title="${isZh()?'下一个发薪周期':'Next pay period'}" onclick="pdPeriodNav(${key},${idx},1)">›</button></span>`;
+  return `<div class="cal">
+    <div class="cal-head"><b>${hdr}</b>${nav}</div>
+    <div class="cal-grid cal-dow"><div>SU</div><div>MO</div><div>TU</div><div>WE</div><div>TH</div><div>FR</div><div>SA</div></div>
+    <div class="cal-grid">${cells}</div></div>`;
+}
 function pdInner(p, idx, key){
-  // 默认显示「发薪周期」所在月，使周期一定可见（发薪日可能落在相邻月，用 ‹ › 翻到下个周期查看）
-  const cal=renderCal(p.startD.getFullYear(), p.startD.getMonth(), {pay:p.pay, submit:p.submit, range:[p.start,p.end]}, key, idx);
+  const periods = currentPeriods(idx+4);   // 覆盖窗口，用于标注所有 submit/pay/range
+  const cal = renderPdCalendar(periods, p, key, idx);
   return `<div class="pd-legend">
       <div class="lg"><div class="k"><span class="sq rng"></span>${bi('发薪周期','Pay period')}</div><div class="v">${p.start}–${p.end}</div></div>
       <div class="lg"><div class="k"><span class="sq sub"></span>${bi('提交日','Submit date')}</div><div class="v">${p.submit}</div></div>
@@ -381,6 +407,24 @@ function setSecondPayday(v){ form.secondPayday=+v; form.firstPayDate=''; renderS
 function setEndDay(which,v){ which===0?form.firstEndDay=+v:form.secondEndDay=+v; renderStep1(); }
 /* 新方案首个发薪日：monthly/semi 只能选设定的发薪日（对应的每月几号），否则拒绝 */
 function allowedPayDoms(){ return form.freq==='monthly'?[form.dayOfMonth]:[form.firstPayday,form.secondPayday]; }
+/* 生成可选的发薪日列表（仅设定的每月几号，从本月起未来若干个） */
+function payDateOptions(){
+  const doms=allowedPayDoms().filter(a=>a!=null);
+  if(!doms.length) return [];
+  const today=new Date(); today.setHours(0,0,0,0);
+  let y=today.getFullYear(), m=today.getMonth(), out=[];
+  for(let k=0;k<8 && out.length<12;k++){
+    doms.forEach(dom=>{ const d=domToDate(y,m,dom); if(d>=today) out.push(fmtISO(d)); });
+    const nx=monthAdd(y,m,1); y=nx[0]; m=nx[1];
+  }
+  return [...new Set(out)].sort().slice(0,10);
+}
+function payDateSelect(f){
+  return `<select class="sel" onchange="setFirstPayDate(this.value)">
+      <option value="" ${!f.firstPayDate?'selected':''} disabled hidden>${isZh()?'请选择发薪日':'Select a pay date'}</option>
+      ${payDateOptions().map(iso=>`<option value="${iso}" ${f.firstPayDate===iso?'selected':''}>${iso}</option>`).join('')}
+    </select>`;
+}
 function setFirstPayDate(v){
   if(v && (form.freq==='monthly'||form.freq==='semimonthly')){
     const d=parseISO(v), dom=d.getDate(), last=new Date(d.getFullYear(),d.getMonth()+1,0).getDate();
@@ -449,8 +493,9 @@ function errBox(errs){
 /* 月度/半月的「即将到来的发薪日」区块（含校验 → 错误框 / 卡片） */
 function upcomingSection(form){
   if(!form.firstPayDate) return '';
-  const inner = genMonthlyLike(form, form.freq==='monthly'?1:2).map(pdCard).join('');
-  return `<div class="hr"></div><div class="upcoming-head"><h3>${bi('即将到来的发薪日','Upcoming paydays')}</h3><span class="see-all" onclick="openPreview()">${bi('查看全部','See all')}</span></div>${inner}`;
+  const first = genMonthlyLike(form, 1)[0];
+  if(!first) return '';
+  return `<div class="hr"></div><div class="upcoming-head"><h3>${bi('即将到来的发薪日','Upcoming paydays')}</h3></div>${pdCard(first,0)}`;
 }
 
 function renderStep1(){
@@ -518,7 +563,7 @@ function weeklyBlock(){
     '你在每 <b>'+WD_ZH[p.payD.getDay()]+'</b> 发薪，对应 <b>'+WD_ZH[p.startD.getDay()]+'</b> 至 <b>'+WD_ZH[p.endD.getDay()]+'</b> 的工时。',
     'You pay your team on <b>'+WD_EN[p.payD.getDay()]+'</b> for work done between <b>'+WD_EN[p.startD.getDay()]+'</b> and <b>'+WD_EN[p.endD.getDay()]+'</b>.')}</div>`;
   h += `<div class="hr"></div>
-    <div class="upcoming-head"><h3>${bi('即将到来的发薪日','Upcoming paydays')}</h3><span class="see-all" onclick="openPreview()">${bi('查看全部','See all')}</span></div>
+    <div class="upcoming-head"><h3>${bi('即将到来的发薪日','Upcoming paydays')}</h3></div>
     ${pdCard(p)}`;
   h += defaultToggle();
   return h;
@@ -539,8 +584,8 @@ function monthlyBlock(){
   if(f.firstEndDay==null) return h;
   // ③ 新方案首个发薪日（仅能选设定的发薪日）
   h += `<div class="fld"><label>${bi('新方案的首个发薪日','First pay date on new schedule')} <span class="info-i">i</span></label>
-      <input type="date" class="dt" value="${f.firstPayDate||''}" onchange="setFirstPayDate(this.value)">
-      <div class="helper">${bi('只能选择每月 <b>'+domLabel(f.dayOfMonth)+'</b>。','Only the <b>'+domLabel(f.dayOfMonth)+'</b> of the month can be selected.')}</div></div>`;
+      ${payDateSelect(f)}
+      <div class="helper">${bi('仅可选择设定的发薪日（每月 <b>'+domLabel(f.dayOfMonth)+'</b>）。','Only the configured payday (the <b>'+domLabel(f.dayOfMonth)+'</b> of the month).')}</div></div>`;
   h += upcomingSection(f) + defaultToggle();
   return h;
 }
@@ -574,8 +619,8 @@ function semiBlock(){
   if(f.secondEndDay==null) return h;
   // ⑤ 新方案首个发薪日（仅能选第一/第二发薪日对应的每月几号）
   h += `<div class="fld"><label>${bi('新方案的首个发薪日','First pay date on new schedule')} <span class="info-i">i</span></label>
-      <input type="date" class="dt" value="${f.firstPayDate||''}" onchange="setFirstPayDate(this.value)">
-      <div class="helper">${bi('只能选择每月 <b>'+[f.firstPayday,f.secondPayday].map(domLabel).join('</b> 或 <b>')+'</b>。','Only the <b>'+[f.firstPayday,f.secondPayday].map(domLabel).join('</b> or <b>')+'</b> of the month can be selected.')}</div></div>`;
+      ${payDateSelect(f)}
+      <div class="helper">${bi('仅可选择设定的发薪日（每月 <b>'+[f.firstPayday,f.secondPayday].map(domLabel).join('</b> 或 <b>')+'</b>）。','Only the configured paydays (the <b>'+[f.firstPayday,f.secondPayday].map(domLabel).join('</b> or <b>')+'</b> of the month).')}</div></div>`;
   h += upcomingSection(f) + defaultToggle();
   return h;
 }
