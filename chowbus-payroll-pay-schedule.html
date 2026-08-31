@@ -55,7 +55,7 @@
   .info-i{width:15px;height:15px;border-radius:50%;border:1px solid #c4c8cf;color:#9aa0aa;font-size:10px;font-weight:800;display:inline-flex;align-items:center;justify-content:center;cursor:help;}
   /* 问号悬浮提示 */
   .tip-i{position:relative;width:15px;height:15px;border-radius:50%;border:1px solid #c4c8cf;color:#9aa0aa;font-size:10px;font-weight:800;display:inline-flex;align-items:center;justify-content:center;cursor:help;}
-  .tip-i .tip-pop{display:none;position:absolute;left:22px;top:-8px;width:330px;background:#1f2937;color:#fff;font-size:12.5px;font-weight:400;line-height:1.65;padding:12px 14px;border-radius:10px;z-index:60;box-shadow:0 8px 24px rgba(0,0,0,.28);white-space:normal;}
+  .tip-i .tip-pop{display:none;position:absolute;left:22px;top:auto;bottom:0;width:330px;background:#1f2937;color:#fff;font-size:12.5px;font-weight:400;line-height:1.65;padding:12px 14px;border-radius:10px;z-index:60;box-shadow:0 8px 24px rgba(0,0,0,.28);white-space:normal;}
   .tip-i .tip-pop b{color:#fff;font-weight:700;}
   .tip-i:hover .tip-pop{display:block;}
   .sel,.dt{width:100%;padding:12px 14px;font-size:14px;border:1px solid #DCDCE3;border-radius:10px;background:#fff;color:#1f1f1f;}
@@ -104,7 +104,9 @@
 
   .cal{flex:1;min-width:0;}
   .cal-head{display:flex;align-items:center;gap:10px;margin-bottom:10px;} .cal-head b{font-size:15.5px;}
-  .cal-nav{margin-left:auto;color:#9aa0aa;font-size:15px;letter-spacing:6px;}
+  .cal-nav{margin-left:auto;display:inline-flex;gap:4px;}
+  .cal-nav button{background:none;border:1px solid transparent;color:#9aa0aa;font-size:16px;cursor:pointer;width:26px;height:26px;border-radius:8px;line-height:1;display:inline-flex;align-items:center;justify-content:center;}
+  .cal-nav button:hover{background:#f3f4f6;color:#374151;}
   .cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;}
   .cal-dow div{text-align:center;font-size:11px;font-weight:800;color:#8a8f9a;padding:3px 0;}
   .cal-cell{text-align:center;font-size:13px;color:#374151;padding:8px 0;border-radius:9px;}
@@ -233,7 +235,7 @@ function genPeriods(freq, payISO, endBefore, count){
 }
 
 /* 迷你日历 */
-function renderCal(y, m0, marks){
+function renderCal(y, m0, marks, key, idx){
   const first=new Date(y,m0,1), startDow=first.getDay();
   const gridStart=new Date(y,m0,1-startDow);
   let cells='';
@@ -245,19 +247,36 @@ function renderCal(y, m0, marks){
     if(marks.pay===iso) cls+=' pay';
     cells+=`<div class="${cls}">${d.getDate()}</div>`;
   }
+  const nav = key!=null
+    ? `<span class="cal-nav"><button type="button" title="${isZh()?'上一个发薪周期':'Previous pay period'}" onclick="pdPeriodNav(${key},${idx},-1)">‹</button><button type="button" title="${isZh()?'下一个发薪周期':'Next pay period'}" onclick="pdPeriodNav(${key},${idx},1)">›</button></span>`
+    : `<span class="cal-nav">‹  ›</span>`;
   return `<div class="cal">
-    <div class="cal-head"><b>${MON_EN[m0]} ${y}</b><span class="cal-nav">‹  ›</span></div>
+    <div class="cal-head"><b>${MON_EN[m0]} ${y}</b>${nav}</div>
     <div class="cal-grid cal-dow"><div>SU</div><div>MO</div><div>TU</div><div>WE</div><div>TH</div><div>FR</div><div>SA</div></div>
     <div class="cal-grid">${cells}</div></div>`;
 }
-function pdCard(p){
-  const cal=renderCal(p.payD.getFullYear(), p.payD.getMonth(), {pay:p.pay, submit:p.submit, range:[p.start,p.end]});
-  return `<div class="pd-card">
-    <div class="pd-legend">
+let _pdKey=0;
+function pdInner(p, idx, key){
+  // 默认显示「发薪周期」所在月，使周期一定可见（发薪日可能落在相邻月，用 ‹ › 翻到下个周期查看）
+  const cal=renderCal(p.startD.getFullYear(), p.startD.getMonth(), {pay:p.pay, submit:p.submit, range:[p.start,p.end]}, key, idx);
+  return `<div class="pd-legend">
       <div class="lg"><div class="k"><span class="sq rng"></span>${bi('发薪周期','Pay period')}</div><div class="v">${p.start}–${p.end}</div></div>
       <div class="lg"><div class="k"><span class="sq sub"></span>${bi('提交日','Submit date')}</div><div class="v">${p.submit}</div></div>
       <div class="lg"><div class="k"><span class="sq pay"></span>${bi('发薪日','Pay date')}</div><div class="v">${p.pay}</div></div>
-    </div>${cal}</div>`;
+    </div>${cal}`;
+}
+function pdCard(p, idx){
+  idx = idx==null ? 0 : idx;
+  const key = ++_pdKey;
+  return `<div class="pd-card" id="pd-${key}">${pdInner(p, idx, key)}</div>`;
+}
+/* 取第 n 个（从当前发薪日起）发薪周期 */
+function periodAt(n){ if(n<0) return null; const arr=currentPeriods(n+1); return arr[n]||null; }
+/* 日历上的 ‹ › ：切换到上/下一个发薪周期 */
+function pdPeriodNav(key, idx, delta){
+  const n=idx+delta; if(n<0) return;
+  const p=periodAt(n); if(!p) return;
+  const el=document.getElementById('pd-'+key); if(el) el.innerHTML = pdInner(p, n, key);
 }
 
 /* ============ 列表 ============ */
@@ -435,7 +454,7 @@ function renderStep1(){
     <div class="step-p">${bi('发薪组帮助你安排「谁在何时发薪」。我们会据此提醒你何时需要跑薪。','A pay group helps you organize who gets paid when. We\'ll use this to remind you when payroll is due.')}</div>`;
 
   // 频率
-  body += `<div class="fld"><label>${bi('发薪频率','Pay frequency')} <span class="info-i">i</span></label>
+  body += `<div class="fld"><label>${bi('发薪频率','Pay frequency')}</label>
     <select class="sel" onchange="onFreq(this.value)">
       <option value="" ${f.freq===''?'selected':''} disabled hidden>${isZh()?'请选择…':'Select…'}</option>
       <option value="weekly" ${f.freq==='weekly'?'selected':''}>${isZh()?'每周':'Every week'}</option>
@@ -473,7 +492,7 @@ function defaultToggle(){
 
 function weeklyBlock(){
   const f=form;
-  let h = `<div class="fld"><label>${bi('本方案发薪日','Pay date for this schedule')} <span class="info-i">i</span></label>
+  let h = `<div class="fld"><label>${bi('本方案发薪日','Pay date for this schedule')}</label>
     <input type="date" class="dt" value="${f.payDate||''}" onchange="onPayDate(this.value)"></div>`;
   if(!f.payDate) return h;                       // ① 仅显示发薪日
   const submit = subBiz(parseISO(f.payDate),4);
