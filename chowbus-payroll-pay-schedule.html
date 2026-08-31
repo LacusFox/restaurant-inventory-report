@@ -53,6 +53,11 @@
   .fld{margin-bottom:20px;}
   .fld>label{display:flex;align-items:center;gap:6px;font-size:14px;font-weight:700;color:#1a1a1a;margin-bottom:8px;}
   .info-i{width:15px;height:15px;border-radius:50%;border:1px solid #c4c8cf;color:#9aa0aa;font-size:10px;font-weight:800;display:inline-flex;align-items:center;justify-content:center;cursor:help;}
+  /* 问号悬浮提示 */
+  .tip-i{position:relative;width:15px;height:15px;border-radius:50%;border:1px solid #c4c8cf;color:#9aa0aa;font-size:10px;font-weight:800;display:inline-flex;align-items:center;justify-content:center;cursor:help;}
+  .tip-i .tip-pop{display:none;position:absolute;left:22px;top:-8px;width:330px;background:#1f2937;color:#fff;font-size:12.5px;font-weight:400;line-height:1.65;padding:12px 14px;border-radius:10px;z-index:60;box-shadow:0 8px 24px rgba(0,0,0,.28);white-space:normal;}
+  .tip-i .tip-pop b{color:#fff;font-weight:700;}
+  .tip-i:hover .tip-pop{display:block;}
   .sel,.dt{width:100%;padding:12px 14px;font-size:14px;border:1px solid #DCDCE3;border-radius:10px;background:#fff;color:#1f1f1f;}
   select.sel{appearance:none;cursor:pointer;padding-right:34px;
     background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%239aa0aa' stroke-width='3'><path d='M6 9l6 6 6-6'/></svg>");background-repeat:no-repeat;background-position:right 12px center;}
@@ -459,13 +464,14 @@ function weeklyBlock(){
   if(!f.payDate) return h;                       // ① 仅显示发薪日
   const submit = subBiz(parseISO(f.payDate),4);
   const endBy  = subBiz(parseISO(f.payDate),5);
-  h += `<div class="infobox"><span class="ib-ic">ⓘ</span><span>${bi(
-    '如通过直存(Direct Deposit)发薪，须在 <b>'+longZh(submit)+'</b> 前提交跑薪（发薪日前 4 个工作日）；且首个发薪周期须在 <b>'+longZh(endBy)+'</b> 前结束（发薪日前 5 个工作日）。',
-    'Payroll must be submitted by <b>'+longEn(submit)+'</b> (4 business days before pay date) if paying by direct deposit. And the first pay period should end by <b>'+longEn(endBy)+'</b> (5 business days before pay date).')}</span></div>`;
-  const maxEnd = fmtISO(subBiz(parseISO(f.payDate),5));   // 首个周期结束日须早于发薪日 ≥5 个工作日
+  const maxEnd = fmtISO(endBy);   // 首个周期结束日须早于发薪日 ≥5 个工作日
   // 兼容旧数据：仅有 endBefore（编辑既有组）时据此推出具体日期
   const endDate = f.endDate || (f.endBefore!=null ? fmtISO(addDays(parseISO(f.payDate), -f.endBefore)) : '');
-  h += `<div class="fld"><label>${bi('首个发薪周期结束于','First pay period ends on')} <span class="info-i">i</span></label>
+  // 提示文案挪进问号悬浮里，不外显
+  const tip = `<span class="tip-i">i<span class="tip-pop">${bi(
+    '直存(Direct Deposit)：须在 <b>'+longZh(submit)+'</b> 前提交（发薪日前 4 个工作日）。<br>因此发薪周期最晚须在 <b>'+longZh(endBy)+'</b> 结束 —— 这是仍能留出时间核对工时的最紧安排。<br>建议：将周期结束设在发薪日前 <b>7–9 个工作日</b>，为漏打卡、节假日留出缓冲。',
+    'Direct deposit: submit by <b>'+longEn(submit)+'</b> (4 business days before payday).<br>So your pay period must end by <b>'+longEn(endBy)+'</b> at the latest — that\'s the tightest it can be and still leave time to finalize hours.<br>Recommended: end the period <b>7–9 business days</b> before payday to leave room for missed punches and holidays.')}</span></span>`;
+  h += `<div class="fld"><label>${bi('首个发薪周期结束于','First pay period ends on')} ${tip}</label>
     <input type="date" class="dt" value="${endDate}" max="${maxEnd}" onchange="onEndDate(this.value)"></div>`;
   if(!endDate) return h;                          // ② 出提交提示 + 「结束于」日期选择器
   const endBefore = Math.round((parseISO(f.payDate)-parseISO(endDate))/86400000);
