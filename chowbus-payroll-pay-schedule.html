@@ -578,8 +578,8 @@ function weeklyBlock(){
   const endDate = f.endDate || (f.endBefore!=null ? fmtISO(addDays(parseISO(f.payDate), -f.endBefore)) : '');
   // 提示文案挪进问号悬浮里，不外显
   const tip = `<span class="tip-i">i<span class="tip-pop">${bi(
-    '直存(Direct Deposit)：须在 <b>'+longZh(submit)+'</b> 前提交（发薪日前 4 个工作日）。<br>因此发薪周期最晚须在 <b>'+longZh(endBy)+'</b> 结束 —— 这是仍能留出时间核对工时的最紧安排。<br>建议：将周期结束设在发薪日前 <b>7–9 个工作日</b>，为漏打卡、节假日留出缓冲。',
-    'Direct deposit: submit by <b>'+longEn(submit)+'</b> (4 business days before payday).<br>So your pay period must end by <b>'+longEn(endBy)+'</b> at the latest — that\'s the tightest it can be and still leave time to finalize hours.<br>Recommended: end the period <b>7–9 business days</b> before payday to leave room for missed punches and holidays.')}</span></span>`;
+    '直存需要提前 4 个工作日进行提交。建议将周期结束日设在发薪日前的 <b>7–9 个工作日</b>，留出足够缓冲。',
+    'Direct deposit must be submitted at least 4 business days before payday. We recommend setting the pay period end <b>7–9 business days</b> before payday to leave enough buffer.')}</span></span>`;
   h += `<div class="fld"><label>${bi('首个发薪周期结束于','First pay period ends on')} ${tip}</label>
     <input type="date" class="dt" value="${endDate}" max="${maxEnd}" onchange="onEndDate(this.value)" onclick="try{this.showPicker()}catch(e){}"></div>`;
   if(!endDate) return h;                          // ② 出提交提示 + 「结束于」日期选择器
