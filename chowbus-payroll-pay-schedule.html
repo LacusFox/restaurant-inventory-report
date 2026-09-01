@@ -60,6 +60,7 @@
   .tip-i .tip-pop b{color:#fff;font-weight:700;}
   .tip-i:hover .tip-pop{display:block;}
   .sel,.dt{width:100%;padding:12px 14px;font-size:14px;border:1px solid #DCDCE3;border-radius:10px;background:#fff;color:#1f1f1f;}
+  .dt{cursor:pointer;}
   select.sel{appearance:none;cursor:pointer;padding-right:34px;
     background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%239aa0aa' stroke-width='3'><path d='M6 9l6 6 6-6'/></svg>");background-repeat:no-repeat;background-position:right 12px center;}
   .sel:focus,.dt:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 3px rgba(204,28,76,.10);}
@@ -537,7 +538,7 @@ function renderStep1(){
       <option value="biweekly" ${f.freq==='biweekly'?'selected':''}>${isZh()?'每两周':'Every other week'}</option>
       <option value="semimonthly" ${f.freq==='semimonthly'?'selected':''}>${isZh()?'每月两次':'Twice a month'}</option>
       <option value="monthly" ${f.freq==='monthly'?'selected':''}>${isZh()?'每月一次':'Once a month'}</option>
-    </select>${editingId?`<div class="helper">${bi('编辑发薪组时，发薪频率不可修改。','Pay frequency cannot be changed when editing a pay group.')}</div>`:''}</div>`;
+    </select></div>`;
 
   if(f.freq){
     // 名称
@@ -569,7 +570,7 @@ function defaultToggle(){
 function weeklyBlock(){
   const f=form;
   let h = `<div class="fld"><label>${bi('本方案发薪日','Pay date for this schedule')}</label>
-    <input type="date" class="dt" value="${f.payDate||''}" onchange="onPayDate(this.value)"></div>`;
+    <input type="date" class="dt" value="${f.payDate||''}" onchange="onPayDate(this.value)" onclick="try{this.showPicker()}catch(e){}"></div>`;
   if(!f.payDate) return h;                       // ① 仅显示发薪日
   const submit = subBiz(parseISO(f.payDate),4);
   const endBy  = subBiz(parseISO(f.payDate),5);
@@ -581,7 +582,7 @@ function weeklyBlock(){
     '直存(Direct Deposit)：须在 <b>'+longZh(submit)+'</b> 前提交（发薪日前 4 个工作日）。<br>因此发薪周期最晚须在 <b>'+longZh(endBy)+'</b> 结束 —— 这是仍能留出时间核对工时的最紧安排。<br>建议：将周期结束设在发薪日前 <b>7–9 个工作日</b>，为漏打卡、节假日留出缓冲。',
     'Direct deposit: submit by <b>'+longEn(submit)+'</b> (4 business days before payday).<br>So your pay period must end by <b>'+longEn(endBy)+'</b> at the latest — that\'s the tightest it can be and still leave time to finalize hours.<br>Recommended: end the period <b>7–9 business days</b> before payday to leave room for missed punches and holidays.')}</span></span>`;
   h += `<div class="fld"><label>${bi('首个发薪周期结束于','First pay period ends on')} ${tip}</label>
-    <input type="date" class="dt" value="${endDate}" max="${maxEnd}" onchange="onEndDate(this.value)"></div>`;
+    <input type="date" class="dt" value="${endDate}" max="${maxEnd}" onchange="onEndDate(this.value)" onclick="try{this.showPicker()}catch(e){}"></div>`;
   if(!endDate) return h;                          // ② 出提交提示 + 「结束于」日期选择器
   const endBefore = Math.round((parseISO(f.payDate)-parseISO(endDate))/86400000);
   const p = genPeriods(f.freq, f.payDate, endBefore, 1)[0];   // ③ 出说明句 + 日历 + 默认开关
@@ -611,7 +612,7 @@ function monthlyBlock(){
   // ③ 新方案首个发薪日（仅能选设定的发薪日）
   h += `<div class="fld"><label>${bi('新方案的首个发薪日','First pay date on new schedule')} <span class="info-i">i</span></label>
       ${payDateSelect(f)}
-      <div class="helper">${bi('仅可选择设定的发薪日（每月 <b>'+domLabel(f.dayOfMonth)+'</b>）。','Only the configured payday (the <b>'+domLabel(f.dayOfMonth)+'</b> of the month).')}</div></div>`;
+      <div class="helper" style="margin-top:10px;">${bi('仅可选择设定的发薪日（每月 <b>'+domLabel(f.dayOfMonth)+'</b>）。','Only the configured payday (the <b>'+domLabel(f.dayOfMonth)+'</b> of the month).')}</div></div>`;
   h += upcomingSection(f) + defaultToggle();
   return h;
 }
@@ -646,7 +647,7 @@ function semiBlock(){
   // ⑤ 新方案首个发薪日（仅能选第一/第二发薪日对应的每月几号）
   h += `<div class="fld"><label>${bi('新方案的首个发薪日','First pay date on new schedule')} <span class="info-i">i</span></label>
       ${payDateSelect(f)}
-      <div class="helper">${bi('仅可选择设定的发薪日（每月 <b>'+[f.firstPayday,f.secondPayday].map(domLabel).join('</b> 或 <b>')+'</b>）。','Only the configured paydays (the <b>'+[f.firstPayday,f.secondPayday].map(domLabel).join('</b> or <b>')+'</b> of the month).')}</div></div>`;
+      <div class="helper" style="margin-top:10px;">${bi('仅可选择设定的发薪日（每月 <b>'+[f.firstPayday,f.secondPayday].map(domLabel).join('</b> 或 <b>')+'</b>）。','Only the configured paydays (the <b>'+[f.firstPayday,f.secondPayday].map(domLabel).join('</b> or <b>')+'</b> of the month).')}</div></div>`;
   h += upcomingSection(f) + defaultToggle();
   return h;
 }
