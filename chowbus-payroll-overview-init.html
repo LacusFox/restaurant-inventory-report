@@ -61,6 +61,8 @@
   .io-f{margin-bottom:16px;}
   .io-f label{display:flex;align-items:center;gap:6px;font-size:14px;font-weight:600;color:#374151;margin-bottom:7px;}
   .io-f input{width:100%;padding:11px 13px;border:1px solid #DADCE0;border-radius:9px;font-size:14px;color:#111;font-family:var(--font);}
+  .io-select{width:100%;padding:11px 13px;border:1px solid #DADCE0;border-radius:9px;font-size:14px;color:#111;font-family:var(--font);background:#fff;appearance:none;cursor:pointer;padding-right:34px;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%239aa0aa' stroke-width='3'><path d='M6 9l6 6 6-6'/></svg>");background-repeat:no-repeat;background-position:right 12px center;}
+  .io-select:focus{outline:none;border-color:var(--brand);box-shadow:0 0 0 3px rgba(224,0,81,.10);}
   .io-f input:focus{outline:none;border-color:var(--brand);box-shadow:0 0 0 3px rgba(224,0,81,.10);}
   .io-help{position:relative;width:15px;height:15px;border-radius:50%;border:1px solid #c4c8cf;color:#9aa0aa;font-size:10px;font-weight:800;display:inline-flex;align-items:center;justify-content:center;cursor:help;}
   .io-help .io-tip{display:none;position:absolute;left:22px;top:-7px;background:#1f2937;color:#fff;font-size:12px;font-weight:500;padding:7px 10px;border-radius:8px;white-space:nowrap;z-index:5;box-shadow:0 6px 18px rgba(0,0,0,.25);}
@@ -189,6 +191,16 @@
   <div class="io-modal">
     <span class="io-x" onclick="closeInfo()">✕</span>
     <div class="io-h"><span class="zh">请输入您的初始化信息</span><span class="en">Enter your setup info</span></div>
+    <div class="io-f"><label><span class="zh">公司法定名称</span><span class="en">Company Legal Name</span></label><input id="io-legal" value="Curry Flurry"></div>
+    <div class="io-f"><label><span class="zh">公司商用名称</span><span class="en">Company Trade Name</span></label><input id="io-trade" value="Curry Flurry"></div>
+    <div class="io-f"><label><span class="zh">企业类型</span><span class="en">Business Type</span></label>
+      <select id="io-btype" class="io-select">
+        <option value="" disabled selected hidden>Select…</option>
+        <option>C Corporation</option>
+        <option>S Corporation</option>
+        <option>Partnership</option>
+        <option>Sole Proprietorship</option>
+      </select></div>
     <div class="io-f"><label><span class="zh">姓名</span><span class="en">Name</span></label><input id="io-name" placeholder="—"></div>
     <div class="io-f"><label><span class="zh">职务</span><span class="en">Title</span></label><input id="io-title" placeholder="—"></div>
     <div class="io-f"><label><span class="zh">邮箱</span><span class="en">Email</span></label><input id="io-email" type="email" placeholder="name@company.com"></div>
