@@ -85,6 +85,7 @@
   .co-step:hover{background:#f3f4f6;}
   .co-step.active{background:#F5F7FF;border-color:#C7D2FE;}
   .co-chk{width:22px;height:22px;border-radius:50%;border:2px solid #22A353;color:#22A353;display:inline-flex;align-items:center;justify-content:center;font-size:12px;font-weight:900;flex:0 0 auto;}
+  .co-chk.todo{border-color:#c4c8cf;color:transparent;background:#fff;}  /* 未完成：灰色空心圈 */
   .co-step-t{font-size:15px;font-weight:700;color:#111;}
   .co-step-s{font-size:12.5px;color:#6b7280;margin-top:2px;}
   .co-main{flex:1;overflow-y:auto;padding:44px 46px;}
@@ -210,11 +211,11 @@
       <div class="co-yp">Your payroll</div>
       <div class="co-yp-sub">Select a step below to view or make changes.</div>
       <div class="co-steps">
-        <div class="co-step" data-step="org" onclick="coGo('org')"><span class="co-chk">✓</span><div><div class="co-step-t">Organization details</div><div class="co-step-s">Complete</div></div></div>
-        <div class="co-step" data-step="payment" onclick="coGo('payment')"><span class="co-chk">✓</span><div><div class="co-step-t">Payment method</div><div class="co-step-s">Complete</div></div></div>
-        <div class="co-step" data-step="tax" onclick="coGo('tax')"><span class="co-chk">✓</span><div><div class="co-step-t">Tax setup</div><div class="co-step-s">Complete</div></div></div>
-        <div class="co-step" data-step="employee" onclick="coGo('employee')"><span class="co-chk">✓</span><div><div class="co-step-t">Employee setup</div><div class="co-step-s">Complete</div></div></div>
-        <div class="co-step" data-step="filing" onclick="coGo('filing')"><span class="co-chk">✓</span><div><div class="co-step-t">Filing authorization</div><div class="co-step-s">Complete</div></div></div>
+        <div class="co-step" data-step="org" onclick="coGo('org')"><span class="co-chk todo"></span><div><div class="co-step-t">Organization details</div><div class="co-step-s">Not started</div></div></div>
+        <div class="co-step" data-step="payment" onclick="coGo('payment')"><span class="co-chk todo"></span><div><div class="co-step-t">Payment method</div><div class="co-step-s">Not started</div></div></div>
+        <div class="co-step" data-step="tax" onclick="coGo('tax')"><span class="co-chk todo"></span><div><div class="co-step-t">Tax setup</div><div class="co-step-s">Not started</div></div></div>
+        <div class="co-step" data-step="employee" onclick="coGo('employee')"><span class="co-chk todo"></span><div><div class="co-step-t">Employee setup</div><div class="co-step-s">Not started</div></div></div>
+        <div class="co-step" data-step="filing" onclick="coGo('filing')"><span class="co-chk todo"></span><div><div class="co-step-t">Filing authorization</div><div class="co-step-s">Not started</div></div></div>
       </div>
     </aside>
     <div class="co-main" id="coMain"></div>
@@ -243,36 +244,46 @@
   function closeInfo(){ document.getElementById('ioOverlay').classList.remove('open'); }
   function infoNext(){ closeInfo(); openCompanyOnboard(); }   // 信息填完 → Company Onboarding（真实可交互组件）
 
-  /* ===== Check「公司入驻」弹窗（复用 company-setup 的真实交互组件，内容按原样英文） ===== */
+  /* ===== Check「公司入驻」弹窗（初始化流程版：空白起始，逐步填写打勾） ===== */
   let coStep='', coPayView='list', coAddMode='instant';
-  function openCompanyOnboard(){ coStep=''; coPayView='list'; coAddMode='instant'; document.getElementById('coOverlay').classList.add('open'); coRender(); }
-  function closeCompanyOnboard(){ document.getElementById('coOverlay').classList.remove('open'); st.company=true; render(); }  // 关闭即视为完成公司登录 → 回引导（第2步）
+  let coDone={org:false,payment:false,tax:false,employee:false,filing:false};
+  const CO_STEPS=['org','payment','tax','employee','filing'];
+  function allCoDone(){ return CO_STEPS.every(k=>coDone[k]); }
+  function firstIncomplete(){ return CO_STEPS.find(k=>!coDone[k]) || ''; }
+  function openCompanyOnboard(){ coPayView='list'; coAddMode='instant'; coStep = allCoDone()?'':firstIncomplete(); document.getElementById('coOverlay').classList.add('open'); coRender(); }
+  function closeCompanyOnboard(){ document.getElementById('coOverlay').classList.remove('open'); st.company=allCoDone(); render(); }  // 5 步全部完成才算「公司登录完成」
   function coGo(s){ coStep=s; if(s==='payment') coPayView='list'; coRender(); }
   function coPayAdd(){ coPayView='add'; coAddMode='instant'; coRender(); }
   function coPayCancel(){ coPayView='list'; coRender(); }
   function coSetAddMode(m){ coAddMode=m; coRender(); }
+  function coMark(step){ coDone[step]=true; coStep = allCoDone()?'':firstIncomplete(); coRender(); }  // 完成某步→打勾，自动跳到下一未完成步（全部完成则回完成页）
   function coToast(t){ const el=document.getElementById('toastMsg'); el.textContent=t; const tt=document.getElementById('toast'); tt.classList.add('show'); clearTimeout(tt._tm); tt._tm=setTimeout(()=>tt.classList.remove('show'),2400); }
   function coRender(){
-    document.querySelectorAll('#coOverlay .co-step').forEach(el=>el.classList.toggle('active', el.dataset.step===coStep));
+    CO_STEPS.forEach(k=>{
+      const el=document.querySelector('#coOverlay .co-step[data-step="'+k+'"]'); if(!el) return;
+      el.classList.toggle('active', k===coStep);
+      const chk=el.querySelector('.co-chk'); chk.classList.toggle('todo', !coDone[k]); chk.textContent=coDone[k]?'✓':'';
+      el.querySelector('.co-step-s').textContent = coDone[k]?'Complete':'Not started';
+    });
     const fn={org:coOrg,payment:coPayment,tax:coTax,employee:coEmployee,filing:coFiling}[coStep];
     const m=document.getElementById('coMain'); m.innerHTML = fn?fn():coDefault(); m.scrollTop=0;
   }
-  function coDefault(){ return `<div class="co-h1">Your payroll setup is complete</div><div class="co-sub">Select any of the categories to the left to update your information.</div>`; }
+  function coDefault(){
+    if(allCoDone()) return `<div class="co-h1">Your payroll setup is complete</div><div class="co-sub">Select any of the categories to the left to update your information.</div><button class="co-btn" style="max-width:240px;" onclick="closeCompanyOnboard()">Done</button>`;
+    return `<div class="co-h1">Let's set up your payroll</div><div class="co-sub">Complete each step on the left to finish onboarding. You can do them in any order.</div>`;
+  }
   function coOrg(){ return `
     <div class="co-h1">Organization details</div>
     <div class="co-sub">Provide some basic information to begin your onboarding process.</div>
     <div class="co-hr"></div>
-    <div class="co-field"><label class="co-label">Industry <span class="co-req">*</span></label><select class="co-select"><option>Restaurant</option><option>Retail</option><option>Services</option></select></div>
-    <div class="co-field"><label class="co-label">Company or entity type <span class="co-req">*</span></label><select class="co-select"><option>LLC</option><option>Corporation</option><option>Sole Proprietor</option></select></div>
-    <div class="co-field"><label class="co-label">Legal name <span class="co-req">*</span></label><input class="co-input" value="Chowbus Demo Restaurant LLC"><div class="co-hint">Your legal name is the name registered with the state. This name will appear on your tax returns. If this name is incorrect, please contact customer support.</div></div>
-    <div class="co-field"><label class="co-label">Trade name (DBA) <span class="co-req">*</span></label><input class="co-input" value="Chowbus Noodle House"><label class="co-check"><input type="checkbox"> N/A</label><div class="co-hint">Your trade name or DBA is the official name by which you do business if that name is different than your legal name.</div></div>
-    <div class="co-field"><label class="co-label">Other name</label><label class="co-check"><input type="checkbox" checked> N/A</label><div class="co-hint">Any non-official name under which your business operates.</div></div>
-    <div class="co-field"><label class="co-label">Phone number <span class="co-req">*</span></label><input class="co-input" value="312-555-0188"></div>
-    <div class="co-field"><label class="co-label">Legal address <span class="co-req">*</span></label><input class="co-input" value="200 W Madison St" style="margin-bottom:10px;"><input class="co-input" value="Suite 100" style="margin-bottom:10px;"><div class="co-row3"><input class="co-input" value="Chicago"><select class="co-select"><option>IL</option><option>CA</option><option>NY</option></select><input class="co-input" value="60606"></div></div>
-    <div class="co-field"><label class="co-label">Primary business address</label><select class="co-select"><option>Same as legal address</option><option>Different address</option></select><div class="co-hint">This address is where the majority of your business is conducted. It will appear on employee paystubs.</div></div>
-    <div class="co-field"><label class="co-label">Website</label><input class="co-input" placeholder="Enter website"></div>
-    <div class="co-field"><label class="co-label">How many employees do you pay, including yourself?</label><input class="co-input" placeholder="Enter number of employees"><div class="co-hint">Enter the number of W-2 employees you currently pay.</div></div>
-    <button class="co-btn" style="max-width:620px;" onclick="coToast('Organization details saved (demo)')">Save</button>`;
+    <div class="co-field"><label class="co-label">Industry <span class="co-req">*</span></label><select class="co-select"><option value="" disabled selected hidden>Select…</option><option>Restaurant</option><option>Retail</option><option>Services</option></select></div>
+    <div class="co-field"><label class="co-label">Company or entity type <span class="co-req">*</span></label><select class="co-select"><option value="" disabled selected hidden>Select…</option><option>LLC</option><option>Corporation</option><option>Sole Proprietor</option></select></div>
+    <div class="co-field"><label class="co-label">Legal name <span class="co-req">*</span></label><input class="co-input" placeholder="Enter legal name"><div class="co-hint">Your legal name is the name registered with the state. This name will appear on your tax returns.</div></div>
+    <div class="co-field"><label class="co-label">Trade name (DBA) <span class="co-req">*</span></label><input class="co-input" placeholder="Enter trade name"><label class="co-check"><input type="checkbox"> N/A</label></div>
+    <div class="co-field"><label class="co-label">Phone number <span class="co-req">*</span></label><input class="co-input" placeholder="Enter phone number"></div>
+    <div class="co-field"><label class="co-label">Legal address <span class="co-req">*</span></label><input class="co-input" placeholder="Street address" style="margin-bottom:10px;"><input class="co-input" placeholder="Apt, suite, etc. (optional)" style="margin-bottom:10px;"><div class="co-row3"><input class="co-input" placeholder="City"><select class="co-select"><option value="" disabled selected hidden>State</option><option>IL</option><option>CA</option><option>NY</option></select><input class="co-input" placeholder="ZIP"></div></div>
+    <div class="co-field"><label class="co-label">How many employees do you pay, including yourself?</label><input class="co-input" placeholder="Enter number of employees"></div>
+    <button class="co-btn" style="max-width:620px;" onclick="coMark('org')">Save</button>`;
   }
   function coPayment(){
     if(coPayView==='add'){
@@ -285,48 +296,45 @@
       </div>
       ${inst
         ? `<p class="co-sub" style="max-width:620px;">A <b>business checking bank account</b> is required to fund payroll. Check partners with Plaid to securely connect to your bank.</p>
-           <button class="co-btn" style="max-width:620px;margin-bottom:12px;" onclick="coToast('Connecting via Plaid (demo)')">🔒 Connect bank account →</button>
+           <button class="co-btn" style="max-width:620px;margin-bottom:12px;" onclick="coMark('payment')">🔒 Connect bank account →</button>
            <button class="co-btn-ghost" style="max-width:620px;" onclick="coPayCancel()">Cancel</button>`
         : `<div class="co-field"><label class="co-label">Routing number</label><input class="co-input" placeholder="Enter routing number"></div>
            <div class="co-field"><label class="co-label">Account number</label><div class="co-hint" style="margin:0 0 8px;">Account must be a business checking account.</div><input class="co-input" placeholder="Enter account number" style="margin-bottom:10px;"><input class="co-input" placeholder="Confirm account number"></div>
-           <button class="co-btn" style="max-width:620px;margin-bottom:12px;" onclick="coToast('Account details submitted (demo)')">🔒 Submit account details</button>
+           <button class="co-btn" style="max-width:620px;margin-bottom:12px;" onclick="coMark('payment')">🔒 Submit account details</button>
            <button class="co-btn-ghost" style="max-width:620px;" onclick="coPayCancel()">Cancel</button>`}`;
     }
     return `
       <div class="co-h1">Bank accounts</div>
-      <div class="co-sub">You'll designate an account to debit each payroll run.</div>
-      <div class="co-bank"><span class="ic">🏦</span><span class="nm">Tartan bank · 0000</span><span class="co-badge">Default</span><span class="dots" onclick="coToast('Account options (demo)')">⋯</span></div>
-      <div class="co-add" onclick="coPayAdd()">＋ Add bank account</div>
-      <button class="co-btn" style="max-width:620px;" onclick="coToast('Saved (demo)')">Continue →</button>`;
+      <div class="co-sub">Add a business checking account to fund your payroll.</div>
+      <div class="co-add" onclick="coPayAdd()">＋ Add bank account</div>`;
   }
   function coTax(){ return `
     <div class="co-h1">Tax setup</div>
     <div class="co-sub">Enter taxpayer information for each jurisdiction you do business in.</div>
-    <div style="font-weight:800;margin:6px 0 14px;color:#111;">Complete</div>
-    <div class="co-taxrow"><span class="co-chk">✓</span><div><b>Federal</b> · 3 of 3 items complete</div><button class="edit" onclick="coToast('Edit Federal (demo)')">Edit</button></div>
-    <div class="co-taxrow"><span class="co-chk">✓</span><div><b>Illinois</b> · 3 of 3 items complete</div><button class="edit" onclick="coToast('Edit Illinois (demo)')">Edit</button></div>`;
+    <div class="co-taxrow"><span class="co-chk todo"></span><div><b>Federal</b> · 0 of 3 items complete</div><button class="edit" onclick="coToast('Set up Federal (demo)')">Set up</button></div>
+    <div class="co-taxrow"><span class="co-chk todo"></span><div><b>Illinois</b> · 0 of 3 items complete</div><button class="edit" onclick="coToast('Set up Illinois (demo)')">Set up</button></div>
+    <button class="co-btn" style="max-width:620px;margin-top:10px;" onclick="coMark('tax')">Save tax setup</button>`;
   }
   function coEmployee(){ return `
     <div class="co-sub" style="margin-top:6px;">Check needs to know more about your employees. Fill out information for each employee below.</div>
-    <div style="display:flex;align-items:center;gap:8px;font-weight:800;margin-bottom:14px;color:#111;"><span class="co-chk">✓</span> Configured Employees</div>
-    <div class="co-field"><select class="co-select"><option>Qiyi Gong</option></select></div>
+    <div class="co-field"><label class="co-label">Employee</label><select class="co-select"><option>Qiyi Gong</option></select></div>
     <div style="border:1px solid #E7E8EC;border-radius:12px;padding:22px;max-width:620px;">
       <div style="font-weight:800;font-size:15px;color:#111;">LLC electing to be taxed as an S corporation shareholder</div>
       <div class="co-hint" style="margin-top:6px;">This single member llc has elected to be taxed as an S corporation shareholder.</div>
-      <select class="co-select" style="width:110px;margin:14px 0;"><option>No</option><option>Yes</option></select>
+      <select class="co-select" style="width:110px;margin:14px 0;"><option value="" disabled selected hidden>Select</option><option>No</option><option>Yes</option></select>
       <div class="co-label">Effective start date</div>
-      <input type="date" class="co-input" value="2026-01-01">
-      <div style="text-align:right;margin-top:16px;"><button class="co-btn" style="width:auto;padding:11px 28px;" onclick="coToast('Employee setup saved (demo)')">Save</button></div>
+      <input type="date" class="co-input">
+      <div style="text-align:right;margin-top:16px;"><button class="co-btn" style="width:auto;padding:11px 28px;" onclick="coMark('employee')">Save</button></div>
     </div>`;
   }
   function coFiling(){ return `
     <div class="co-h1">Authorization forms</div>
     <div class="co-sub">Please review and sign the forms below to grant authorization to process your payroll.</div>
-    <span class="co-pill">Signed (2)</span>
     <div style="max-width:680px;">
-      <div class="co-formrow" onclick="coToast('Open Federal Form 8655 (demo)')"><span class="co-chk">✓</span><div>Federal Form 8655</div><span class="arw">›</span></div>
-      <div class="co-formrow" onclick="coToast('Open IL Power of Attorney (demo)')"><span class="co-chk">✓</span><div>Power of Attorney for Representing Employer under the Illinois Unemployment Insurance Act</div><span class="arw">›</span></div>
-    </div>`;
+      <div class="co-formrow" onclick="coToast('Open Federal Form 8655 (demo)')"><span class="co-chk todo"></span><div>Federal Form 8655</div><span class="arw">›</span></div>
+      <div class="co-formrow" onclick="coToast('Open IL Power of Attorney (demo)')"><span class="co-chk todo"></span><div>Power of Attorney for Representing Employer under the Illinois Unemployment Insurance Act</div><span class="arw">›</span></div>
+    </div>
+    <button class="co-btn" style="max-width:620px;margin-top:16px;" onclick="coMark('filing')">Sign &amp; complete</button>`;
   }
 
   function render(){
