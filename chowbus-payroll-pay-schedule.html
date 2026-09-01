@@ -151,7 +151,6 @@
       <div class="cb-content">
         <span class="crumb" onclick="location.href='chowbus-payroll-company-setup.html'"><span class="zh">← 返回公司设置</span><span class="en">← Back to Company Setup</span></span>
         <h1 class="page-title"><span class="zh">发薪周期</span><span class="en">Pay Schedule</span></h1>
-        <p class="page-desc"><span class="zh">发薪组定义了员工「如何」以及「何时」发薪。你可以为不同员工创建不同的发薪组。</span><span class="en">Pay groups define how and when workers are paid. You can create different groups for different workers.</span></p>
         <div class="pg-add"><button class="btn-addpg" onclick="openAdd()"><span>＋</span><span class="zh">新建发薪组</span><span class="en">Add pay group</span></button></div>
 
         <div id="groupList"></div>
@@ -699,7 +698,6 @@ function renderStep2(){
   const sel=form.workers;
   const allChecked = WORKERS.every(w=>sel.has(w.id));
   let body=`<div class="step-h">${bi('选择员工','Select workers')}</div>
-    <div class="step-p">${bi('选择要加入该发薪组的员工。若某人已在其他组，我们会自动为你重新分配。','Choose which workers to include in this pay group. If someone is already assigned to a different one, we\'ll reassign them for you.')}</div>
     <div class="wk-all"><input type="checkbox" ${allChecked?'checked':''} onchange="toggleAllWk(this.checked)"><span>${isZh()?'全部员工':'ALL WORKERS'} (${WORKERS.length})</span></div>`;
   body += WORKERS.map(w=>`<div class="wk">
       <input type="checkbox" ${sel.has(w.id)?'checked':''} onchange="toggleWk(${w.id},this.checked)">
