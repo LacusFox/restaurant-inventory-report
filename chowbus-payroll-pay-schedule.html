@@ -19,6 +19,7 @@
   .pg-card{background:#fff;border:1px solid var(--border);border-radius:14px;padding:22px 24px;margin-bottom:16px;box-shadow:0 2px 12px rgba(0,0,0,.03);}
   .pg-top{display:flex;align-items:center;gap:14px;}
   .pg-name{font-size:18px;font-weight:800;color:#1a1a1a;}
+  .pg-count{display:inline-flex;align-items:center;gap:5px;background:#F1F2F4;color:#4b5563;font-size:12.5px;font-weight:700;padding:4px 11px;border-radius:999px;white-space:nowrap;}
   .pg-actions{margin-left:auto;display:flex;align-items:center;gap:12px;position:relative;}
   .manage{display:inline-flex;align-items:center;gap:7px;color:var(--primary);font-weight:700;font-size:14px;cursor:pointer;border:1px solid transparent;border-radius:9px;padding:8px 14px;transition:.15s;}
   .manage:hover{border-color:#C4D0FF;background:#F7F9FF;}
@@ -356,6 +357,7 @@ function renderList(){
     <div class="pg-card">
       <div class="pg-top">
         <span class="pg-name">${g.name}</span>
+        <span class="pg-count">👤 ${bi('已关联 '+((g.workers||[]).length)+' 名员工', ((g.workers||[]).length)+' '+(((g.workers||[]).length)===1?'employee':'employees')+' assigned')}</span>
         <div class="pg-actions">
           <span class="manage" onclick="openManage(${g.id})">${bi('管理员工','Manage workers')}</span>
           <span class="pg-sep">|</span>
