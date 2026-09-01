@@ -316,30 +316,15 @@ function monthGrid(y, m0, cur, periods){
     <div class="cal-grid cal-dow"><div>SU</div><div>MO</div><div>TU</div><div>WE</div><div>TH</div><div>FR</div><div>SA</div></div>
     <div class="cal-grid">${cells}</div></div>`;
 }
-function pdInner(p, idx, key){
-  const periods = currentPeriods(idx+4);   // 覆盖窗口，用于标注所有 submit/pay/range
-  let cal;
-  if(form.freq==='monthly'){
-    // 每月一次：并排展示两个月（周期起始月 + 发薪日月），跨月周期一目了然
-    let mA=[p.startD.getFullYear(), p.startD.getMonth()];
-    let mB=[p.payD.getFullYear(), p.payD.getMonth()];
-    if(mA[0]===mB[0] && mA[1]===mB[1]) mB=monthAdd(mA[0],mA[1],1);
-    const nav=`<span class="cal-nav"><button type="button" title="${isZh()?'上一个发薪周期':'Previous pay period'}" onclick="pdPeriodNav(${key},${idx},-1)">‹</button><button type="button" title="${isZh()?'下一个发薪周期':'Next pay period'}" onclick="pdPeriodNav(${key},${idx},1)">›</button></span>`;
-    cal=`<div class="pd-cal2"><div class="pd-cal2-head">${nav}</div><div class="pd-cal2-grids">${monthGrid(mA[0],mA[1],p,periods)}${monthGrid(mB[0],mB[1],p,periods)}</div></div>`;
-  } else {
-    cal = renderPdCalendar(periods, p, key, idx);
-  }
-  return `<div class="pd-legend">
-      <div class="lg"><div class="k"><span class="sq rng"></span>${bi('发薪周期','Pay period')}</div><div class="v">${p.start}–${p.end}</div></div>
-      <div class="lg"><div class="k"><span class="sq sub"></span>${bi('提交日','Submit date')}</div><div class="v">${p.submit}</div></div>
-      <div class="lg"><div class="k"><span class="sq pay"></span>${bi('发薪日','Pay date')}</div><div class="v">${p.pay}</div></div>
-    </div>${cal}`;
+function pdInner(p){
+  // 只显示「发薪周期 + 发薪日」，不再显示日历与提交日
+  return `<div class="pd-legend" style="width:auto;">
+      <div class="lg"><div class="k">${bi('发薪周期','Pay period')}</div><div class="v">${p.start} – ${p.end}</div></div>
+      <div class="lg" style="margin-bottom:0;"><div class="k">${bi('发薪日','Pay date')}</div><div class="v">${p.pay}</div></div>
+    </div>`;
 }
-function pdCard(p, idx){
-  idx = idx==null ? 0 : idx;
-  const key = ++_pdKey;
-  const cls = form.freq==='monthly' ? 'pd-card pd-card-2m' : 'pd-card';  // 每月一次：图例在上、双月并排在下
-  return `<div class="${cls}" id="pd-${key}">${pdInner(p, idx, key)}</div>`;
+function pdCard(p){
+  return `<div class="pd-card">${pdInner(p)}</div>`;
 }
 /* 取第 n 个（从当前发薪日起）发薪周期 */
 function periodAt(n){ if(n<0) return null; const arr=currentPeriods(n+1); return arr[n]||null; }
@@ -601,8 +586,8 @@ function weeklyBlock(){
   const endBefore = Math.round((parseISO(f.payDate)-parseISO(endDate))/86400000);
   const p = genPeriods(f.freq, f.payDate, endBefore, 1)[0];   // ③ 出说明句 + 日历 + 默认开关
   h += `<div class="helper">${bi(
-    '你在每 <b>'+WD_ZH[p.payD.getDay()]+'</b> 发薪，对应 <b>'+WD_ZH[p.startD.getDay()]+'</b> 至 <b>'+WD_ZH[p.endD.getDay()]+'</b> 的工时。',
-    'You pay your team on <b>'+WD_EN[p.payD.getDay()]+'</b> for work done between <b>'+WD_EN[p.startD.getDay()]+'</b> and <b>'+WD_EN[p.endD.getDay()]+'</b>.')}</div>`;
+    '发薪周期对应每 <b>'+WD_ZH[p.startD.getDay()]+'</b> 至 <b>'+WD_ZH[p.endD.getDay()]+'</b>。',
+    'You pay your team between <b>'+WD_EN[p.startD.getDay()]+'</b> and <b>'+WD_EN[p.endD.getDay()]+'</b>.')}</div>`;
   h += `<div class="hr"></div>
     <div class="upcoming-head"><h3>${bi('即将到来的发薪日','Upcoming paydays')}</h3></div>
     ${pdCard(p)}`;
