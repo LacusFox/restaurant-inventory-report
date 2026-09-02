@@ -638,7 +638,7 @@ function semiBlock(){
   // ② 第一个周期结束于（第二个周期结束日自动 = 往前 15 天）
   h += `<div class="fld"><label>${bi('首个发薪周期结束于','First pay period ends on')} <span class="info-i">i</span></label>
       <select class="sel" onchange="setEndDay(0,this.value)">${domSelectOptions(f.firstEndDay)}</select>
-      ${f.firstEndDay!=null?`<div class="helper" style="margin-top:8px;">${bi('第二个发薪周期结束日将自动设为其往前 15 天（每月 <b>'+domLabel(secondEnd)+'</b>），无需单独设置。','The second pay period end is set automatically to 15 days earlier (the <b>'+domLabel(secondEnd)+'</b>) — no need to set it separately.')}</div>`:''}</div>`;
+      ${f.firstEndDay!=null?`<div class="helper" style="margin-top:8px;">${bi('第二个发薪周期结束日将自动设为其往前 15 天（每月 <b>'+domLabel(secondEnd)+'</b>）。','The second pay period end is set automatically to 15 days earlier (the <b>'+domLabel(secondEnd)+'</b>).')}</div>`:''}</div>`;
   if(f.firstEndDay==null) return h;
   // ③ 第二次发薪日
   h += `<div class="fld"><label>${bi('每月第二次发薪日','Second payday of the month')} <span class="info-i">i</span></label>
