@@ -39,6 +39,29 @@
   .status{display:inline-block;font-size:13px;font-weight:700;padding:6px 14px;border-radius:7px;color:#fff;}
   .status.ready{background:#22A353;}
   .status.incomplete{background:#3B82F6;}
+  .status.group{background:#3B82F6;}      /* 待分配发薪组 */
+  .status.onboard{background:#E08A00;}     /* 待入职 */
+  /* Payroll ID */
+  .pid{font-size:14px;font-weight:700;color:#374151;font-variant-numeric:tabular-nums;letter-spacing:.02em;}
+  /* 席位状态 */
+  .seat{display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:600;padding:5px 12px;border-radius:7px;}
+  .seat i{width:7px;height:7px;border-radius:50%;display:inline-block;}
+  .seat.assigned{color:#12905a;background:#EAF7F0;} .seat.assigned i{background:#22A353;}
+  .seat.unassigned{color:#6b7280;background:#F1F2F4;} .seat.unassigned i{background:#c4c8cf;}
+  /* 添加员工弹窗 */
+  .ae-overlay{position:fixed;inset:0;background:rgba(20,22,30,.45);display:none;z-index:660;align-items:center;justify-content:center;padding:20px;}
+  .ae-overlay.open{display:flex;}
+  .ae-modal{background:#fff;width:min(480px,94vw);max-height:88vh;overflow:auto;border-radius:16px;box-shadow:0 24px 70px rgba(0,0,0,.3);}
+  .ae-head{display:flex;align-items:center;padding:20px 24px;border-bottom:1px solid var(--border);}
+  .ae-head h2{font-size:18px;font-weight:800;} .ae-head .x{margin-left:auto;font-size:22px;color:#9aa0aa;cursor:pointer;line-height:1;} .ae-head .x:hover{color:#333;}
+  .ae-body{padding:18px 24px;}
+  .ae-hint{font-size:13.5px;color:var(--muted);line-height:1.55;margin-bottom:14px;}
+  .ae-row{display:flex;align-items:center;gap:12px;padding:12px 6px;border-bottom:1px solid #F1F2F4;cursor:pointer;font-size:14.5px;color:#1a1a1a;}
+  .ae-row:last-child{border-bottom:none;}
+  .ae-row input{width:18px;height:18px;accent-color:var(--primary);}
+  .ae-av{width:34px;height:34px;border-radius:50%;background:#D9A45B;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:13px;}
+  .ae-empty{font-size:14px;color:#9aa0aa;text-align:center;padding:24px 0;}
+  .ae-foot{display:flex;justify-content:flex-end;gap:12px;padding:14px 24px;border-top:1px solid var(--border);}
   /* 在职状态(轻量点+字,和上面实色的薪酬状态区分开) */
   .stat{display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:600;padding:5px 12px;border-radius:7px;}
   .stat i{width:7px;height:7px;border-radius:50%;display:inline-block;}
@@ -157,23 +180,13 @@
     <div class="cb-scroll">
       <div class="cb-content">
 
-    <!-- 通知栏:预留的提醒/通知位 -->
-    <div class="notice" id="notice">
-      <div class="n-body">
-        <span class="zh">您新增了 <span id="ncZh">2</span> 名员工，请在「管理员工」中设置是否需要使用薪酬功能。</span>
-        <span class="en">You've added <span id="ncEn">2</span> new <span id="nnEn">employees</span>. Please set payroll participation under "Manage Employees".</span>
-      </div>
-      <button class="n-cta" onclick="location.href='chowbus-payroll-manage-employees.html?tab=off'"><span class="zh">去设置</span><span class="en">Set now</span></button>
-      <span class="n-close" onclick="document.getElementById('notice').style.display='none'">&times;</span>
-    </div>
-
     <div class="page-head">
       <h1 class="page-title"><span class="zh">员工管理</span><span class="en">Employees</span></h1>
       <div class="head-actions">
         <button class="btn-ghost" onclick="location.href='chowbus-payroll-past-employees.html'">
           <span class="zh">历史发薪员工</span><span class="en">Past Employees</span><span class="cnt">5</span>
         </button>
-        <button class="btn-manage" onclick="location.href='chowbus-payroll-manage-employees.html'"><span class="zh">管理员工</span><span class="en">Manage Employees</span></button>
+        <button class="btn-manage" onclick="openAddEmp()"><span class="zh">添加员工</span><span class="en">Add employee</span></button>
       </div>
     </div>
 
@@ -183,62 +196,14 @@
           <tr>
             <th><span class="zh">姓名</span><span class="en">Name</span></th>
             <th><span class="zh">角色</span><span class="en">Role</span></th>
-            <th><span class="zh">在职状态</span><span class="en">Status</span></th>
+            <th>Payroll ID</th>
             <th><span class="zh">薪酬状态</span><span class="en">Payroll Status</span></th>
+            <th><span class="zh">席位状态</span><span class="en">Seat</span></th>
             <th><span class="zh">薪酬</span><span class="en">Pay Rate</span></th>
             <th style="text-align:right;padding-right:24px;"><span class="zh">操作</span><span class="en">Action</span></th>
           </tr>
         </thead>
-        <tbody>
-          <tr>
-            <td class="name">Dan Boyle</td>
-            <td><div class="roles"><span class="role-pill">Super Admin</span></div></td>
-            <td><span class="stat active"><i></i><span class="zh">在职</span><span class="en">Active</span></span></td>
-            <td><span class="status ready"><span class="zh">可发薪</span><span class="en">Ready to pay</span></span></td>
-            <td><span class="pay">$6,000<span class="unit zh">/月</span><span class="unit en">/mo</span></span></td>
-            <td class="col-act"><div class="act-wrap"><button class="kebab" onclick="toggleMenu(event,this)">⋯</button><div class="act-menu">
-              <div class="mi" onclick="location.href='chowbus-payroll-employee-detail.html'"><span class="zh">查看详情</span><span class="en">View details</span></div>
-              <div class="mi" onclick="openEditPayFromRow(event,this)"><span class="zh">编辑薪资</span><span class="en">Edit Pay</span></div>
-            </div></div></td>
-          </tr>
-          <tr data-phone="(415) 555-0261" data-email="">
-            <td class="name">Test Parse</td>
-            <td><div class="roles"><span class="role-pill">Restaurant Owner</span></div></td>
-            <td><span class="stat active"><i></i><span class="zh">在职</span><span class="en">Active</span></span></td>
-            <td><span class="status incomplete"><span class="zh">设置未完成</span><span class="en">Setup incomplete</span></span></td>
-            <td><span class="pay-none"><span class="zh">未设置</span><span class="en">Not set</span></span></td>
-            <td class="col-act"><div class="act-wrap"><button class="kebab" onclick="toggleMenu(event,this)">⋯</button><div class="act-menu">
-              <div class="mi" onclick="location.href='chowbus-payroll-employee-detail.html'"><span class="zh">查看详情</span><span class="en">View details</span></div>
-              <div class="mi" onclick="openEditPayFromRow(event,this)"><span class="zh">编辑薪资</span><span class="en">Edit Pay</span></div>
-              <div class="sep"></div>
-              <div class="mi" onclick="openSendFromRow(event,this)"><span class="zh">发送入职短信/邮件</span><span class="en">Send onboarding SMS/Email</span></div>
-            </div></div></td>
-          </tr>
-          <tr data-phone="" data-email="test.parse@example.com">
-            <td class="name">Test Parse</td>
-            <td><div class="roles"><span class="role-pill">Manager</span><span class="role-pill sec">Waiter</span></div></td>
-            <td><span class="stat active"><i></i><span class="zh">在职</span><span class="en">Active</span></span></td>
-            <td><span class="status incomplete"><span class="zh">设置未完成</span><span class="en">Setup incomplete</span></span></td>
-            <td><span class="pay-none"><span class="zh">未设置</span><span class="en">Not set</span></span></td>
-            <td class="col-act"><div class="act-wrap"><button class="kebab" onclick="toggleMenu(event,this)">⋯</button><div class="act-menu">
-              <div class="mi" onclick="location.href='chowbus-payroll-employee-detail.html'"><span class="zh">查看详情</span><span class="en">View details</span></div>
-              <div class="mi" onclick="openEditPayFromRow(event,this)"><span class="zh">编辑薪资</span><span class="en">Edit Pay</span></div>
-              <div class="sep"></div>
-              <div class="mi" onclick="openSendFromRow(event,this)"><span class="zh">发送入职短信/邮件</span><span class="en">Send onboarding SMS/Email</span></div>
-            </div></div></td>
-          </tr>
-          <tr>
-            <td class="name">Maria Lopez</td>
-            <td><div class="roles"><span class="role-pill">Server</span></div></td>
-            <td><span class="stat inactive"><i></i><span class="zh">离职</span><span class="en">Archived</span></span></td>
-            <td><span class="status ready"><span class="zh">可发薪</span><span class="en">Ready to pay</span></span></td>
-            <td><span class="pay">$16.50<span class="unit zh">/小时</span><span class="unit en">/hr</span></span></td>
-            <td class="col-act"><div class="act-wrap"><button class="kebab" onclick="toggleMenu(event,this)">⋯</button><div class="act-menu">
-              <div class="mi" onclick="location.href='chowbus-payroll-employee-detail.html'"><span class="zh">查看详情</span><span class="en">View details</span></div>
-              <div class="mi" onclick="openEditPayFromRow(event,this)"><span class="zh">编辑薪资</span><span class="en">Edit Pay</span></div>
-            </div></div></td>
-          </tr>
-        </tbody>
+        <tbody id="empBody"></tbody>
       </table>
 
       <div class="pager">
@@ -311,6 +276,18 @@
   </div>
 </div>
 
+<!-- 添加员工 弹窗（复选：列出尚未设置薪酬的员工） -->
+<div class="ae-overlay" id="aeOverlay">
+  <div class="ae-modal">
+    <div class="ae-head"><h2><span class="zh">添加员工</span><span class="en">Add employee</span></h2><span class="x" onclick="closeAddEmp()">&times;</span></div>
+    <div class="ae-body">
+      <div class="ae-hint"><span class="zh">勾选需要加入薪酬的员工（以下为尚未设置薪酬的员工）。</span><span class="en">Select employees to add to payroll (those without payroll set up).</span></div>
+      <div id="aeList"></div>
+    </div>
+    <div class="ae-foot"><button class="btn-ghost" onclick="closeAddEmp()"><span class="zh">取消</span><span class="en">Cancel</span></button><button class="btn-manage" onclick="confirmAddEmp()"><span class="zh">添加</span><span class="en">Add</span></button></div>
+  </div>
+</div>
+
 <!-- Toast -->
 <div class="toast" id="toast">
   <span class="tick">✓</span>
@@ -320,6 +297,70 @@
 <script src="cb-shell.js"></script>
 <script>
   renderShell('employees');
+
+  /* ===== 员工列表（数据驱动） ===== */
+  let ROSTER=[
+    {name:'Dan Boyle',   roles:['Super Admin'],        pid:'10482', seat:'assigned',   status:'ready',   pay:{amt:'$6,000', z:'/月', e:'/mo'}, phone:'', email:''},
+    {name:'Test Parse',  roles:['Restaurant Owner'],   pid:'10517', seat:'unassigned', status:'onboard', pay:null, phone:'(415) 555-0261', email:''},
+    {name:'Test Parse',  roles:['Manager','Waiter'],   pid:'10538', seat:'unassigned', status:'group',   pay:null, phone:'', email:'test.parse@example.com'},
+    {name:'Maria Lopez', roles:['Server'],             pid:'10604', seat:'assigned',   status:'ready',   pay:{amt:'$16.50', z:'/小时', e:'/hr'}, phone:'', email:''},
+  ];
+  function statusPill(s){
+    const m={ready:['可发薪','Ready to pay','ready'], group:['待分配发薪组','Pending pay group','group'], onboard:['待入职','Pending onboarding','onboard']}[s];
+    return `<span class="status ${m[2]}"><span class="zh">${m[0]}</span><span class="en">${m[1]}</span></span>`;
+  }
+  function seatPill(seat){
+    return seat==='assigned'
+      ? `<span class="seat assigned"><i></i><span class="zh">已分配</span><span class="en">Assigned</span></span>`
+      : `<span class="seat unassigned"><i></i><span class="zh">未分配</span><span class="en">Unassigned</span></span>`;
+  }
+  function payCell(p){
+    return p ? `<span class="pay">${p.amt}<span class="unit zh">${p.z}</span><span class="unit en">${p.e}</span></span>`
+             : `<span class="pay-none"><span class="zh">未设置</span><span class="en">Not set</span></span>`;
+  }
+  function renderEmp(){
+    document.getElementById('empBody').innerHTML = ROSTER.map((e,i)=>{
+      const seatAct = e.seat==='assigned'
+        ? `<div class="mi" onclick="cancelSeat(${i},event)"><span class="zh">取消席位</span><span class="en">Cancel Seat</span></div>`
+        : `<div class="mi primary" onclick="assignSeat(${i},event)"><span class="zh">分配席位</span><span class="en">Assign Seat</span></div>`;
+      const onbAct = e.status==='onboard' ? `<div class="sep"></div><div class="mi" onclick="sendOnb(${i},event)"><span class="zh">发送入职短信/邮件</span><span class="en">Send onboarding SMS/Email</span></div>` : '';
+      return `<tr>
+        <td class="name">${e.name}</td>
+        <td><div class="roles">${e.roles.map((r,k)=>`<span class="role-pill ${k>0?'sec':''}">${r}</span>`).join('')}</div></td>
+        <td><span class="pid">${e.pid}</span></td>
+        <td>${statusPill(e.status)}</td>
+        <td>${seatPill(e.seat)}</td>
+        <td>${payCell(e.pay)}</td>
+        <td class="col-act"><div class="act-wrap"><button class="kebab" onclick="toggleMenu(event,this)">⋯</button><div class="act-menu">
+          <div class="mi" onclick="location.href='chowbus-payroll-employee-detail.html'"><span class="zh">查看详情</span><span class="en">View details</span></div>
+          <div class="mi" onclick="editPay(${i},event)"><span class="zh">编辑薪资</span><span class="en">Edit Pay</span></div>
+          ${seatAct}
+          <div class="mi" onclick="notOnPayroll(${i},event)"><span class="zh">不使用薪酬</span><span class="en">Not on Payroll</span></div>
+          ${onbAct}
+        </div></div></td>
+      </tr>`;
+    }).join('');
+  }
+  function assignSeat(i,ev){ ev.stopPropagation(); closeAllMenus(); ROSTER[i].seat='assigned'; renderEmp(); toastMsg('已为「'+ROSTER[i].name+'」分配席位','Seat assigned to '+ROSTER[i].name); }
+  function cancelSeat(i,ev){ ev.stopPropagation(); closeAllMenus(); ROSTER[i].seat='unassigned'; renderEmp(); toastMsg('已取消「'+ROSTER[i].name+'」的席位','Seat removed for '+ROSTER[i].name); }
+  function notOnPayroll(i,ev){ ev.stopPropagation(); closeAllMenus(); toastMsg('已将「'+ROSTER[i].name+'」设为不使用薪酬','Marked '+ROSTER[i].name+' as Not on Payroll'); }
+  function editPay(i,ev){ ev.stopPropagation(); closeAllMenus(); openEditPay(ROSTER[i].name, ROSTER[i].roles); }
+  function sendOnb(i,ev){ ev.stopPropagation(); closeAllMenus(); openSend(ROSTER[i].name, ROSTER[i].phone||'', ROSTER[i].email||''); }
+  function toastMsg(zh,en){ document.getElementById('toastMsg').innerHTML=`<span class="zh">${zh}</span><span class="en">${en}</span>`; const t=document.getElementById('toast'); t.classList.add('show'); clearTimeout(_tt); _tt=setTimeout(()=>t.classList.remove('show'),2200); }
+
+  /* ===== 添加员工弹窗 ===== */
+  const AE_POOL=['Kenji Tanaka','Sofia Rossi','Diego Ramirez','Aisha Khan','Chen Wei'];
+  let aeSel=new Set();
+  function openAddEmp(){ aeSel=new Set(); renderAe(); document.getElementById('aeOverlay').classList.add('open'); }
+  function closeAddEmp(){ document.getElementById('aeOverlay').classList.remove('open'); }
+  function aeToggle(n){ aeSel.has(n)?aeSel.delete(n):aeSel.add(n); renderAe(); }
+  function renderAe(){
+    document.getElementById('aeList').innerHTML = AE_POOL.length
+      ? AE_POOL.map(n=>`<label class="ae-row"><input type="checkbox" ${aeSel.has(n)?'checked':''} onchange="aeToggle('${n}')"><span class="ae-av">${n.split(' ').map(x=>x[0]).join('')}</span><span class="ae-nm">${n}</span></label>`).join('')
+      : `<div class="ae-empty">${isZh()?'没有待添加的员工':'No employees to add'}</div>`;
+  }
+  function confirmAddEmp(){ const n=aeSel.size; if(!n){ toastMsg('请至少选择一名员工','Select at least one employee'); return; } closeAddEmp(); toastMsg('已添加 '+n+' 名员工','Added '+n+' employee(s)'); }
+
   // 操作菜单:点 ⋯ 展开,点外部或再次点击收起
   function closeAllMenus(){document.querySelectorAll('.act-menu.open').forEach(m=>m.classList.remove('open'));}
   function toggleMenu(ev, btn){
@@ -427,15 +468,7 @@
     const t=document.getElementById('toast'); t.classList.add('show'); clearTimeout(_tt); _tt=setTimeout(()=>t.classList.remove('show'),2200);
   }
 
-  // 新增员工提醒:数量 + 英文单复数(1 与 >1 通用),0 则隐藏提示条
-  const NEW_COUNT = 2;
-  (function(){
-    const n = NEW_COUNT;
-    if(n < 1){ const el=document.getElementById('notice'); if(el) el.style.display='none'; return; }
-    document.getElementById('ncZh').textContent = n;
-    document.getElementById('ncEn').textContent = n;
-    document.getElementById('nnEn').textContent = (n===1 ? 'employee' : 'employees');
-  })();
+  renderEmp();
   /* 首次真正进入员工管理主页 → 弹窗引导设置使用薪酬的员工（仅一次）。
      标记 localStorage.cbPayrollPrompted。首次会先被重定向到匹配页，故本段只在匹配完成返回主页时执行。 */
   function closePayrollPrompt(){ document.getElementById('ppOverlay').classList.remove('open'); }

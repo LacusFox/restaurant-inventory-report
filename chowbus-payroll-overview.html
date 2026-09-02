@@ -21,6 +21,7 @@
   .stat.onb::before{background:var(--warning);}
   .stat.ts::before{background:var(--info);}
   .s-label{font-size:13px;color:var(--t2);font-weight:500;margin-bottom:12px;}
+  .s-period{font-size:20px;font-weight:800;color:#111;letter-spacing:-0.01em;font-variant-numeric:tabular-nums;margin:2px 0 12px;}
   .s-main{display:flex;align-items:baseline;gap:8px;}
   .s-num{font-size:32px;font-weight:700;line-height:1;letter-spacing:-0.01em;font-variant-numeric:tabular-nums;}
   .stat.due .s-num{color:var(--brand);} .stat.onb .s-num{color:var(--warning);} .stat.ts .s-num{color:var(--info);}
@@ -48,10 +49,16 @@
 
         <div class="stat-row">
           <div class="stat due">
-            <div class="s-label"><span class="zh">距离下次跑薪</span><span class="en">Next payroll in</span></div>
-            <div class="s-main"><span class="s-num">3</span><span class="s-unit zh">天</span><span class="s-unit en">days</span></div>
-            <div class="s-meta"><span class="zh">发薪日：2026年8月20日 · 周期 8/4–8/17</span><span class="en">Pay date: Aug 20, 2026 · Period Aug 4–17</span></div>
+            <div class="s-label"><span class="zh">最近发薪周期</span><span class="en">Most recent pay period</span></div>
+            <div class="s-period">2026/8/4 – 2026/8/17</div>
+            <div class="s-meta"><span class="zh">状态：<b style="color:var(--warning)">未完成跑薪</b></span><span class="en">Status: <b style="color:var(--warning)">Payroll not run</b></span></div>
             <button class="s-cta" onclick="location.href='chowbus-payroll-start-payroll.html'"><span class="zh">开始跑薪</span><span class="en">Run Payroll</span></button>
+          </div>
+
+          <div class="stat ts">
+            <div class="s-label"><span class="zh">下个发薪周期</span><span class="en">Next pay period</span></div>
+            <div class="s-period">2026/8/18 – 2026/8/31</div>
+            <div class="s-meta"><span class="zh">距离下次跑薪还有 <b style="color:var(--info)">3 天</b></span><span class="en"><b style="color:var(--info)">3 days</b> until next payroll</span></div>
           </div>
 
           <div class="stat onb">
@@ -59,13 +66,6 @@
             <div class="s-main"><span class="s-num">2</span><span class="s-unit zh">名员工</span><span class="s-unit en">employees</span></div>
             <div class="s-meta"><span class="zh">需完成资料填写后才能发薪</span><span class="en">They must finish onboarding before they can be paid</span></div>
             <button class="s-cta" onclick="location.href='chowbus-payroll-employees.html'"><span class="zh">去处理</span><span class="en">Resolve</span></button>
-          </div>
-
-          <div class="stat ts">
-            <div class="s-label"><span class="zh">待审批工时</span><span class="en">Timesheets to approve</span></div>
-            <div class="s-main"><span class="s-num">5</span><span class="s-unit zh">名员工</span><span class="s-unit en">employees</span></div>
-            <div class="s-meta"><span class="zh">本周期工时尚未确认，可提前单独审批</span><span class="en">This period's hours aren't approved yet — review anytime</span></div>
-            <button class="s-cta" onclick="location.href='chowbus-payroll-approve-timesheet.html'"><span class="zh">去审批</span><span class="en">Approve</span></button>
           </div>
         </div>
 
