@@ -3,80 +3,54 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Chowbus Payroll · 历史薪资导入</title>
+<title>Chowbus Payroll · 导入历史发薪</title>
 <link rel="stylesheet" href="cb-inter.css">
 <link rel="stylesheet" href="cb-shell.css">
 <style>
-  :root{--ck-blue:#1F44E0;}
-  .crumb{font-size:12.5px;color:#9aa0aa;margin-bottom:16px;cursor:pointer;display:inline-block;}
-  .crumb:hover{color:var(--primary);}
-  .ph-wrap{max-width:760px;margin:0 auto;}
+  :root{--ck:#2b4eff;--ck-hover:#2140db;}
+  /* 白色底内嵌页 */
+  .cb-scroll{background:#fff;}
+  .cb-content{max-width:100%;padding:0;}
+  .ip-top{padding:14px 24px 0;}
+  .crumb{font-size:12.5px;color:#9aa0aa;cursor:pointer;display:inline-block;}
+  .crumb:hover{color:var(--brand);}
+  .ip-wrap{max-width:760px;margin:0 auto;padding:20px 24px 60px;}
 
-  .ph-info{display:flex;gap:14px;background:#EAF2FB;border:1px solid #CFE0F3;border-radius:12px;padding:16px 18px;margin-bottom:26px;}
-  .ph-info .i{color:#2b6cb0;font-size:20px;flex:0 0 auto;}
-  .ph-info b{color:#1a3b66;font-weight:800;display:block;margin-bottom:3px;} .ph-info span{color:#33547c;font-size:14px;line-height:1.5;}
+  .ip-banner{display:flex;gap:14px;background:#EEF4FF;border:1px solid #D9E4FB;border-radius:12px;padding:16px 18px;margin-bottom:28px;}
+  .ip-banner .bi{color:var(--ck);flex:0 0 auto;}
+  .ip-banner b{color:#1e2a52;font-size:15px;}
+  .ip-banner .d{color:#41527e;font-size:14px;line-height:1.55;margin-top:3px;}
 
-  .ph-h1{font-size:24px;font-weight:800;margin-bottom:8px;}
-  .ph-sub{font-size:15px;color:#6b7280;line-height:1.6;margin-bottom:24px;}
-  .ph-q{font-size:16px;font-weight:800;margin-bottom:6px;} .ph-q .req{color:#e0455e;margin-left:3px;}
-  .ph-qh{font-size:14px;color:#6b7280;line-height:1.55;margin-bottom:12px;}
-  .ph-field{margin-bottom:26px;}
-  .ph-sel,.ph-date{width:100%;padding:13px 14px;border:1px solid #DADCE0;border-radius:10px;font-size:15px;background:#fff;color:#111;}
-  select.ph-sel{appearance:none;cursor:pointer;padding-right:36px;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%239aa0aa' stroke-width='3'><path d='M6 9l6 6 6-6'/></svg>");background-repeat:no-repeat;background-position:right 13px center;}
-  .ph-sel:focus,.ph-date:focus{outline:none;border-color:var(--ck-blue);box-shadow:0 0 0 3px rgba(31,68,224,.14);}
+  .ip-h1{font-size:24px;font-weight:800;color:#111;margin-bottom:8px;}
+  .ip-sub{font-size:15px;color:#6b7280;line-height:1.6;margin-bottom:26px;}
+  .ip-q{font-size:16px;font-weight:800;color:#111;}
+  .ip-req{color:#e0455e;}
+  .ip-help{font-size:14px;color:#6b7280;line-height:1.55;margin:8px 0 14px;}
+  .ip-select{width:100%;padding:13px 15px;border:1px solid #DADCE0;border-radius:10px;font-size:15px;color:#111;background:#fff;font-family:var(--font);appearance:none;cursor:pointer;padding-right:36px;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='13' height='13' viewBox='0 0 24 24' fill='none' stroke='%239aa0aa' stroke-width='3'><path d='M6 9l6 6 6-6'/></svg>");background-repeat:no-repeat;background-position:right 14px center;}
+  .ip-select:focus{outline:none;border-color:var(--ck);box-shadow:0 0 0 3px rgba(43,78,255,.12);}
+  .ip-btn{width:100%;background:var(--ck);color:#fff;border:none;border-radius:10px;padding:15px;font-size:15px;font-weight:700;cursor:pointer;margin-top:22px;}
+  .ip-btn:hover{background:var(--ck-hover);}
+  .ip-btn.ghost{background:#fff;color:#111;border:1px solid #DADCE0;}
+  .ip-btn.ghost:hover{background:#f7f8fa;}
+  .ip-actions{display:flex;gap:12px;margin-top:24px;}
+  .ip-actions .ip-btn{margin-top:0;}
 
-  /* 多选 */
-  .ms{position:relative;}
-  .ms-box{min-height:48px;border:1px solid #DADCE0;border-radius:10px;padding:8px 10px;display:flex;flex-wrap:wrap;gap:6px;align-items:center;cursor:text;background:#fff;}
-  .ms-box.open{border-color:var(--ck-blue);box-shadow:0 0 0 3px rgba(31,68,224,.14);}
-  .ms-ph{color:#9aa0aa;font-size:14px;padding:4px 2px;}
-  .ms-chip{display:inline-flex;align-items:center;gap:6px;background:#EEF1FF;color:#2740c8;font-size:13px;font-weight:600;padding:5px 9px;border-radius:7px;}
-  .ms-chip .x{cursor:pointer;font-weight:800;}
-  .ms-panel{position:absolute;left:0;right:0;top:calc(100% + 6px);background:#fff;border:1px solid #E4E5E9;border-radius:12px;box-shadow:0 14px 40px rgba(0,0,0,.16);padding:8px;z-index:30;max-height:320px;overflow-y:auto;}
-  .ms-group{font-size:13px;color:#9aa0aa;padding:8px 10px 4px;}
-  .ms-opt{display:flex;align-items:center;gap:11px;padding:9px 10px;border-radius:8px;cursor:pointer;font-size:15px;font-weight:600;color:#111;}
-  .ms-opt:hover{background:#F5F6F8;}
-  .ms-opt input{width:18px;height:18px;accent-color:var(--ck-blue);}
-  .ms-more{display:flex;align-items:center;gap:8px;padding:10px;color:#6b7280;font-size:14px;cursor:pointer;border-top:1px solid #F0F1F3;margin-top:4px;}
-  .ms-more:hover{color:#111;}
+  /* 录入表 */
+  .ip-freqtag{display:inline-block;background:#EEF0FF;color:var(--ck);font-size:13px;font-weight:700;padding:4px 12px;border-radius:999px;margin-bottom:18px;}
+  table.ip-tbl{width:100%;border-collapse:collapse;}
+  .ip-tbl th{text-align:left;font-size:13px;font-weight:800;color:#111;padding:12px 10px;border-bottom:1px solid #EDEEF1;}
+  .ip-tbl th.n,.ip-tbl td.n{text-align:right;}
+  .ip-tbl td{padding:12px 10px;border-bottom:1px solid #F1F2F4;font-size:14px;color:#111;vertical-align:middle;}
+  .ip-tbl .nm{font-weight:700;}
+  .ip-in{width:120px;padding:9px 11px;border:1px solid #DADCE0;border-radius:9px;font-size:14px;color:#111;text-align:right;font-family:var(--font);}
+  .ip-in:focus{outline:none;border-color:var(--ck);box-shadow:0 0 0 3px rgba(43,78,255,.12);}
 
-  .ph-btn{width:100%;background:var(--ck-blue);color:#fff;border:none;border-radius:10px;padding:15px;font-size:16px;font-weight:700;cursor:pointer;margin-top:6px;}
-  .ph-btn:hover{background:#1636bd;}
-  .ph-btn:disabled{background:#A9B6EC;cursor:not-allowed;}
+  .ip-done{text-align:center;padding:70px 20px;}
+  .ip-done-ic{width:58px;height:58px;border-radius:50%;background:#EAF7F0;color:#12905a;font-size:28px;font-weight:900;display:flex;align-items:center;justify-content:center;margin:0 auto 18px;}
+  .ip-done-h{font-size:22px;font-weight:800;color:#111;margin-bottom:8px;}
+  .ip-done-d{font-size:15px;color:#6b7280;margin-bottom:24px;}
 
-  /* Step2 instructions */
-  .ins-step{display:flex;gap:14px;margin-bottom:20px;}
-  .ins-num{width:26px;height:26px;border-radius:50%;background:#F1F2F4;color:#374151;font-size:13px;font-weight:800;display:flex;align-items:center;justify-content:center;flex:0 0 auto;}
-  .ins-body{font-size:15px;color:#111;} .ins-body>.t{font-weight:600;margin-bottom:6px;}
-  .ins-body ul{margin:0;padding-left:20px;} .ins-body li{font-size:14.5px;color:#374151;line-height:1.6;margin-bottom:4px;}
-  .ins-body a{color:#374151;text-decoration:underline;cursor:pointer;}
-  .ph-hr{height:1px;background:#EFF0F3;margin:26px 0;}
-  .ph-h2{font-size:19px;font-weight:800;margin-bottom:16px;}
-  .ins-table{width:100%;border-collapse:collapse;border:1px solid #e5e7eb;border-radius:12px;overflow:hidden;margin-bottom:28px;}
-  .ins-table th{background:#FAFBFC;text-align:left;font-size:14px;color:#9aa0aa;font-weight:600;padding:16px 18px;border-bottom:1px solid #e5e7eb;width:42%;vertical-align:top;}
-  .ins-table td{padding:16px 18px;border-bottom:1px solid #F1F2F4;font-size:15px;color:#111;vertical-align:top;}
-  .ins-table tr:last-child td,.ins-table tr:last-child th{border-bottom:none;}
-  .ins-table .qq{font-weight:700;} .ins-table .qq span{color:#9aa0aa;font-weight:400;}
-  .ins-table ul{margin:0;padding-left:18px;} .ins-table li{margin-bottom:8px;line-height:1.5;} .ins-table li:last-child{margin-bottom:0;}
-  .ins-table .muted{color:#9aa0aa;}
-  .ins-sub{padding-left:18px;margin:6px 0 0;} .ins-sub li{font-size:14px;}
-
-  /* Step3 pay history */
-  .ph-recordhd{display:flex;align-items:baseline;gap:10px;margin-bottom:14px;}
-  .ph-recordhd .cnt{font-size:14px;color:#6b7280;} .ph-recordhd a{color:#374151;text-decoration:underline;cursor:pointer;font-size:14px;}
-  .ph-acts{display:flex;gap:12px;margin-bottom:18px;}
-  .ph-a{background:#F1F2F4;border:none;border-radius:9px;padding:11px 16px;font-size:14px;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;gap:7px;} .ph-a:hover{background:#E7E9ED;}
-  .rec-table{width:100%;border-collapse:collapse;}
-  .rec-table th{text-align:left;font-size:13px;color:#6b7280;font-weight:700;padding:14px 12px;border-bottom:1px solid var(--border);}
-  .rec-table th.num,.rec-table td.num{text-align:right;}
-  .rec-table td{padding:14px 12px;border-bottom:1px solid #F1F2F4;font-size:14px;color:#374151;}
-  .rec-empty{padding:36px 10px;text-align:center;color:#9aa0aa;font-size:14.5px;}
-  .rec-status{display:inline-block;font-size:12px;font-weight:700;padding:3px 10px;border-radius:6px;background:#FFF3E0;color:#C77700;}
-  .ph-foot{display:flex;justify-content:flex-end;align-items:center;gap:18px;margin-top:26px;}
-  .ph-confirm{display:flex;align-items:center;gap:9px;font-size:14px;color:#374151;cursor:pointer;} .ph-confirm input{width:18px;height:18px;accent-color:var(--ck-blue);}
-  .ph-btn-sm{background:var(--ck-blue);color:#fff;border:none;border-radius:10px;padding:12px 26px;font-size:15px;font-weight:700;cursor:pointer;} .ph-btn-sm:disabled{background:#A9B6EC;cursor:not-allowed;}
-
-  .toast{position:fixed;left:50%;bottom:32px;transform:translateX(-50%) translateY(24px);opacity:0;pointer-events:none;background:#1f2430;color:#fff;border-radius:12px;padding:13px 18px;box-shadow:0 12px 32px rgba(0,0,0,.28);z-index:999;transition:all .3s cubic-bezier(.2,.8,.3,1);font-size:14px;}
+  .toast{position:fixed;left:50%;bottom:32px;transform:translateX(-50%) translateY(24px);opacity:0;pointer-events:none;background:#1f2937;color:#fff;border-radius:10px;padding:12px 18px;box-shadow:0 12px 32px rgba(0,0,0,.28);z-index:1000;transition:all .3s cubic-bezier(.2,.8,.3,1);font-size:14px;}
   .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
 </style>
 </head>
@@ -86,8 +60,8 @@
   <main class="cb-main">
     <div class="cb-scroll">
       <div class="cb-content">
-        <span class="crumb" onclick="location.href='chowbus-payroll-company-setup.html'"><span class="zh">← 返回公司设置 · 历史薪资导入</span><span class="en">← Back to Company Setup · Import Pay History</span></span>
-        <div class="ph-wrap" id="phMain"></div>
+        <div class="ip-top"><span class="crumb" onclick="location.href='chowbus-payroll-company-setup.html'"><span class="zh">← 返回公司设置</span><span class="en">← Back to Company Setup</span></span></div>
+        <div class="ip-wrap" id="ipApp"></div>
       </div>
     </div>
   </main>
@@ -97,178 +71,75 @@
 
 <script src="cb-shell.js"></script>
 <script>
-renderShell('company');
-/* 内嵌 Check 组件，内容按原样英文 */
-const EARN_GROUPS=[['Hourly',['Hourly','Salaried','Overtime','Paid holiday','PTO','Sick']],['Non-hourly',['Bonus','Commission','Cash tips']]];
-const DED_GROUPS=[['Healthcare',['125 Medical','125 Dental','125 Vision','125 Life','FSA Medical']],['Retirement',['401(k)','Roth 401(k)']],['Other',['HSA','Garnishment','Union dues','Loan repayment','After-tax 401(k)']]];
+  renderShell('company');
 
-let phStep=1;
-let f={freq:'', d1:'', d2:'', earn:[], ded:[]};
-let earnOpen=false, dedOpen=false, dedShowAll=false;
-let records=[], confirmed=false;
+  let ipStep=1, ipFreq='';
+  const ROSTER=['Qiyi Gong','Dan Boyle','Aisha Khan'];
+  const ipData={};   // name -> {gross, tax, net}
 
-function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/"/g,'&quot;');}
-function toast(t){const el=document.getElementById('toastMsg');el.textContent=t;const tt=document.getElementById('toast');tt.classList.add('show');clearTimeout(tt._tm);tt._tm=setTimeout(()=>tt.classList.remove('show'),2400);}
+  function ipSetFreq(v){ ipFreq=v; }
+  function ipContinue(){ if(!ipFreq){ showToast('Please select a pay frequency'); return; } ipStep=2; render(); }
+  function ipBack(){ ipStep=1; render(); }
+  function ipSet(name, field, v){ (ipData[name]=ipData[name]||{})[field]=v; }
+  function ipSave(){ ipStep=3; render(); }
 
-function render(){
-  const m=document.getElementById('phMain');
-  m.innerHTML = phStep===1?renderStep1(): phStep===2?renderStep2(): renderStep3();
-  window.scrollTo({top:0,behavior:'smooth'});
-}
+  function render(){
+    document.getElementById('ipApp').innerHTML = ipStep===1 ? renderStep1() : ipStep===2 ? renderStep2() : renderDone();
+  }
 
-/* ---------- Step 1 ---------- */
-function msChips(list, which){
-  if(!list.length) return `<span class="ms-ph">${which==='earn'?'Add earning type...':'Add deduction...'}</span>`;
-  return list.map(v=>`<span class="ms-chip">${esc(v)}<span class="x" onclick="event.stopPropagation();msRemove('${which}','${esc(v)}')">×</span></span>`).join('');
-}
-function msPanel(which){
-  const groups = which==='earn'?EARN_GROUPS:DED_GROUPS;
-  const sel = which==='earn'?f.earn:f.ded;
-  let shown = groups;
-  if(which==='ded' && !dedShowAll) shown = groups.slice(0,2);
-  let html='';
-  shown.forEach(([g,opts])=>{
-    html+=`<div class="ms-group">${g}</div>`;
-    opts.forEach(o=>{ const on=sel.includes(o);
-      html+=`<label class="ms-opt" onclick="event.stopPropagation();"><input type="checkbox" ${on?'checked':''} onclick="msToggle('${which}','${esc(o)}')"> ${esc(o)}</label>`;
-    });
-  });
-  if(which==='ded' && !dedShowAll) html+=`<div class="ms-more" onclick="event.stopPropagation();dedShowAll=true;render();">⇕ Show all (27)</div>`;
-  return `<div class="ms-panel">${html}</div>`;
-}
-function msField(which){
-  const open = which==='earn'?earnOpen:dedOpen;
-  const list = which==='earn'?f.earn:f.ded;
-  return `<div class="ms"><div class="ms-box ${open?'open':''}" onclick="msOpen('${which}')">${msChips(list,which)}</div>${open?msPanel(which):''}</div>`;
-}
-function msOpen(which){ if(which==='earn'){earnOpen=!earnOpen;dedOpen=false;}else{dedOpen=!dedOpen;earnOpen=false;} render(); }
-function msToggle(which,val){ const arr=which==='earn'?f.earn:f.ded; const i=arr.indexOf(val); if(i>=0)arr.splice(i,1); else arr.push(val); render(); }
-function msRemove(which,val){ const arr=which==='earn'?f.earn:f.ded; const i=arr.indexOf(val); if(i>=0)arr.splice(i,1); render(); }
-
-function renderStep1(){
-  const freqChosen = !!f.freq;
-  const datesFilled = f.d1 && f.d2;
-  let html = `
-    <div class="ph-info"><span class="i">📄</span><div><b>You'll need 2026 pay records to get started.</b><span>You can download these from your existing payroll provider.</span></div></div>
-    <div class="ph-h1">Enter pay history</div>
-    <div class="ph-sub">For accurate tax filing, we'll need 2026 pay history records from your existing payroll provider.</div>
-    <div class="ph-field">
-      <div class="ph-q">How often did you pay your team in 2026?<span class="req">*</span></div>
-      <div class="ph-qh">Select the frequency employees are paid on a regular, recurring basis.</div>
-      <select class="ph-sel" onchange="f.freq=this.value;render()">
-        <option value="" ${f.freq===''?'selected':''} disabled hidden>Select</option>
-        ${['Weekly','Biweekly','Semi-monthly','Monthly','Quarterly','Annually'].map(o=>`<option ${f.freq===o?'selected':''}>${o}</option>`).join('')}
+  function renderStep1(){
+    return `
+      <div class="ip-banner">
+        <svg class="bi" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/></svg>
+        <div><b>You'll need 2026 pay records to get started.</b><div class="d">You can download these from your existing payroll provider.</div></div>
+      </div>
+      <div class="ip-h1">Enter pay history</div>
+      <div class="ip-sub">For accurate tax filing, we'll need 2026 pay history records from your existing payroll provider.</div>
+      <div class="ip-q">How often did you pay your team in 2026? <span class="ip-req">*</span></div>
+      <div class="ip-help">Select the frequency employees are paid on a regular, recurring basis.</div>
+      <select class="ip-select" onchange="ipSetFreq(this.value)">
+        <option value="" ${ipFreq===''?'selected':''} disabled hidden>Select</option>
+        ${['Weekly','Biweekly','Semi-monthly','Monthly','Quarterly','Annually'].map(f=>`<option ${ipFreq===f?'selected':''}>${f}</option>`).join('')}
       </select>
-    </div>`;
-  if(freqChosen){
-    html += `
-    <div class="ph-field">
-      <div class="ph-q">When did your first pay period of the year end?<span class="req">*</span></div>
-      <div class="ph-qh">For the first payday of the year entered above, select the last day of that pay period.</div>
-      <input type="date" class="ph-date" value="${f.d1}" onchange="f.d1=this.value;render()">
-    </div>
-    <div class="ph-field">
-      <div class="ph-q">What was your first payday of the year?<span class="req">*</span></div>
-      <div class="ph-qh">Select the payday, also known as the check date, when employees received their first paycheck of the current year.</div>
-      <input type="date" class="ph-date" value="${f.d2}" onchange="f.d2=this.value;render()">
+      <button class="ip-btn" onclick="ipContinue()">Continue</button>`;
+  }
+
+  function renderStep2(){
+    const rows = ROSTER.map(n=>{
+      const d=ipData[n]||{};
+      return `<tr>
+        <td class="nm">${n}</td>
+        <td class="n"><input class="ip-in" placeholder="$0.00" value="${d.gross||''}" oninput="ipSet('${n}','gross',this.value)"></td>
+        <td class="n"><input class="ip-in" placeholder="$0.00" value="${d.tax||''}" oninput="ipSet('${n}','tax',this.value)"></td>
+        <td class="n"><input class="ip-in" placeholder="$0.00" value="${d.net||''}" oninput="ipSet('${n}','net',this.value)"></td>
+      </tr>`;
+    }).join('');
+    return `
+      <span class="ip-freqtag">${ipFreq} · 2026</span>
+      <div class="ip-h1">Enter 2026 pay history</div>
+      <div class="ip-sub">Enter each employee's year-to-date totals as of your switch to Chowbus. These keep tax filings accurate.</div>
+      <table class="ip-tbl">
+        <thead><tr><th>Employee</th><th class="n">YTD gross</th><th class="n">Taxes withheld</th><th class="n">YTD net</th></tr></thead>
+        <tbody>${rows}</tbody>
+      </table>
+      <div class="ip-actions">
+        <button class="ip-btn ghost" onclick="ipBack()">Back</button>
+        <button class="ip-btn" onclick="ipSave()">Save pay history</button>
+      </div>`;
+  }
+
+  function renderDone(){
+    return `<div class="ip-done">
+      <div class="ip-done-ic">✓</div>
+      <div class="ip-done-h">Pay history imported</div>
+      <div class="ip-done-d">Your 2026 pay history has been saved. Year-to-date totals and tax filings will stay accurate.</div>
+      <button class="ip-btn" style="max-width:300px;margin:0 auto;" onclick="location.href='chowbus-payroll-company-setup.html'">Back to Company Setup</button>
     </div>`;
   }
-  if(freqChosen && datesFilled){
-    html += `
-    <div class="ph-field">
-      <div class="ph-q">What types of earnings did you use to pay your team in 2026?<span class="req">*</span></div>
-      <div class="ph-qh">Indicate all earning types applicable to payrolls you ran in 2026. You'll be able to edit these later.</div>
-      ${msField('earn')}
-    </div>
-    <div class="ph-field">
-      <div class="ph-q">What deductions were applicable to your payrolls in 2026?</div>
-      <div class="ph-qh">Indicate all deduction types applicable to payrolls you ran in 2026. You'll be able to edit these later.</div>
-      ${msField('ded')}
-    </div>`;
-  }
-  const canContinue = freqChosen && datesFilled && f.earn.length>0;
-  html += `<button class="ph-btn" ${canContinue?'':'disabled'} onclick="phStep=2;earnOpen=false;dedOpen=false;render()">Continue</button>`;
-  return html;
-}
 
-/* ---------- Step 2 ---------- */
-function renderStep2(){
-  return `
-    <div class="ph-info"><span class="i">📄</span><div><b>You'll need 2026 pay records to get started.</b><span>You can download these from your existing payroll provider.</span></div></div>
-    <div class="ph-h1">Enter pay history</div>
-    <div class="ph-sub">Follow the instructions below to enter your 2026 pay history.</div>
+  function showToast(t){ const el=document.getElementById('toast'); document.getElementById('toastMsg').textContent=t; el.classList.add('show'); clearTimeout(el._tm); el._tm=setTimeout(()=>el.classList.remove('show'),2400); }
 
-    <div class="ins-step"><div class="ins-num">1</div><div class="ins-body"><div class="t">Gather year-to-date pay records</div>
-      <ul><li>Have your 2026 pay records on hand, whether in the form of a spreadsheet or paper accounting.</li>
-      <li>Ensure your reports <a onclick="toast('cover required pay periods (demo)')">cover required pay periods</a> and <a onclick="toast('contain required information (demo)')">contain required information</a></li></ul></div></div>
-    <div class="ins-step"><div class="ins-num">2</div><div class="ins-body"><div class="t">Input pay history data</div>
-      <ul><li>Using our provided form, you'll import data from your pay records.</li></ul></div></div>
-
-    <div class="ph-hr"></div>
-    <div class="ph-h2">Which pay periods do I need to account for?</div>
-    <table class="ins-table">
-      <thead><tr><th>If your first pay date falls within...</th><th>You'll need to enter data for...</th></tr></thead>
-      <tbody>
-        <tr><td class="qq">Q1 <span>(Jan 1 - Mar 31)</span></td><td><ul><li>Each pay date in the current quarter</li></ul></td></tr>
-        <tr><td class="qq">Q2 <span>(Apr 1 - Jun 30)</span></td><td><ul><li>QTD summary for Q1 (1/1–3/31)</li><li>Each pay date in the current quarter</li></ul></td></tr>
-        <tr><td class="qq">Q3 <span>(Jul 1 - Sep 30)</span></td><td><ul><li>QTD summary for Q1 (1/1–3/31)</li><li>QTD summary for Q2 (4/1–6/30)</li><li>Each pay date in the current quarter</li></ul></td></tr>
-        <tr><td class="qq">Q4 <span>(Oct 1 - Dec 31)</span></td><td><ul><li>QTD summary for Q1 (1/1–3/31)</li><li>QTD summary for Q2 (4/1–6/30)</li><li>QTD summary for Q3 (7/1–9/30)</li><li>Each pay date in the current quarter</li></ul></td></tr>
-      </tbody>
-    </table>
-
-    <div class="ph-h2">What data do I need from each pay period?</div>
-    <table class="ins-table">
-      <thead><tr><th>For each individual...</th><th>Pay period data must include...</th></tr></thead>
-      <tbody>
-        <tr><td class="qq">Employee <span>(active or terminated)</span></td><td><ul>
-          <li>Wages, tips, and commissions</li><li>Deductions</li>
-          <li>Taxes<ul class="ins-sub"><li>Federal Income Tax</li><li>Social Security <span class="muted">(Employer and Employee portion)</span></li><li>Medicare <span class="muted">(Employer and Employee portion)</span></li><li>Federal Unemployment Tax (FUTA)</li><li>State Unemployment Insurance (SUI)</li><li>State Income Tax</li><li>Local Taxes</li></ul></li></ul></td></tr>
-        <tr><td class="qq">Contractor <span>(active or terminated)</span></td><td><ul><li>Contractor payments</li><li>Reimbursements</li></ul></td></tr>
-      </tbody>
-    </table>
-
-    <div style="display:flex;gap:12px;">
-      <button class="ph-btn" style="background:#fff;color:#374151;border:1px solid #DADCE0;" onclick="phStep=1;render()">Back</button>
-      <button class="ph-btn" onclick="phStep=3;render()">Continue</button>
-    </div>`;
-}
-
-/* ---------- Step 3 ---------- */
-function addRecord(){
-  const n=records.length+1;
-  records.push({status:'Draft',period:'01/01–01/14',pay:'01/17/2026',gross:'$3,200.00',net:'$2,540.00',hours:'160.0',ded:'$180.00'});
-  toast('Pay record added (demo)');
   render();
-}
-function renderStep3(){
-  const rows = records.length
-    ? records.map((r,i)=>`<tr><td>${i+1}</td><td><span class="rec-status">${r.status}</span></td><td>${r.period}</td><td>${r.pay}</td><td class="num">${r.gross}</td><td class="num">${r.net}</td><td class="num">${r.hours}</td><td class="num">${r.ded}</td></tr>`).join('')
-    : `<tr><td colspan="8"><div class="rec-empty">Record all wages you paid in 2026 from the first pay date of the year through August 26, 2026.</div></td></tr>`;
-  return `
-    <div class="ph-info"><span class="i">📖</span><div><b>Record all wages you've paid this year leading up to your desired first pay date</b><span>The IRS requires year-to-date pay records for tax filing.</span></div></div>
-    <div class="ph-recordhd"><div class="ph-h1" style="margin:0;">Pay history</div></div>
-    <div style="font-size:14px;color:#6b7280;margin-bottom:14px;">${records.length} pay records · <a onclick="toast('View instructions (demo)')" style="color:#374151;text-decoration:underline;cursor:pointer;">View instructions</a></div>
-    <div class="ph-acts">
-      <button class="ph-a" onclick="addRecord()">＋ Add pay record</button>
-      <button class="ph-a" onclick="toast('Export payroll journal (demo)')">⤒ Export payroll journal</button>
-    </div>
-    <table class="rec-table">
-      <thead><tr><th>#</th><th>Status</th><th>Pay period</th><th>Pay date</th><th class="num">Gross pay</th><th class="num">Net pay</th><th class="num">Hours</th><th class="num">Deductions</th></tr></thead>
-      <tbody>${rows}</tbody>
-    </table>
-    <div class="ph-foot">
-      <label class="ph-confirm"><input type="checkbox" ${confirmed?'checked':''} onchange="confirmed=this.checked;render()"> I confirm these are all my pay records to date</label>
-      <button class="ph-btn-sm" ${confirmed?'':'disabled'} onclick="finish()">Continue →</button>
-    </div>`;
-}
-function finish(){ toast('历史薪资导入完成 / Pay history imported'); setTimeout(()=>location.href='chowbus-payroll-company-setup.html',1300); }
-
-/* 点击空白关闭多选面板 */
-document.addEventListener('click',function(e){
-  if(phStep===1 && (earnOpen||dedOpen) && !e.target.closest('.ms')){ earnOpen=false; dedOpen=false; render(); }
-});
-
-render();
 </script>
 </body>
 </html>
