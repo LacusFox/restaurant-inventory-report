@@ -196,7 +196,6 @@
           <tr>
             <th><span class="zh">姓名</span><span class="en">Name</span></th>
             <th><span class="zh">角色</span><span class="en">Role</span></th>
-            <th>Payroll ID</th>
             <th><span class="zh">薪酬状态</span><span class="en">Payroll Status</span></th>
             <th><span class="zh">席位状态</span><span class="en">Seat</span></th>
             <th><span class="zh">薪酬</span><span class="en">Pay Rate</span></th>
@@ -327,7 +326,6 @@
       return `<tr>
         <td class="name">${e.name}</td>
         <td><div class="roles">${e.roles.map((r,k)=>`<span class="role-pill ${k>0?'sec':''}">${r}</span>`).join('')}</div></td>
-        <td><span class="pid">${e.pid}</span></td>
         <td>${statusPill(e.status)}</td>
         <td>${seatPill(e.seat)}</td>
         <td>${payCell(e.pay)}</td>
