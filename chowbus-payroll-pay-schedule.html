@@ -431,7 +431,13 @@ function setEndMode(m){ form.endMode=m; renderStep1(); }
 function setDayOfMonth(v){ form.dayOfMonth=+v; form.firstPayDate=''; renderStep1(); }
 function setFirstPayday(v){ form.firstPayday=+v; form.firstPayDate=''; renderStep1(); }
 function setSecondPayday(v){ form.secondPayday=+v; form.firstPayDate=''; renderStep1(); }
-function setEndDay(which,v){ which===0?form.firstEndDay=+v:form.secondEndDay=+v; renderStep1(); }
+/* 半月薪：第二个周期结束日 = 第一个往前 15 天（每月日号，跨月回绕；99=当月最后一天按 30 计） */
+function secondEndFrom(d){ const base=d===99?30:d; let s=base-15; if(s<1) s+=30; return s; }
+function setEndDay(which,v){
+  if(which===0){ form.firstEndDay=+v; if(form.freq==='semimonthly') form.secondEndDay=secondEndFrom(+v); }
+  else { form.secondEndDay=+v; }
+  renderStep1();
+}
 /* 新方案首个发薪日：monthly/semi 只能选设定的发薪日（对应的每月几号），否则拒绝 */
 function allowedPayDoms(){ return form.freq==='monthly'?[form.dayOfMonth]:[form.firstPayday,form.secondPayday]; }
 /* 生成可选的发薪日列表（仅设定的每月几号，从本月起未来若干个） */
@@ -618,33 +624,29 @@ function monthlyBlock(){
 
 function semiBlock(){
   const f=form;
-  const allSet = f.firstPayday!=null && f.firstEndDay!=null && f.secondPayday!=null && f.secondEndDay!=null;
-  // 两个回显仅在 4 项都选完后出现（首个周期的起始依赖第二个周期结束日）
-  const echo1 = allSet ? `<span class="ends-echo">${bi(
-      '第一个发薪周期为每月 <b>'+domLabel(nextDom(f.secondEndDay))+'</b> 至 <b>'+domLabel(f.firstEndDay)+'</b>。',
-      'The first pay period is from <b>'+domLabel(nextDom(f.secondEndDay))+'</b> to <b>'+domLabel(f.firstEndDay)+'</b>.')}</span>` : '';
-  const echo2 = allSet ? `<span class="ends-echo">${bi(
-      '第二个发薪周期为每月 <b>'+domLabel(nextDom(f.firstEndDay))+'</b> 至 <b>'+domLabel(f.secondEndDay)+'</b>。',
-      'The second pay period is from <b>'+domLabel(nextDom(f.firstEndDay))+'</b> to <b>'+domLabel(f.secondEndDay)+'</b>.')}</span>` : '';
+  const secondEnd = f.firstEndDay!=null ? secondEndFrom(f.firstEndDay) : null;   // 第二个周期结束日 = 第一个往前 15 天（自动）
+  const allSet = f.firstPayday!=null && f.firstEndDay!=null && f.secondPayday!=null;
+  // 两段周期回显（三项都选完后出现）
+  const echoBlock = allSet ? `<div class="ends-echo" style="margin-top:4px;">${bi(
+      '第一个发薪周期为每月 <b>'+domLabel(nextDom(secondEnd))+'</b> 至 <b>'+domLabel(f.firstEndDay)+'</b>；第二个发薪周期为每月 <b>'+domLabel(nextDom(f.firstEndDay))+'</b> 至 <b>'+domLabel(secondEnd)+'</b>。',
+      'First pay period: <b>'+domLabel(nextDom(secondEnd))+'</b> to <b>'+domLabel(f.firstEndDay)+'</b>. &nbsp;Second pay period: <b>'+domLabel(nextDom(f.firstEndDay))+'</b> to <b>'+domLabel(secondEnd)+'</b>.')}</div>` : '';
 
   // ① 第一次发薪日
   let h = `<div class="fld"><label>${bi('每月第一次发薪日','First payday of the month')} <span class="info-i">i</span></label>
       <select class="sel" onchange="setFirstPayday(this.value)">${domSelectOptions(f.firstPayday)}</select></div>`;
   if(f.firstPayday==null) return h;
-  // ② 第一个周期结束于
+  // ② 第一个周期结束于（第二个周期结束日自动 = 往前 15 天）
   h += `<div class="fld"><label>${bi('首个发薪周期结束于','First pay period ends on')} <span class="info-i">i</span></label>
-      <div class="ends-row"><select class="sel" onchange="setEndDay(0,this.value)">${domSelectOptions(f.firstEndDay)}</select>${echo1}</div></div>`;
+      <select class="sel" onchange="setEndDay(0,this.value)">${domSelectOptions(f.firstEndDay)}</select>
+      ${f.firstEndDay!=null?`<div class="helper" style="margin-top:8px;">${bi('第二个发薪周期结束日将自动设为其往前 15 天（每月 <b>'+domLabel(secondEnd)+'</b>），无需单独设置。','The second pay period end is set automatically to 15 days earlier (the <b>'+domLabel(secondEnd)+'</b>) — no need to set it separately.')}</div>`:''}</div>`;
   if(f.firstEndDay==null) return h;
   // ③ 第二次发薪日
   h += `<div class="fld"><label>${bi('每月第二次发薪日','Second payday of the month')} <span class="info-i">i</span></label>
       <select class="sel" onchange="setSecondPayday(this.value)">${domSelectOptions(f.secondPayday)}</select></div>`;
   if(f.secondPayday==null) return h;
-  // ④ 第二个周期结束于
-  h += `<div class="fld"><label>${bi('第二个发薪周期结束于','Second pay period ends on')} <span class="info-i">i</span></label>
-      <div class="ends-row"><select class="sel" onchange="setEndDay(1,this.value)">${domSelectOptions(f.secondEndDay)}</select>${echo2}</div></div>`;
-  if(f.secondEndDay==null) return h;
-  // ⑤ 新方案首个发薪日（仅能选第一/第二发薪日对应的每月几号）
-  h += `<div class="fld"><label>${bi('新方案的首个发薪日','First pay date on new schedule')} <span class="info-i">i</span></label>
+  h += echoBlock;
+  // ④ 新方案首个发薪日（仅能选第一/第二发薪日对应的每月几号）
+  h += `<div class="fld" style="margin-top:20px;"><label>${bi('新方案的首个发薪日','First pay date on new schedule')} <span class="info-i">i</span></label>
       ${payDateSelect(f)}
       <div class="helper" style="margin-top:10px;">${bi('仅可选择设定的发薪日（每月 <b>'+[f.firstPayday,f.secondPayday].map(domLabel).join('</b> 或 <b>')+'</b>）。','Only the configured paydays (the <b>'+[f.firstPayday,f.secondPayday].map(domLabel).join('</b> or <b>')+'</b> of the month).')}</div></div>`;
   h += upcomingSection(f) + defaultToggle();
