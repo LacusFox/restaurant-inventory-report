@@ -23,6 +23,7 @@
     return '<div class="cb-item"><svg width="19" height="19" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.35" stroke-linecap="round" stroke-linejoin="round">'+IC[key]+'</svg><span class="lb"><span class="zh">'+zh+'</span><span class="en">'+en+'</span></span>'+(chev?CHEV:'')+'</div>';
   }
   var SUBS = [
+    ['setup','初始化设置','Payroll Setup','chowbus-payroll-overview-init.html'],   // 初始化流程入口，置顶
     ['overview','概览','Overview','chowbus-payroll-overview.html', true],   // 暂时前端隐藏，保留代码，以后再放出
     ['company','公司设置','Company Setup','chowbus-payroll-company-setup.html'],
     ['employees','员工管理','Employees','chowbus-payroll-employees.html'],
