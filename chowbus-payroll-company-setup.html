@@ -14,6 +14,20 @@
   .init-link:hover{background:#ffe1ec;}
   .init-link svg{flex-shrink:0;}
 
+  /* 未完成初始化提醒弹窗 */
+  .ib-ov{position:fixed;inset:0;background:rgba(17,24,39,.45);display:none;align-items:center;justify-content:center;z-index:1200;}
+  .ib-ov.open{display:flex;}
+  .ib-modal{background:#fff;border-radius:16px;padding:30px 30px 24px;width:420px;max-width:calc(100vw - 40px);box-shadow:0 24px 60px rgba(0,0,0,.28);text-align:center;}
+  .ib-ic{width:52px;height:52px;border-radius:50%;background:var(--brand-sub);color:var(--brand);display:flex;align-items:center;justify-content:center;margin:0 auto 16px;}
+  .ib-t{font-size:18px;font-weight:800;color:#111;margin-bottom:8px;}
+  .ib-s{font-size:14px;color:var(--muted);line-height:1.6;margin-bottom:24px;}
+  .ib-foot{display:flex;gap:12px;}
+  .ib-foot button{flex:1;border-radius:10px;padding:11px 0;font-size:14px;font-weight:700;cursor:pointer;transition:.15s;}
+  .ib-later{background:#fff;border:1px solid #DCDCDC;color:#374151;}
+  .ib-later:hover{border-color:#b8bcc4;}
+  .ib-now{background:var(--brand);border:1px solid var(--brand);color:#fff;}
+  .ib-now:hover{background:var(--brand-hover);}
+
   .entry-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:18px;}
   .entry-card{background:#fff;border:1px solid var(--border);border-radius:14px;padding:22px;display:flex;gap:16px;align-items:flex-start;cursor:pointer;transition:.18s;box-shadow:0 2px 12px rgba(0,0,0,.03);}
   .entry-card:hover{border-color:#E7A9B5;box-shadow:0 10px 26px rgba(204,28,76,.09);transform:translateY(-2px);}
@@ -155,11 +169,29 @@
   </div>
 </div>
 
+<!-- 未完成初始化提醒弹窗 -->
+<div class="ib-ov" id="ibOverlay">
+  <div class="ib-modal">
+    <div class="ib-ic"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 9v4M12 17h.01M10.3 3.9 2.4 18a1.9 1.9 0 0 0 1.7 2.9h15.8a1.9 1.9 0 0 0 1.7-2.9L13.7 3.9a1.9 1.9 0 0 0-3.4 0Z"/></svg></div>
+    <div class="ib-t"><span class="zh">您尚未完成公司初始化设置</span><span class="en">Payroll setup is not finished</span></div>
+    <div class="ib-s"><span class="zh">请立即完成薪酬初始化设置，完成后即可开始使用薪酬功能。</span><span class="en">Please finish payroll setup now to start using payroll.</span></div>
+    <div class="ib-foot">
+      <button class="ib-later" onclick="ibLater()"><span class="zh">稍后再说</span><span class="en">Later</span></button>
+      <button class="ib-now" onclick="ibNow()"><span class="zh">立即完成</span><span class="en">Finish now</span></button>
+    </div>
+  </div>
+</div>
+
 <div class="toast" id="toast"><span class="tick">+</span><span id="toastMsg"></span></div>
 
 <script src="cb-shell.js"></script>
 <script>
   renderShell('company');
+
+  /* 每次进入本页都提醒未完成初始化 */
+  function ibNow(){ location.href='chowbus-payroll-overview-init.html'; }   // 立即完成 → 初始化流程
+  function ibLater(){ document.getElementById('ibOverlay').classList.remove('open'); }  // 稍后再说 → 留在本页
+  document.getElementById('ibOverlay').classList.add('open');
 
   function soon(en,zh){
     const t=document.getElementById('toast');
