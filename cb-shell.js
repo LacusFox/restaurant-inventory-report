@@ -23,10 +23,10 @@
     return '<div class="cb-item"><svg width="19" height="19" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.35" stroke-linecap="round" stroke-linejoin="round">'+IC[key]+'</svg><span class="lb"><span class="zh">'+zh+'</span><span class="en">'+en+'</span></span>'+(chev?CHEV:'')+'</div>';
   }
   var SUBS = [
-    ['overview','概览','Overview','chowbus-payroll-overview.html'],
-    ['run','跑薪','Run Payroll','chowbus-payroll-run-payroll.html'],
+    ['overview','概览','Overview','chowbus-payroll-overview.html', true],   // 暂时前端隐藏，保留代码，以后再放出
     ['company','公司设置','Company Setup','chowbus-payroll-company-setup.html'],
     ['employees','员工管理','Employees','chowbus-payroll-employees.html'],
+    ['run','跑薪','Run Payroll','chowbus-payroll-run-payroll.html'],
     ['taxes','税务与申报','Taxes &amp; Filings','chowbus-payroll-taxes-filings.html']
   ];
 
@@ -41,7 +41,7 @@
     '</div>';
 
   function buildSidebar(active){
-    var subHtml = SUBS.map(function(s){
+    var subHtml = SUBS.filter(function(s){ return !s[4]; }).map(function(s){
       var on = s[0]===active;
       return '<div class="cb-subitem '+(on?'active':'')+'" onclick="location.href=\''+s[3]+'\'"><span class="zh">'+s[1]+'</span><span class="en">'+s[2]+'</span>'+(on?'<span class="bar"></span>':'')+'</div>';
     }).join('');

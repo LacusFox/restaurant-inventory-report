@@ -9,6 +9,10 @@
 <style>
   .page-title{font-size:24px;font-weight:800;margin-bottom:4px;}
   .page-sub{font-size:13.5px;color:var(--muted);margin-bottom:24px;}
+  .cb-titlerow{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;}
+  .init-link{display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:600;color:var(--brand);background:var(--brand-sub);border:1px solid var(--brand-muted);border-radius:8px;padding:7px 14px;cursor:pointer;transition:.15s;white-space:nowrap;}
+  .init-link:hover{background:#ffe1ec;}
+  .init-link svg{flex-shrink:0;}
 
   .entry-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:18px;}
   .entry-card{background:#fff;border:1px solid var(--border);border-radius:14px;padding:22px;display:flex;gap:16px;align-items:flex-start;cursor:pointer;transition:.18s;box-shadow:0 2px 12px rgba(0,0,0,.03);}
@@ -87,7 +91,13 @@
   <main class="cb-main">
     <div class="cb-scroll">
       <div class="cb-content">
-        <h1 class="page-title"><span class="zh">公司设置</span><span class="en">Company Setup</span></h1>
+        <div class="cb-titlerow">
+          <h1 class="page-title"><span class="zh">公司设置</span><span class="en">Company Setup</span></h1>
+          <button class="init-link" onclick="location.href='chowbus-payroll-overview-init.html'" title="薪酬初始化流程">
+            <svg width="14" height="14" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 12.4a2.4 2.4 0 1 0 0-4.8 2.4 2.4 0 0 0 0 4.8Z"/><path d="M10 3.5v1.8M10 14.7v1.8M16.5 10h-1.8M5.3 10H3.5M14.6 5.4l-1.3 1.3M6.7 13.3l-1.3 1.3M14.6 14.6l-1.3-1.3M6.7 6.7 5.4 5.4"/></svg>
+            <span class="zh">初始化流程</span><span class="en">Setup Flow</span>
+          </button>
+        </div>
 
         <div class="entry-grid">
           <div class="entry-card" onclick="openCompanyOnboard()">
