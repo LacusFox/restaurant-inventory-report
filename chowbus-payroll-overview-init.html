@@ -17,8 +17,22 @@
   .demo-bar{display:flex;gap:20px;align-items:center;background:#fff;border:1px dashed #D9DBE0;border-radius:10px;padding:11px 16px;font-size:13px;color:#6b7280;max-width:760px;flex-wrap:wrap;}
   .demo-bar b{color:#374151;} .demo-bar label{display:flex;align-items:center;gap:7px;cursor:pointer;} .demo-bar input{width:16px;height:16px;accent-color:var(--brand);}
 
+  /* ===== 顶部两步进度条 ===== */
+  .init-prog{display:flex;gap:0;max-width:760px;margin-bottom:22px;}
+  .ip-seg{flex:1;padding-top:10px;font-size:13.5px;font-weight:700;color:#9aa0aa;border-top:3px solid #E7E8EC;transition:.15s;}
+  .ip-seg.on{color:#111;border-top-color:var(--brand);}
+  .ip-seg.done{color:#111;border-top-color:#22A353;}
+  .ip-seg + .ip-seg{text-align:right;}
+
   /* ===== 初始化引导（串行） ===== */
   .guide-card{background:#fff;border:1px solid var(--border);border-radius:16px;padding:28px 30px;max-width:760px;box-shadow:0 1px 3px rgba(0,0,0,.08);}
+  .g-btn2{border:1px solid #DCDCDC;background:#fff;border-radius:8px;padding:8px 16px;font-size:13.5px;font-weight:700;color:#374151;cursor:pointer;white-space:nowrap;}
+  .g-btn2:hover:not(:disabled){border-color:var(--brand);color:var(--brand);}
+  .g-btn2:disabled{opacity:.5;cursor:not-allowed;}
+  .g-answer{font-size:12.5px;color:var(--muted);margin-top:4px;}
+  .se-row{display:flex;align-items:center;gap:11px;padding:11px 4px;border-bottom:1px solid #F1F2F4;font-size:14.5px;color:#1a1a1a;cursor:pointer;}
+  .se-row:last-child{border-bottom:none;}
+  .se-row input{width:18px;height:18px;accent-color:var(--brand);}
   .guide-h{font-size:19px;font-weight:800;margin-bottom:6px;}
   .guide-sub{font-size:14px;color:var(--muted);margin-bottom:12px;line-height:1.6;}
   .guide-row{display:flex;align-items:center;gap:16px;padding:18px 2px;border-top:1px solid #F1F2F4;}
@@ -147,12 +161,18 @@
           </button>
         </div>
 
+        <!-- 顶部两步进度条 -->
+        <div class="init-prog" id="initProg">
+          <div class="ip-seg" id="ipSeg1"><span class="zh">1. 公司初始化设置</span><span class="en">1. Company setup</span></div>
+          <div class="ip-seg" id="ipSeg2"><span class="zh">2. 员工初始化设置</span><span class="en">2. Employee setup</span></div>
+        </div>
+
         <!-- 演示开关（仅引导态显示） -->
         <div class="demo-bar" id="demoBar">
           <b>演示开关：</b>
           <label><input type="checkbox" id="d-company" onchange="setStep('company',this.checked)"> 公司登录完成</label>
           <label><input type="checkbox" id="d-schedule" onchange="setStep('schedule',this.checked)"> 发薪周期完成</label>
-          <span>（两步都完成 → 切换为仪表盘）</span>
+          <span>（两项都勾选 → 进入第二步「员工初始化设置」）</span>
         </div>
 
         <!-- 初始化引导 -->
@@ -214,6 +234,19 @@
   </div>
 </div>
 
+<!-- 选择使用薪酬的员工 弹窗 -->
+<div class="ov" id="seOverlay">
+  <div class="io-modal">
+    <span class="io-x" onclick="closeSelectEmp()">✕</span>
+    <div class="io-h"><span class="zh">选择使用薪酬的员工</span><span class="en">Select employees to pay</span></div>
+    <div id="seList"></div>
+    <div class="io-foot">
+      <button class="io-cancel" onclick="closeSelectEmp()"><span class="zh">取消</span><span class="en">Cancel</span></button>
+      <button class="io-next" onclick="confirmSelectEmp()"><span class="zh">确定</span><span class="en">Confirm</span></button>
+    </div>
+  </div>
+</div>
+
 <!-- ② Company Onboarding（复用 company-setup 的真实 Check 组件，左侧步骤可点、右侧动态渲染） -->
 <div class="co-overlay" id="coOverlay">
   <div class="co-modal">
@@ -239,12 +272,26 @@
 <script src="cb-shell.js"></script>
 <script>
   renderShell('overview');
-  const st={company:false, schedule:false};
+  const st={company:false, schedule:false, empSelected:false, paidBefore:'', empFinished:false};
   const STEPS=[
     {key:'company',  zh:'完成公司登录', en:'Company onboarding', href:'chowbus-payroll-company-setup.html'},
     {key:'schedule', zh:'设置发薪周期', en:'Set up pay schedule', href:'chowbus-payroll-pay-schedule.html'},
   ];
   function setStep(k,v){ st[k]=v; render(); }
+
+  /* ===== 第二步：员工初始化设置 ===== */
+  const SE_POOL=['Dan Boyle','Test Parse','Test Parse','Maria Lopez','Kenji Tanaka'];
+  let seSel=new Set();
+  function openSelectEmp(){ if(!(st.company&&st.schedule))return; renderSe(); document.getElementById('seOverlay').classList.add('open'); }
+  function closeSelectEmp(){ document.getElementById('seOverlay').classList.remove('open'); }
+  function seToggle(i){ seSel.has(i)?seSel.delete(i):seSel.add(i); renderSe(); }
+  function renderSe(){
+    document.getElementById('seList').innerHTML = SE_POOL.map((n,i)=>
+      `<label class="se-row"><input type="checkbox" ${seSel.has(i)?'checked':''} onchange="seToggle(${i})"> ${n}</label>`).join('');
+  }
+  function confirmSelectEmp(){ closeSelectEmp(); st.empSelected=true; render(); }
+  function setPaid(v){ if(!st.empSelected)return; st.paidBefore=v; render(); }
+  function finishEmp(){ st.empFinished=true; render(); }   // 之前没发过 → 完成初始化
   function currentStep(){ return STEPS.find(s=>!st[s.key]) || null; }   // 串行：第一个未完成的步骤
   function goCurrent(){
     const c=currentStep(); if(!c) return;
@@ -350,13 +397,27 @@
   }
 
   function render(){
-    const ready = st.company && st.schedule;   // 仅「公司登录 + 发薪周期」都完成 → 仪表盘
-    document.getElementById('initView').style.display = ready?'none':'';
-    document.getElementById('dashView').style.display = ready?'':'none';
-    document.getElementById('demoBar').style.display  = ready?'none':'';     // 仪表盘态隐藏演示开关
-    document.getElementById('setupFlowBtn').style.display = ready?'':'none'; // 仪表盘态显示 Setup Flow 入口
-    if(ready) return;
+    const companyDone = st.company && st.schedule;        // 第一步：公司初始化设置
+    const empDone = st.empFinished;                        // 第二步：员工初始化设置（完成）
+    const phase = !companyDone ? 'company' : (!empDone ? 'employee' : 'dash');
 
+    // 顶部两步进度条
+    const s1=document.getElementById('ipSeg1'), s2=document.getElementById('ipSeg2');
+    s1.className = 'ip-seg ' + (companyDone ? 'done' : 'on');
+    s2.className = 'ip-seg ' + (empDone ? 'done' : (phase==='employee' ? 'on' : ''));
+    document.getElementById('initProg').style.display = phase==='dash' ? 'none' : 'flex';
+
+    document.getElementById('demoBar').style.display  = phase==='dash' ? 'none' : '';
+    document.getElementById('dashView').style.display = phase==='dash' ? '' : 'none';
+    document.getElementById('setupFlowBtn').style.display = phase==='dash' ? '' : 'none';
+    const iv=document.getElementById('initView');
+    iv.style.display = phase==='dash' ? 'none' : '';
+    if(phase==='dash') return;
+    iv.innerHTML = phase==='company' ? renderCompanyStep() : renderEmployeeStep();
+  }
+
+  /* 第一步：公司初始化设置（公司登录 + 发薪周期） */
+  function renderCompanyStep(){
     let prevDone = true;   // 串行锁：前一步未完成则当前步锁定置灰
     const rows = STEPS.map((s,i)=>{
       const done=st[s.key];
@@ -369,16 +430,70 @@
       prevDone = done;
       return row;
     }).join('');
-
-    document.getElementById('initView').innerHTML = `
+    return `
       <div class="guide-card">
-        <div class="guide-h"><span class="zh">请先完成薪资初始化设置</span><span class="en">Finish payroll setup first</span></div>
-        <div class="guide-sub"><span class="zh">请按顺序依次完成以下步骤后即可开始使用薪酬功能。</span><span class="en">Complete the steps below in order to start using payroll.</span></div>
+        <div class="guide-h"><span class="zh">公司初始化设置</span><span class="en">Company setup</span></div>
+        <div class="guide-sub"><span class="zh">请按顺序完成以下步骤。每一步即时保存，可随时中断后再回来。</span><span class="en">Complete the steps below in order. Each step saves instantly — you can pause and resume anytime.</span></div>
         ${rows}
       </div>
       <div class="guide-foot">
         <button class="g-btn" onclick="goCurrent()"><span class="zh">去设置</span><span class="en">Set now</span></button>
       </div>`;
+  }
+
+  /* 第二步：员工初始化设置 */
+  function renderEmployeeStep(){
+    const t1done = st.empSelected;
+    const paid = st.paidBefore;
+
+    const t1 = `<div class="guide-row">
+      <span class="g-num ${t1done?'done':''}">${t1done?'✓':'1'}</span>
+      <div class="g-body"><div class="g-t"><span class="zh">选定需要使用系统发放工资的员工</span><span class="en">Select which employees use payroll</span></div>
+        ${t1done?`<div class="g-answer"><span class="zh">已选择 ${seSel.size} 名员工</span><span class="en">${seSel.size} employees selected</span></div>`:''}</div>
+      ${t1done
+        ? `<button class="g-btn2" onclick="openSelectEmp()"><span class="zh">修改</span><span class="en">Edit</span></button>`
+        : `<button class="g-btn2" onclick="openSelectEmp()"><span class="zh">去选择</span><span class="en">Select</span></button>`}
+    </div>`;
+
+    let t2;
+    if(paid===''){
+      t2 = `<div class="guide-row ${t1done?'':'locked'}">
+        <span class="g-num">2</span>
+        <div class="g-body"><div class="g-t"><span class="zh">您在之前的薪酬系统里是否给员工发放过工资？</span><span class="en">Have you paid employees in a previous payroll system?</span></div></div>
+        <div style="display:flex;gap:8px;">
+          <button class="g-btn2" ${t1done?'':'disabled'} onclick="setPaid('no')"><span class="zh">否</span><span class="en">No</span></button>
+          <button class="g-btn2" ${t1done?'':'disabled'} onclick="setPaid('yes')"><span class="zh">是</span><span class="en">Yes</span></button>
+        </div>
+      </div>`;
+    } else if(paid==='no'){
+      t2 = `<div class="guide-row">
+        <span class="g-num done">✓</span>
+        <div class="g-body"><div class="g-t"><span class="zh">您在之前的薪酬系统里是否给员工发放过工资？</span><span class="en">Have you paid employees before?</span></div>
+          <div class="g-answer"><span class="zh">已回答：否</span><span class="en">Answered: No</span></div></div>
+        <button class="g-btn2" onclick="setPaid('')"><span class="zh">修改</span><span class="en">Change</span></button>
+      </div>`;
+    } else {
+      t2 = `<div class="guide-row">
+        <span class="g-num">2</span>
+        <div class="g-body"><div class="g-t"><span class="zh">您在之前的薪酬系统里是否给员工发放过工资？</span><span class="en">Have you paid employees before?</span></div>
+          <div class="g-answer"><span class="zh">已回答：是 —— 需要导入历史发薪记录，之后才能开始使用</span><span class="en">Answered: Yes — you'll need to import pay history first</span></div></div>
+        <button class="g-btn2" onclick="setPaid('')"><span class="zh">修改</span><span class="en">Change</span></button>
+      </div>`;
+    }
+
+    let foot='';
+    if(paid==='no'){
+      foot = `<div class="guide-foot"><button class="g-btn" onclick="finishEmp()"><span class="zh">完成初始化</span><span class="en">Finish setup</span></button></div>`;
+    } else if(paid==='yes'){
+      foot = `<div class="guide-foot"><button class="g-btn" onclick="location.href='chowbus-payroll-import-pay-history.html'"><span class="zh">去导入历史发薪</span><span class="en">Import Pay History</span></button></div>`;
+    }
+
+    return `
+      <div class="guide-card">
+        <div class="guide-h"><span class="zh">员工初始化设置</span><span class="en">Employee setup</span></div>
+        <div class="guide-sub"><span class="zh">选择使用薪酬的员工，并确认历史发薪情况。每一步即时保存，可中断去准备数据，再回来继续。</span><span class="en">Choose which employees are paid and confirm prior pay history. Each step saves instantly — pause to prepare data and resume anytime.</span></div>
+        ${t1}${t2}
+      </div>${foot}`;
   }
   render();
 </script>

@@ -388,10 +388,8 @@ function closeWizard(){ document.getElementById('wizard').classList.remove('open
 function renderWizard(){
   document.getElementById('wizTitle').innerHTML = manageMode ? bi('管理员工','Manage workers')
     : (editingId? bi('编辑发薪组','Edit pay group') : bi('新建发薪组','Add pay group'));
-  document.getElementById('wsteps').style.display = manageMode ? 'none' : 'flex';
-  document.getElementById('ws1').classList.toggle('on', true);
-  document.getElementById('ws2').classList.toggle('on', wizStep===2);
-  document.getElementById('wizBack').style.display = (manageMode || wizStep===2) ? '' : 'none';
+  document.getElementById('wsteps').style.display = 'none';   // 去掉顶部进度条；创建周期与选员工解耦
+  document.getElementById('wizBack').style.display = manageMode ? '' : 'none';
   if(wizStep===1) renderStep1(); else renderStep2();
 }
 function wizBack(){ if(wizStep===2){wizStep=1;renderWizard();} }
@@ -562,7 +560,15 @@ function renderStep1(){
   document.getElementById('wizBody').innerHTML = body;
   document.getElementById('wizFoot').innerHTML =
     `<button class="btn-ghost" onclick="closeWizard()">${bi('取消','Cancel')}</button>
-     <button class="btn-primary" onclick="wizNext()">${bi('下一步','Next')}</button>`;
+     <button class="btn-primary" onclick="saveFromStep1()">${bi('保存','Save')}</button>`;
+}
+/* 创建/编辑发薪组：只做「周期设置」，保存后直接完成（添加员工另走「管理员工」） */
+function saveFromStep1(){
+  if(!form.freq){ showToast('请先选择发薪频率','Please select a pay frequency'); return; }
+  if((form.freq==='weekly'||form.freq==='biweekly') && !form.payDate){ showToast('请填写发薪日','Please set the pay date'); return; }
+  if((form.freq==='weekly'||form.freq==='biweekly') && form.endBefore==null){ showToast('请选择首个发薪周期结束','Please select when the first pay period ends'); return; }
+  if((form.freq==='monthly'||form.freq==='semimonthly') && !form.firstPayDate){ showToast('请完成发薪周期设置','Please complete the schedule setup'); return; }
+  saveGroup();
 }
 
 function defaultToggle(){
