@@ -289,7 +289,10 @@
     document.getElementById('seList').innerHTML = SE_POOL.map((n,i)=>
       `<label class="se-row"><input type="checkbox" ${seSel.has(i)?'checked':''} onchange="seToggle(${i})"> ${n}</label>`).join('');
   }
-  function confirmSelectEmp(){ closeSelectEmp(); st.empSelected=true; render(); }
+  function confirmSelectEmp(){
+    if(seSel.size===0){ coToast(document.body.classList.contains('lang-en')?'Please select at least one employee':'请至少选择 1 名员工'); return; }  // 未选员工时锁定下一步
+    closeSelectEmp(); st.empSelected=true; render();
+  }
   function setPaid(v){ if(!st.empSelected)return; st.paidBefore=v; render(); }
   function finishEmp(){ st.empFinished=true; render(); }   // 之前没发过 → 完成初始化
   function currentStep(){ return STEPS.find(s=>!st[s.key]) || null; }   // 串行：第一个未完成的步骤
