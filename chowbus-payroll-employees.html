@@ -33,8 +33,21 @@
   .f-sel::after{content:"";position:absolute;right:13px;top:50%;width:8px;height:8px;border-right:1.5px solid #9ca3af;border-bottom:1.5px solid #9ca3af;transform:translateY(-70%) rotate(45deg);pointer-events:none;}
   .f-reset{height:40px;padding:0 18px;border:1px solid var(--border);background:var(--surface);border-radius:9px;font-size:13.5px;font-weight:600;color:var(--tb);cursor:pointer;}
   .f-reset:hover{border-color:#b8bcc4;}
+  .col-wrap{position:relative;}
   .f-cols{width:40px;height:40px;border:1px solid var(--border);background:var(--surface);border-radius:9px;display:flex;align-items:center;justify-content:center;color:var(--t2);cursor:pointer;}
   .f-cols:hover{border-color:#b8bcc4;}
+  .f-cols.on{border-color:var(--brand);color:var(--brand);}
+  .col-pop{position:absolute;top:46px;right:0;z-index:800;background:#fff;border:1px solid var(--border);border-radius:12px;box-shadow:0 12px 32px rgba(0,0,0,.16);padding:14px 8px 8px;min-width:230px;max-height:360px;overflow-y:auto;display:none;}
+  .col-pop.open{display:block;}
+  .col-pop .cp-h{font-size:12.5px;color:var(--t2);font-weight:600;padding:0 12px 8px;}
+  .col-opt{display:flex;align-items:center;gap:11px;padding:9px 12px;border-radius:8px;font-size:14px;color:var(--t1);cursor:pointer;}
+  .col-opt:hover{background:#fafafa;}
+  .col-opt.req{color:#9ca3af;cursor:default;}
+  .col-opt.req:hover{background:transparent;}
+  .col-opt .req-tag{margin-left:auto;font-size:12px;color:#c4c8cf;}
+  .cp-cb{width:20px;height:20px;border:1.7px solid #c4c8cf;border-radius:6px;display:flex;align-items:center;justify-content:center;background:#fff;flex-shrink:0;}
+  .cp-cb.ck{background:var(--brand);border-color:var(--brand);color:#fff;}
+  .cp-cb.dis{background:#e9eaee;border-color:#dfe1e6;color:#b8bcc4;}
 
   /* ===== 列表卡 ===== */
   .list-card{background:var(--surface);border-radius:12px;box-shadow:0 1px 3px rgba(0,0,0,.08);overflow:hidden;}
@@ -165,7 +178,10 @@
           <div class="f-sel"><select><option>Payroll 状态</option></select></div>
           <div class="f-sel"><select><option>是否导入历史薪资</option></select></div>
           <button class="f-reset" onclick="resetFilters()"><span class="zh">重置</span><span class="en">Reset</span></button>
-          <div class="f-cols" title="列设置 / Columns"><svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="3" width="14" height="14" rx="2"/><path d="M10 3v14"/></svg></div>
+          <div class="col-wrap">
+            <div class="f-cols" id="colBtn" title="自定义显示列 / Columns" onclick="toggleColPop(event)"><svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="3" width="14" height="14" rx="2"/><path d="M10 3v14"/></svg></div>
+            <div class="col-pop" id="colPop"></div>
+          </div>
         </div>
 
         <!-- 列表 -->
@@ -176,18 +192,7 @@
           </div>
           <div class="tbl-wrap">
             <table class="emp">
-              <thead><tr>
-                <th><span class="zh">POS 姓名</span><span class="en">POS Name</span></th>
-                <th><span class="zh">角色</span><span class="en">Role</span></th>
-                <th>Official Name</th>
-                <th><span class="zh">入职日期</span><span class="en">Hire Date</span></th>
-                <th><span class="zh">离职时间</span><span class="en">Termination Date</span></th>
-                <th><span class="zh">薪资</span><span class="en">Pay Rate</span></th>
-                <th><span class="zh">员工状态</span><span class="en">Employee Status</span></th>
-                <th><span class="zh">Payroll 状态</span><span class="en">Payroll Status</span></th>
-                <th><span class="zh">历史薪资状态</span><span class="en">Pay History</span></th>
-                <th><span class="zh">操作</span><span class="en">Action</span></th>
-              </tr></thead>
+              <thead><tr id="empHead"></tr></thead>
               <tbody id="empBody"></tbody>
             </table>
           </div>
@@ -249,15 +254,15 @@
 
   /* ===== 员工列表数据 ===== */
   const ROSTER=[
-    {pos:'Bohong X.', roles:[{zh:'超级管理员',en:'Super Admin'}], official:'Bohong Xu', hire:'01/12/2024', term:'--',
+    {pos:'Bohong X.', roles:[{zh:'超级管理员',en:'Super Admin'}], official:'Bohong Xu', pid:'10482', hire:'01/12/2024', term:'--',
       pays:[{amt:'$78,000.00',z:'/年',e:'/yr'}], pstatus:'paying', pcount:12, hist:'imported'},
-    {pos:'Ruiqi Z.', roles:[{zh:'虚拟上线经理',en:'Virtual Setup Manager'},{zh:'经理',en:'manager'}], official:'Ruiqi Zhang', hire:'03/04/2024', term:'--',
+    {pos:'Ruiqi Z.', roles:[{zh:'虚拟上线经理',en:'Virtual Setup Manager'},{zh:'经理',en:'manager'}], official:'Ruiqi Zhang', pid:'10517', hire:'03/04/2024', term:'--',
       pays:[{amt:'$32.00',z:'/小时',e:'/hr',rz:'虚拟上线经理',re:'Virtual Setup Manager'},{amt:'$28.00',z:'/小时',e:'/hr',rz:'经理',re:'manager'}], pstatus:'paying', pcount:8, hist:'imported'},
-    {pos:'司机 2号', roles:[{zh:'司机',en:'Driver'}], official:'司机 2号', hire:'05/20/2025', term:'--',
+    {pos:'司机 2号', roles:[{zh:'司机',en:'Driver'}], official:'司机 2号', pid:'10538', hire:'05/20/2025', term:'--',
       pays:[{amt:'$18.50',z:'/小时',e:'/hr'}], pstatus:'incomplete', hist:'not', onboard:true},
-    {pos:'伟 黄', roles:[{zh:'餐厅老板',en:'owner'}], official:'Wei Huang', hire:'11/08/2023', term:'--',
+    {pos:'伟 黄', roles:[{zh:'餐厅老板',en:'owner'}], official:'Wei Huang', pid:'10329', hire:'11/08/2023', term:'--',
       pays:[{amt:'$96,000.00',z:'/年',e:'/yr'}], pstatus:'ready', hist:'not'},
-    {pos:'Yang F.', roles:[{zh:'经理',en:'manager'},{zh:'收银员',en:'cashier'},{zh:'服务员',en:'server'}], official:'Yang Feng', hire:'02/17/2025', term:'--',
+    {pos:'Yang F.', roles:[{zh:'经理',en:'manager'},{zh:'收银员',en:'cashier'},{zh:'服务员',en:'server'}], official:'Yang Feng', pid:'10604', hire:'02/17/2025', term:'--',
       pays:[{amt:'$26.00',z:'/小时',e:'/hr',rz:'经理',re:'manager'},{amt:'$19.00',z:'/小时',e:'/hr',rz:'收银员',re:'cashier'},{amt:'$16.50',z:'/小时',e:'/hr',rz:'服务员',re:'server'}], pstatus:'noseat', hist:'not'},
   ];
   const IC_PERSON='<svg width="12" height="12" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="10" cy="7" r="3"/><path d="M4.5 16.5a5.5 5.5 0 0 1 11 0" stroke-linecap="round"/></svg>';
@@ -281,25 +286,51 @@
     return '<div class="rl-wrap">'+r.roles.map(x=>'<span class="rl-pill">'+IC_PERSON+bi(x.zh,x.en)+'</span>').join('')+'</div>';
   }
 
+  /* ===== 列定义 + 可见性（自定义显示列） ===== */
+  const COLS=[
+    {key:'pos',     zh:'POS 姓名',     en:'POS Name',          req:true,  cell:r=>'<td class="c-pos">'+r.pos+'</td>'},
+    {key:'role',    zh:'角色',         en:'Role',                        cell:r=>'<td>'+roleCell(r)+'</td>'},
+    {key:'pid',     zh:'Payroll ID',  en:'Payroll ID',        off:true,  cell:r=>'<td class="c-mut">'+(r.pid||'--')+'</td>'},
+    {key:'official',zh:'Official Name',en:'Official Name',                cell:r=>'<td class="c-mut">'+r.official+'</td>'},
+    {key:'hire',    zh:'入职日期',     en:'Hire Date',                    cell:r=>'<td>'+r.hire+'</td>'},
+    {key:'term',    zh:'离职时间',     en:'Termination Date',             cell:r=>'<td class="c-mut">'+r.term+'</td>'},
+    {key:'pay',     zh:'薪资',         en:'Pay Rate',                     cell:r=>'<td>'+payCell(r)+'</td>'},
+    {key:'estatus', zh:'员工状态',     en:'Employee Status',              cell:r=>'<td><span class="estat"><span class="dot"></span>'+bi('在职','Active')+'</span></td>'},
+    {key:'pstatus', zh:'Payroll 状态', en:'Payroll Status',               cell:r=>'<td>'+psPill(r)+'</td>'},
+    {key:'hist',    zh:'历史薪资状态', en:'Pay History',                  cell:r=>'<td>'+histCell(r)+'</td>'},
+    {key:'action',  zh:'操作',         en:'Action',            req:true,  cell:(r,i)=>'<td><button class="row-menu-btn" onclick="openRowMenu(event,'+i+')">⋮</button></td>'},
+  ];
+  let colVis={}; COLS.forEach(c=>colVis[c.key] = !c.off);   // 默认全显示，Payroll ID 默认隐藏
+
+  function renderHead(){
+    document.getElementById('empHead').innerHTML =
+      COLS.filter(c=>colVis[c.key]).map(c=>'<th>'+bi(c.zh,c.en)+'</th>').join('');
+  }
   function renderRows(){
     const q=(document.getElementById('empSearch').value||'').toLowerCase().trim();
     const rows=ROSTER.map((r,i)=>({r,i})).filter(({r})=> !q || r.pos.toLowerCase().includes(q) || r.official.toLowerCase().includes(q));
+    const vis=COLS.filter(c=>colVis[c.key]);
     document.getElementById('empBody').innerHTML = rows.map(({r,i})=>
-      '<tr>'+
-        '<td class="c-pos">'+r.pos+'</td>'+
-        '<td>'+roleCell(r)+'</td>'+
-        '<td class="c-mut">'+r.official+'</td>'+
-        '<td>'+r.hire+'</td>'+
-        '<td class="c-mut">'+r.term+'</td>'+
-        '<td>'+payCell(r)+'</td>'+
-        '<td><span class="estat"><span class="dot"></span>'+bi('在职','Active')+'</span></td>'+
-        '<td>'+psPill(r)+'</td>'+
-        '<td>'+histCell(r)+'</td>'+
-        '<td><button class="row-menu-btn" onclick="openRowMenu(event,'+i+')">⋮</button></td>'+
-      '</tr>').join('');
+      '<tr>'+vis.map(c=>c.cell(r,i)).join('')+'</tr>').join('');
   }
+  function renderTable(){ renderHead(); renderRows(); }
   function resetFilters(){ document.getElementById('empSearch').value=''; renderRows(); }
-  renderRows();
+
+  /* 自定义显示列弹层 */
+  function renderColPop(){
+    document.getElementById('colPop').innerHTML =
+      '<div class="cp-h">'+bi('自定义显示列','Customize columns')+'</div>'+
+      COLS.map(c=> c.req
+        ? '<div class="col-opt req"><span class="cp-cb dis"><svg width="13" height="13" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10.5 8 14l8-8"/></svg></span><span>'+bi(c.zh,c.en)+'</span><span class="req-tag">'+bi('必显示','Required')+'</span></div>'
+        : '<div class="col-opt" onclick="toggleCol(\''+c.key+'\')"><span class="cp-cb '+(colVis[c.key]?'ck':'')+'">'+(colVis[c.key]?'<svg width="13" height="13" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10.5 8 14l8-8"/></svg>':'')+'</span><span>'+bi(c.zh,c.en)+'</span></div>'
+      ).join('');
+  }
+  function toggleCol(k){ colVis[k]=!colVis[k]; renderColPop(); renderTable(); }
+  function toggleColPop(ev){ ev.stopPropagation(); const p=document.getElementById('colPop'); const open=!p.classList.contains('open'); renderColPop(); p.classList.toggle('open',open); document.getElementById('colBtn').classList.toggle('on',open); }
+  function closeColPop(){ document.getElementById('colPop').classList.remove('open'); document.getElementById('colBtn').classList.remove('on'); }
+  document.addEventListener('click', e=>{ if(!e.target.closest('.col-wrap')) closeColPop(); });
+
+  renderTable();
 
   /* ===== 行操作下拉 ===== */
   function openRowMenu(ev, idx){
