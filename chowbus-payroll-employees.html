@@ -98,6 +98,21 @@
   .emp-toast{position:fixed;left:50%;bottom:32px;transform:translateX(-50%) translateY(24px);opacity:0;pointer-events:none;background:#1f2937;color:#fff;border-radius:10px;padding:12px 18px;font-size:14px;box-shadow:0 12px 32px rgba(0,0,0,.28);z-index:1400;transition:all .3s cubic-bezier(.2,.8,.3,1);}
   .emp-toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
 
+  /* ===== 工资单弹窗 ===== */
+  .ps-ov{position:fixed;inset:0;background:rgba(17,24,39,.45);display:none;align-items:center;justify-content:center;z-index:1250;}
+  .ps-ov.open{display:flex;}
+  .ps-modal{background:#fff;border-radius:16px;width:840px;max-width:calc(100vw - 40px);max-height:calc(100vh - 60px);display:flex;flex-direction:column;box-shadow:0 24px 60px rgba(0,0,0,.28);}
+  .ps-modh{display:flex;align-items:center;justify-content:space-between;padding:22px 26px 16px;}
+  .ps-modt{font-size:20px;font-weight:800;color:var(--t1);}
+  .ps-modx{border:none;background:transparent;font-size:20px;color:var(--t2);cursor:pointer;}
+  .ps-cardw{margin:0 26px 26px;border:1px solid var(--border);border-radius:12px;overflow:hidden;}
+  table.ps-tbl{width:100%;border-collapse:collapse;}
+  table.ps-tbl thead th{font-size:13px;font-weight:500;color:#9ca3af;text-align:left;padding:14px 24px;background:#fafafa;border-bottom:1px solid var(--border);}
+  table.ps-tbl tbody td{padding:16px 24px;font-size:14.5px;color:var(--t1);border-bottom:1px solid #f1f2f4;}
+  table.ps-tbl tbody tr:last-child td{border-bottom:none;}
+  .ps-dl{color:var(--brand);font-weight:600;cursor:pointer;background:none;border:none;font-size:14px;}
+  .ps-dl:hover{text-decoration:underline;}
+
   /* ===== 添加员工到 payroll 弹窗（穿梭框） ===== */
   .am-ov{position:fixed;inset:0;background:rgba(17,24,39,.45);display:none;align-items:center;justify-content:center;z-index:1200;}
   .am-ov.open{display:flex;}
@@ -208,6 +223,27 @@
 
 <!-- 轻提示 -->
 <div class="emp-toast" id="empToast"><span id="empToastMsg"></span></div>
+
+<!-- 工资单弹窗 -->
+<div class="ps-ov" id="psOverlay">
+  <div class="ps-modal">
+    <div class="ps-modh">
+      <div class="ps-modt"><span class="zh">工资单</span><span class="en">Pay Stubs</span> · <span id="psName"></span></div>
+      <button class="ps-modx" onclick="closePaystub()">✕</button>
+    </div>
+    <div class="ps-cardw">
+      <table class="ps-tbl">
+        <thead><tr>
+          <th><span class="zh">日期</span><span class="en">Date</span></th>
+          <th><span class="zh">发薪金额</span><span class="en">Net pay</span></th>
+          <th><span class="zh">总工时</span><span class="en">Total hours</span></th>
+          <th></th>
+        </tr></thead>
+        <tbody id="psBody"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
 
 <!-- 添加员工到 payroll 弹窗 -->
 <div class="am-ov" id="amOverlay">
@@ -338,7 +374,7 @@
     const r=ROSTER[idx];
     const menu=document.getElementById('rowMenu');
     const hasSeat = (r.pstatus==='paying'||r.pstatus==='ready');   // 有席位 = 发薪中/发薪就绪
-    const DETAIL="location.href='chowbus-payroll-employee-detail.html'";
+    const DETAIL="location.href='chowbus-payroll-employee-detail.html?i="+idx+"'";
     const items=[];
     if(r.onboard){
       // 资料待完善（待入职）：以完善资料为主
@@ -347,13 +383,17 @@
       items.push([bi('修改薪资&入职日期','Edit pay & hire date'), DETAIL]);
       items.push([bi('导入历史薪资数据','Import pay history'), "location.href='chowbus-payroll-import-pay-history.html'"]);
       items.push([bi('查看员工资料','View profile'), DETAIL]);
-    } else {
-      // 已入职员工
-      items.push([bi('查看工资单','View pay stub'), "location.href='chowbus-payroll-records.html'"]);
-      items.push(hasSeat
-        ? [bi('取消席位','Cancel seat'), "empToast('已取消该员工席位','Seat canceled')"]
-        : [bi('分配席位','Assign seat'), "empToast('已为该员工分配席位','Seat assigned')"]);
+    } else if(hasSeat){
+      // 已入职、已分配席位（发薪中/发薪就绪）
+      items.push([bi('查看工资单','View pay stubs'), "openPaystub("+idx+")"]);
+      items.push([bi('取消席位','Cancel seat'), "empToast('已取消该员工席位','Seat canceled')"]);
       items.push([bi('修改发薪组','Change pay group'), "location.href='chowbus-payroll-pay-schedule.html'"]);
+      items.push([bi('查看员工资料','View profile'), DETAIL]);
+      items.push([bi('修改薪资&入职日期','Edit pay & hire date'), DETAIL]);
+      items.push([bi('修改员工 payroll 资料','Edit payroll info'), DETAIL]);
+    } else {
+      // 已入职、暂未分配席位
+      items.push([bi('分配席位&发薪组','Assign seat & pay group'), "location.href='chowbus-payroll-pay-schedule.html'"]);
       items.push([bi('查看员工资料','View profile'), DETAIL]);
       items.push([bi('修改薪资&入职日期','Edit pay & hire date'), DETAIL]);
       items.push([bi('修改员工 payroll 资料','Edit payroll info'), DETAIL]);
@@ -368,6 +408,21 @@
   }
   function closeRowMenu(){ document.getElementById('rowMenu').classList.remove('open'); }
   function empToast(zh,en){ const t=document.getElementById('empToast'); document.getElementById('empToastMsg').textContent=document.body.classList.contains('lang-en')?en:zh; t.classList.add('show'); clearTimeout(t._tm); t._tm=setTimeout(()=>t.classList.remove('show'),2200); }
+
+  /* ===== 工资单弹窗 ===== */
+  const PAYSTUBS=[
+    {d:'2026-09-01', amt:'$375.00', hrs:'35'},
+    {d:'2026-08-15', amt:'$412.50', hrs:'38.5'},
+    {d:'2026-08-01', amt:'$390.00', hrs:'36'},
+  ];
+  function openPaystub(idx){
+    const r=ROSTER[idx];
+    document.getElementById('psName').textContent=r.official;
+    document.getElementById('psBody').innerHTML = PAYSTUBS.map(p=>
+      '<tr><td>'+p.d+'</td><td>'+p.amt+'</td><td>'+p.hrs+'</td><td style="text-align:right"><button class="ps-dl" onclick="empToast(\'工资单下载中（示意）\',\'Downloading pay stub\')">'+bi('下载','Download')+'</button></td></tr>').join('');
+    document.getElementById('psOverlay').classList.add('open');
+  }
+  function closePaystub(){ document.getElementById('psOverlay').classList.remove('open'); }
   document.addEventListener('click', e=>{ if(!e.target.closest('.row-menu')&&!e.target.closest('.row-menu-btn')) closeRowMenu(); });
 
   /* ===== 添加员工到 payroll 弹窗 ===== */
