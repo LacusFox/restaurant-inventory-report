@@ -129,6 +129,8 @@
   .cal-cell.pay{background:var(--primary);color:#fff;font-weight:800;}
 
   /* 选择员工 */
+  .wk-hint{display:flex;gap:8px;background:#eff6ff;border:1px solid #d7e6fd;border-radius:9px;padding:10px 13px;font-size:13px;color:#2b53c9;line-height:1.6;margin-bottom:14px;}
+  .wk-hint::before{content:"ⓘ";flex-shrink:0;}
   .wk-all{display:flex;align-items:center;gap:14px;padding:12px 2px;border-bottom:1px solid var(--border);font-size:12.5px;font-weight:800;color:#8a8f9a;letter-spacing:.04em;}
   .wk{display:flex;align-items:center;gap:14px;padding:14px 2px;border-bottom:1px solid #F1F2F4;}
   .wk .avatar{width:40px;height:40px;border-radius:50%;background:#D9A45B;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:14px;flex:0 0 auto;}
@@ -692,6 +694,7 @@ function renderStep2(){
   const sel=form.workers;
   const allChecked = WORKERS.every(w=>sel.has(w.id));
   let body=`<div class="step-h">${bi('选择员工','Select workers')}</div>
+    <div class="wk-hint">${bi('添加到本发薪组后，将自动为该员工分配席位。','Adding a worker to this pay group will automatically assign them a payroll seat.')}</div>
     <div class="wk-all"><input type="checkbox" ${allChecked?'checked':''} onchange="toggleAllWk(this.checked)"><span>${isZh()?'全部员工':'ALL WORKERS'} (${WORKERS.length})</span></div>`;
   body += WORKERS.map(w=>`<div class="wk">
       <input type="checkbox" ${sel.has(w.id)?'checked':''} onchange="toggleWk(${w.id},this.checked)">

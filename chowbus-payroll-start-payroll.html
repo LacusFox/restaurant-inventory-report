@@ -61,6 +61,23 @@
   .btn-approve{background:#fff;color:var(--ck-blue);border:1px solid #C4D0FF;border-radius:7px;padding:6px 16px;font-size:13px;font-weight:700;cursor:pointer;transition:.15s;}
   .btn-approve:hover{background:#EEF2FF;border-color:#9DB2FF;}
   .approved-tag{display:inline-flex;align-items:center;gap:5px;font-size:12.5px;font-weight:700;color:#12905a;background:#EAF7F0;border:1px solid #CBEBD9;border-radius:7px;padding:6px 13px;}
+  .ts-acts{display:inline-flex;gap:8px;}
+  .btn-skip{background:#fff;color:#6b7280;border:1px solid var(--border);border-radius:7px;padding:6px 16px;font-size:13px;font-weight:700;cursor:pointer;transition:.15s;}
+  .btn-skip:hover{background:#f3f4f6;border-color:#c4c8cf;color:#374151;}
+  .skipped-tag{display:inline-flex;align-items:center;gap:5px;font-size:12.5px;font-weight:700;color:#6b7280;background:#f1f2f4;border:1px solid #e2e4e8;border-radius:7px;padding:6px 13px;}
+  /* 忽略发薪 强提示弹窗 */
+  .sk-ov{position:fixed;inset:0;background:rgba(17,24,39,.5);display:none;align-items:center;justify-content:center;z-index:1300;}
+  .sk-ov.open{display:flex;}
+  .sk-modal{background:#fff;border-radius:16px;padding:28px 28px 22px;width:420px;max-width:calc(100vw - 40px);box-shadow:0 24px 60px rgba(0,0,0,.3);text-align:center;}
+  .sk-ic{width:52px;height:52px;border-radius:50%;background:#FDECEC;color:#DC2626;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;}
+  .sk-t{font-size:18px;font-weight:800;color:#111;margin-bottom:8px;}
+  .sk-s{font-size:14px;color:#6b7280;line-height:1.6;margin-bottom:8px;}
+  .sk-warn{font-size:13px;font-weight:700;color:#DC2626;margin-bottom:22px;}
+  .sk-foot{display:flex;gap:12px;}
+  .sk-foot button{flex:1;border-radius:10px;padding:11px 0;font-size:14px;font-weight:700;cursor:pointer;}
+  .sk-cancel{background:#fff;border:1px solid #DCDCDC;color:#374151;}
+  .sk-confirm{background:#DC2626;border:1px solid #DC2626;color:#fff;}
+  .sk-confirm:hover{background:#b91c1c;}
 
   /* 内嵌 Check 组件 */
   .ck{background:#fff;border:1px solid #E7E8EC;border-radius:16px;box-shadow:0 4px 20px rgba(0,0,0,.05);overflow:hidden;}
@@ -293,6 +310,20 @@
   </main>
 </div>
 
+<!-- 忽略本次发薪 强提示 -->
+<div class="sk-ov" id="skipOverlay">
+  <div class="sk-modal">
+    <div class="sk-ic"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 9v4M12 17h.01M10.3 3.9 2.4 18a1.9 1.9 0 0 0 1.7 2.9h15.8a1.9 1.9 0 0 0 1.7-2.9L13.7 3.9a1.9 1.9 0 0 0-3.4 0Z"/></svg></div>
+    <div class="sk-t"><span class="zh">确认要忽略该员工的本次发薪吗？</span><span class="en">Skip this employee for the current run?</span></div>
+    <div class="sk-s"><span class="zh">将跳过 <b id="skipName"></b> 本次发薪周期，不为其生成本次工资。</span><span class="en">This will exclude the employee from this pay run.</span></div>
+    <div class="sk-warn"><span class="zh">⚠ 该操作不可逆。</span><span class="en">⚠ This action cannot be undone.</span></div>
+    <div class="sk-foot">
+      <button class="sk-cancel" onclick="closeSkip()"><span class="zh">取消</span><span class="en">Cancel</span></button>
+      <button class="sk-confirm" onclick="confirmSkip()"><span class="zh">确认忽略</span><span class="en">Skip</span></button>
+    </div>
+  </div>
+</div>
+
 <div class="toast" id="toast"><span class="tick">✓</span><span id="toastMsg"></span></div>
 
 <script src="cb-shell.js"></script>
@@ -324,6 +355,7 @@
   let sched = 'biweekly';
   let selPid = PERIODS_BW[1].id;   // 默认 7/15–7/28（已审批）
   let rows = ROSTER.map(()=>false);
+  let skipped = ROSTER.map(()=>false);   // 忽略本次发薪的员工
 
   const SCHED_EN = {weekly:'Weekly',biweekly:'Bi-weekly'};
   const SCHED_ZH = {weekly:'每周',biweekly:'双周'};
@@ -376,17 +408,27 @@
     document.getElementById('tsBody').innerHTML = ROSTER.map((e,i)=>`<tr>
         <td class="nm">${e.name}</td><td><span class="role-pill">${e.role}</span></td>
         <td class="num">${e.reg}</td><td class="num">${e.ot}</td><td class="num">${e.tips}</td>
-        <td class="ctr">${ (rows[i]||approved)
-          ? `<span class="approved-tag">✓ <span class="zh">已审批</span><span class="en">Approved</span></span>`
-          : `<button class="btn-approve" onclick="approveRow(${i})">Approve</button>` }</td>
+        <td class="ctr">${ skipped[i]
+          ? `<span class="skipped-tag"><span class="zh">已忽略</span><span class="en">Skipped</span></span>`
+          : (rows[i]||approved)
+            ? `<span class="approved-tag">✓ <span class="zh">已审批</span><span class="en">Approved</span></span>`
+            : `<div class="ts-acts"><button class="btn-approve" onclick="approveRow(${i})">Approve</button><button class="btn-skip" onclick="askSkip(${i})"><span class="zh">忽略</span><span class="en">Skip</span></button></div>` }</td>
       </tr>`).join('');
-    const done = (approved?ROSTER.length:rows.filter(Boolean).length), tot=ROSTER.length;
+    const settled = ROSTER.map((_,i)=> (rows[i]||approved||skipped[i]));
+    const allSettled = settled.every(Boolean);
+    const done = settled.filter(Boolean).length, tot=ROSTER.length;
     ['apDone','apDoneEn'].forEach(id=>document.getElementById(id).textContent=done);
     ['apTot','apTotEn'].forEach(id=>document.getElementById(id).textContent=tot);
-    document.getElementById('toEditBtn').disabled = !approved && !rows.every(Boolean);
+    document.getElementById('toEditBtn').disabled = !allSettled;
   }
-  function approveRow(i){ rows[i]=true; if(rows.every(Boolean)){ setPeriodApproved(selPid,true); showToast('工时和小费已全部审批','Approved'); } renderConfirm(); }
-  function approveAll(){ rows=ROSTER.map(()=>true); setPeriodApproved(selPid,true); showToast('已批准全部','Approved all'); renderConfirm(); }
+  function approveRow(i){ rows[i]=true; if(rows.every((v,k)=>v||skipped[k])){ if(rows.every(Boolean))setPeriodApproved(selPid,true); showToast('工时和小费已确认','Confirmed'); } renderConfirm(); }
+
+  /* 忽略本次发薪（强提示，不可逆） */
+  let skipIdx=null;
+  function askSkip(i){ skipIdx=i; document.getElementById('skipName').textContent=ROSTER[i].name; document.getElementById('skipOverlay').classList.add('open'); }
+  function closeSkip(){ document.getElementById('skipOverlay').classList.remove('open'); skipIdx=null; }
+  function confirmSkip(){ if(skipIdx!=null){ skipped[skipIdx]=true; } closeSkip(); showToast('已忽略该员工本次发薪','Employee skipped for this run'); renderConfirm(); }
+  function approveAll(){ rows=ROSTER.map((_,i)=>!skipped[i]); if(!skipped.some(Boolean)) setPeriodApproved(selPid,true); showToast('已批准全部','Approved all'); renderConfirm(); }
   function openTimesheets(){ showToast('打开「员工考勤表」（示意）','Opening Timesheets (demo)'); }
 
   /* Step3/4 头部日期同步所选周期 */

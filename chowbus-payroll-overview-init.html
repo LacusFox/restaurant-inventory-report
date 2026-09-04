@@ -48,6 +48,45 @@
   .g-btn{border:none;border-radius:10px;padding:12px 40px;font-size:15px;font-weight:700;cursor:pointer;background:var(--brand);color:#fff;transition:.15s;}
   .g-btn:hover{background:var(--brand-hover);}
 
+  /* ===== 添加员工到 payroll 弹窗（穿梭框，复用自员工管理页） ===== */
+  .am-ov{position:fixed;inset:0;background:rgba(17,24,39,.45);display:none;align-items:center;justify-content:center;z-index:1200;}
+  .am-ov.open{display:flex;}
+  .am-modal{background:#fff;border-radius:16px;width:960px;max-width:calc(100vw - 40px);max-height:calc(100vh - 60px);display:flex;flex-direction:column;box-shadow:0 24px 60px rgba(0,0,0,.28);}
+  .am-h{display:flex;align-items:flex-start;justify-content:space-between;padding:24px 28px 4px;}
+  .am-h .t{font-size:20px;font-weight:800;color:var(--t1);}
+  .am-h .s{font-size:13px;color:var(--t2);margin-top:4px;}
+  .am-x{border:none;background:transparent;font-size:20px;color:var(--t2);cursor:pointer;line-height:1;}
+  .am-banner{margin:14px 28px 0;background:var(--brand-sub);border:1px solid #fbd5e2;border-radius:10px;padding:12px 16px;font-size:13px;color:var(--tb);line-height:1.6;display:flex;gap:10px;}
+  .am-banner .bi{color:var(--brand);flex-shrink:0;margin-top:1px;}
+  .am-banner a{color:var(--brand);font-weight:700;text-decoration:none;white-space:nowrap;}
+  .am-body{display:grid;grid-template-columns:190px 1fr 240px;gap:18px;padding:20px 28px;overflow:hidden;min-height:340px;}
+  .am-roles{border:1px solid var(--border);border-radius:10px;padding:8px;overflow-y:auto;}
+  .am-role{display:flex;align-items:center;justify-content:space-between;padding:10px 12px;border-radius:8px;font-size:13.5px;color:var(--tb);cursor:pointer;}
+  .am-role .cnt{color:#9ca3af;font-size:12.5px;}
+  .am-role.on{background:var(--brand-sub);color:var(--brand);font-weight:700;}
+  .am-role.on .cnt{color:var(--brand);}
+  .am-mid{border:1px solid var(--border);border-radius:10px;display:flex;flex-direction:column;overflow:hidden;}
+  .am-midhead,.am-midrow{display:grid;grid-template-columns:34px 1fr 1fr;align-items:center;padding:11px 14px;}
+  .am-midhead{font-size:13px;font-weight:600;color:var(--tb);border-bottom:1px solid var(--border);}
+  .am-midbody{overflow-y:auto;}
+  .am-midrow{border-bottom:1px solid #f4f5f6;font-size:13.5px;cursor:pointer;}
+  .am-midrow:hover{background:#fafafa;}
+  .am-midrow .off{color:var(--t2);}
+  .am-cb{width:18px;height:18px;border:1.6px solid #c4c8cf;border-radius:5px;display:flex;align-items:center;justify-content:center;background:#fff;}
+  .am-cb.ck{background:var(--brand);border-color:var(--brand);color:#fff;}
+  .am-right{display:flex;flex-direction:column;overflow:hidden;}
+  .am-rtitle{display:flex;align-items:center;justify-content:space-between;font-size:13.5px;font-weight:700;color:var(--t1);margin-bottom:10px;}
+  .am-rtitle .clr{color:#c4c8cf;cursor:pointer;}
+  .am-chips{display:flex;flex-direction:column;gap:8px;overflow-y:auto;}
+  .am-chip{display:flex;align-items:center;justify-content:space-between;background:#f5f6f8;border-radius:9px;padding:10px 12px;font-size:13.5px;color:var(--tb);}
+  .am-chip .rm{color:#b8bcc4;cursor:pointer;font-size:15px;line-height:1;}
+  .am-empty{color:#c4c8cf;font-size:13px;text-align:center;padding:30px 0;}
+  .am-foot{display:flex;justify-content:center;gap:12px;padding:16px 28px 24px;border-top:1px solid var(--border);}
+  .am-foot button{border-radius:10px;padding:10px 30px;font-size:14px;font-weight:700;cursor:pointer;}
+  .am-cancel{background:#fff;border:1px solid #DCDCDC;color:var(--tb);}
+  .am-add{background:var(--brand);border:1px solid var(--brand);color:#fff;}
+  .am-add:hover{background:var(--brand-hover);}
+
   /* ===== 完成后仪表盘（3 卡，与标准概览一致） ===== */
   .stat-row{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;}
   .stat{background:var(--surface);border-radius:12px;box-shadow:0 1px 3px rgba(0,0,0,.08);padding:18px 20px;display:flex;flex-direction:column;position:relative;overflow:hidden;}
@@ -234,15 +273,41 @@
   </div>
 </div>
 
-<!-- 选择使用薪酬的员工 弹窗 -->
-<div class="ov" id="seOverlay">
-  <div class="io-modal">
-    <span class="io-x" onclick="closeSelectEmp()">✕</span>
-    <div class="io-h"><span class="zh">选择使用薪酬的员工</span><span class="en">Select employees to pay</span></div>
-    <div id="seList"></div>
-    <div class="io-foot">
-      <button class="io-cancel" onclick="closeSelectEmp()"><span class="zh">取消</span><span class="en">Cancel</span></button>
-      <button class="io-next" onclick="confirmSelectEmp()"><span class="zh">确定</span><span class="en">Confirm</span></button>
+<!-- 添加员工到 payroll 弹窗（复用自员工管理页） -->
+<div class="am-ov" id="amOverlay">
+  <div class="am-modal">
+    <div class="am-h">
+      <div>
+        <div class="t"><span class="zh">添加员工到 payroll</span><span class="en">Add Employees to Payroll</span></div>
+        <div class="s"><span class="zh"><b id="amCntZh">10</b> 位员工尚未加入 payroll</span><span class="en"><b id="amCntEn">10</b> employees not yet on payroll</span></div>
+      </div>
+      <button class="am-x" onclick="closeAddModal()">✕</button>
+    </div>
+    <div class="am-banner">
+      <span class="bi"><svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="10" cy="10" r="8"/><path d="M10 9v5M10 6.4v.1" stroke-linecap="round"/></svg></span>
+      <span>
+        <span class="zh">如果本年度需要 chowbus 提供 W-2 的员工未添加至 chowbus（包含已离职员工），请您到员工列表中添加员工。<a href="chowbus-payroll-manage-employees.html">前往员工列表添加 →</a></span>
+        <span class="en">If an employee who needs a Chowbus-issued W-2 for this year is not in Chowbus yet (including terminated employees), please add them in the employee list first. <a href="chowbus-payroll-manage-employees.html">Go to employee list →</a></span>
+      </span>
+    </div>
+    <div class="am-body">
+      <div class="am-roles" id="amRoles"></div>
+      <div class="am-mid">
+        <div class="am-midhead">
+          <div id="amAll" class="am-cb" onclick="amToggleAll()"></div>
+          <div><span class="zh">POS 姓名</span><span class="en">POS Name</span></div>
+          <div>Official Name</div>
+        </div>
+        <div class="am-midbody" id="amMid"></div>
+      </div>
+      <div class="am-right">
+        <div class="am-rtitle"><span><span class="zh">已选择</span><span class="en">Selected</span> (<span id="amSelCnt">0</span>)</span><span class="clr" onclick="amClear()" title="清空">🗑</span></div>
+        <div class="am-chips" id="amChips"></div>
+      </div>
+    </div>
+    <div class="am-foot">
+      <button class="am-cancel" onclick="closeAddModal()"><span class="zh">取消</span><span class="en">Cancel</span></button>
+      <button class="am-add" onclick="amConfirm()"><span class="zh">添加</span><span class="en">ADD</span></button>
     </div>
   </div>
 </div>
@@ -279,19 +344,64 @@
   ];
   function setStep(k,v){ st[k]=v; render(); }
 
-  /* ===== 第二步：员工初始化设置 ===== */
-  const SE_POOL=['Dan Boyle','Test Parse','Test Parse','Maria Lopez','Kenji Tanaka'];
-  let seSel=new Set();
-  function openSelectEmp(){ if(!(st.company&&st.schedule))return; renderSe(); document.getElementById('seOverlay').classList.add('open'); }
-  function closeSelectEmp(){ document.getElementById('seOverlay').classList.remove('open'); }
-  function seToggle(i){ seSel.has(i)?seSel.delete(i):seSel.add(i); renderSe(); }
-  function renderSe(){
-    document.getElementById('seList').innerHTML = SE_POOL.map((n,i)=>
-      `<label class="se-row"><input type="checkbox" ${seSel.has(i)?'checked':''} onchange="seToggle(${i})"> ${n}</label>`).join('');
+  /* ===== 第二步：员工初始化设置（复用「添加员工到 payroll」穿梭弹窗） ===== */
+  let empCount=0;
+  function bi(zh,en){ return '<span class="zh">'+zh+'</span><span class="en">'+en+'</span>'; }
+
+  const ADD_POOL=[
+    {pos:'Bohong X.', official:'Bohong Xu',   role:'manager'},
+    {pos:'Ruiqi Z.',  official:'Ruiqi Zhang', role:'manager'},
+    {pos:'司机 2号',   official:'司机 2号',     role:'Driver'},
+    {pos:'伟 黄',      official:'Wei Huang',    role:'manager'},
+    {pos:'Yang F.',   official:'Yang Feng',    role:'Server'},
+    {pos:'Yang F. (UI)', official:'Yang F. (UI)', role:'Cashier'},
+    {pos:'Yiran C.',  official:'Yiran Chen',   role:'Server'},
+    {pos:'Li W.',     official:'Li Wang',      role:'Cashier'},
+    {pos:'Chen W.',   official:'Chen Wei',     role:'Driver'},
+    {pos:'Sofia R.',  official:'Sofia Rossi',  role:'Server'},
+  ];
+  const ADD_ROLES=[['all','全部角色','All roles',22],['Server','服务员','Server',5],['Cashier','收银员','Cashier',5],['Driver','司机','Driver',3],['manager','经理','manager',2]];
+  let amRole='all';
+  let amSel=new Set(ADD_POOL.map((_,i)=>i));
+
+  function openSelectEmp(){
+    if(!(st.company&&st.schedule))return;
+    amRole='all'; amSel=new Set(ADD_POOL.map((_,i)=>i));
+    document.getElementById('amCntZh').textContent=ADD_POOL.length;
+    document.getElementById('amCntEn').textContent=ADD_POOL.length;
+    amRenderRoles(); amRenderMid(); amRenderRight();
+    document.getElementById('amOverlay').classList.add('open');
   }
-  function confirmSelectEmp(){
-    if(seSel.size===0){ coToast(document.body.classList.contains('lang-en')?'Please select at least one employee':'请至少选择 1 名员工'); return; }  // 未选员工时锁定下一步
-    closeSelectEmp(); st.empSelected=true; render();
+  function closeAddModal(){ document.getElementById('amOverlay').classList.remove('open'); }
+  function amVisible(){ return ADD_POOL.map((p,i)=>({p,i})).filter(({p})=> amRole==='all'||p.role===amRole); }
+  function amRenderRoles(){
+    document.getElementById('amRoles').innerHTML = ADD_ROLES.map(r=>
+      '<div class="am-role '+(amRole===r[0]?'on':'')+'" onclick="amSetRole(\''+r[0]+'\')"><span>'+bi(r[1],r[2])+'</span><span class="cnt">'+r[3]+'</span></div>').join('');
+  }
+  function amSetRole(r){ amRole=r; amRenderRoles(); amRenderMid(); }
+  function ck(on){ return '<div class="am-cb'+(on?' ck':'')+'">'+(on?'<svg width="12" height="12" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10.5 8 14l8-8"/></svg>':'')+'</div>'; }
+  function amRenderMid(){
+    const vis=amVisible();
+    document.getElementById('amMid').innerHTML = vis.map(({p,i})=>
+      '<div class="am-midrow" onclick="amToggle('+i+')"><div>'+ck(amSel.has(i))+'</div><div class="pn">'+p.pos+'</div><div class="off">'+p.official+'</div></div>').join('');
+    const allVis=vis.every(({i})=>amSel.has(i)) && vis.length>0;
+    document.getElementById('amAll').className='am-cb'+(allVis?' ck':'');
+    document.getElementById('amAll').innerHTML=allVis?'<svg width="12" height="12" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10.5 8 14l8-8"/></svg>':'';
+  }
+  function amToggle(i){ amSel.has(i)?amSel.delete(i):amSel.add(i); amRenderMid(); amRenderRight(); }
+  function amToggleAll(){ const vis=amVisible(); const allVis=vis.every(({i})=>amSel.has(i)); vis.forEach(({i})=> allVis?amSel.delete(i):amSel.add(i)); amRenderMid(); amRenderRight(); }
+  function amRemove(i){ amSel.delete(i); amRenderMid(); amRenderRight(); }
+  function amClear(){ amSel.clear(); amRenderMid(); amRenderRight(); }
+  function amRenderRight(){
+    const sel=[...amSel];
+    document.getElementById('amSelCnt').textContent=sel.length;
+    const box=document.getElementById('amChips');
+    box.innerHTML = sel.length? sel.map(i=>'<div class="am-chip"><span>'+ADD_POOL[i].pos+'</span><span class="rm" onclick="amRemove('+i+')">✕</span></div>').join('')
+      : '<div class="am-empty">'+bi('尚未选择员工','No employees selected')+'</div>';
+  }
+  function amConfirm(){
+    if(amSel.size===0){ coToast(document.body.classList.contains('lang-en')?'Please select at least one employee':'请至少选择 1 名员工'); return; }  // 至少选 1 名
+    empCount=amSel.size; st.empSelected=true; closeAddModal(); render();
   }
   function setPaid(v){ if(!st.empSelected)return; st.paidBefore=v; render(); }
   function finishEmp(){ st.empFinished=true; render(); }   // 之前没发过 → 完成初始化
@@ -452,7 +562,7 @@
     const t1 = `<div class="guide-row">
       <span class="g-num ${t1done?'done':''}">${t1done?'✓':'1'}</span>
       <div class="g-body"><div class="g-t"><span class="zh">选定需要使用系统发放工资的员工</span><span class="en">Select which employees use payroll</span></div>
-        ${t1done?`<div class="g-answer"><span class="zh">已选择 ${seSel.size} 名员工</span><span class="en">${seSel.size} employees selected</span></div>`:''}</div>
+        ${t1done?`<div class="g-answer"><span class="zh">已选择 ${empCount} 名员工</span><span class="en">${empCount} employees selected</span></div>`:''}</div>
       ${t1done
         ? `<button class="g-btn2" onclick="openSelectEmp()"><span class="zh">修改</span><span class="en">Edit</span></button>`
         : `<button class="g-btn2" onclick="openSelectEmp()"><span class="zh">去选择</span><span class="en">Select</span></button>`}
