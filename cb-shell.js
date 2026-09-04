@@ -26,7 +26,7 @@
     ['setup','初始化设置','Payroll Setup','chowbus-payroll-overview-init.html'],   // 初始化流程入口，置顶
     ['overview','概览','Overview','chowbus-payroll-overview.html', true],   // 暂时前端隐藏，保留代码，以后再放出
     ['company','公司设置','Company Setup','chowbus-payroll-company-setup.html'],
-    ['employees','员工管理','Employees','chowbus-payroll-employees.html'],
+    ['employees','发薪员工管理','Payroll Employees','chowbus-payroll-employees.html'],
     ['run','跑薪','Run Payroll','chowbus-payroll-run-payroll.html'],
     ['taxes','税务与申报','Taxes &amp; Filings','chowbus-payroll-taxes-filings.html']
   ];
