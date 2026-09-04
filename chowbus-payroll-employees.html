@@ -82,6 +82,8 @@
   .row-menu.open{display:block;}
   .row-menu button{display:block;width:100%;text-align:left;border:none;background:transparent;padding:9px 12px;font-size:13.5px;color:var(--tb);border-radius:7px;cursor:pointer;white-space:nowrap;}
   .row-menu button:hover{background:var(--brand-sub);color:var(--brand);}
+  .emp-toast{position:fixed;left:50%;bottom:32px;transform:translateX(-50%) translateY(24px);opacity:0;pointer-events:none;background:#1f2937;color:#fff;border-radius:10px;padding:12px 18px;font-size:14px;box-shadow:0 12px 32px rgba(0,0,0,.28);z-index:1400;transition:all .3s cubic-bezier(.2,.8,.3,1);}
+  .emp-toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
 
   /* ===== 添加员工到 payroll 弹窗（穿梭框） ===== */
   .am-ov{position:fixed;inset:0;background:rgba(17,24,39,.45);display:none;align-items:center;justify-content:center;z-index:1200;}
@@ -199,6 +201,9 @@
 <!-- 行操作下拉 -->
 <div class="row-menu" id="rowMenu"></div>
 
+<!-- 轻提示 -->
+<div class="emp-toast" id="empToast"><span id="empToastMsg"></span></div>
+
 <!-- 添加员工到 payroll 弹窗 -->
 <div class="am-ov" id="amOverlay">
   <div class="am-modal">
@@ -301,15 +306,29 @@
     ev.stopPropagation();
     const r=ROSTER[idx];
     const menu=document.getElementById('rowMenu');
+    const hasSeat = (r.pstatus==='paying'||r.pstatus==='ready');   // 有席位 = 发薪中/发薪就绪
+    const DETAIL="location.href='chowbus-payroll-employee-detail.html'";
     const items=[];
-    items.push(['edit', bi('修改薪资&入职日期','Edit pay & hire date'), "location.href='chowbus-payroll-employee-detail.html'"]);
     if(r.onboard){
-      items.push(['ob-sms', bi('发送 OB 短信/邮件','Send onboarding SMS/email'), "alert('demo')"]);
-      items.push(['ob-fill', bi('填写员工 payroll OB 资料','Fill payroll onboarding info'), "location.href='chowbus-payroll-employee-detail.html'"]);
+      // 资料待完善（待入职）：以完善资料为主
+      items.push([bi('发送 OB 短信/邮件','Send onboarding SMS/email'), "empToast('已发送入职短信/邮件','Onboarding link sent')"]);
+      items.push([bi('填写员工 payroll 资料','Fill payroll info'), DETAIL]);
+      items.push([bi('修改薪资&入职日期','Edit pay & hire date'), DETAIL]);
+      items.push([bi('导入历史薪资数据','Import pay history'), "location.href='chowbus-payroll-import-pay-history.html'"]);
+      items.push([bi('查看员工资料','View profile'), DETAIL]);
+    } else {
+      // 已入职员工
+      items.push([bi('查看工资单','View pay stub'), "location.href='chowbus-payroll-records.html'"]);
+      items.push(hasSeat
+        ? [bi('取消席位','Cancel seat'), "empToast('已取消该员工席位','Seat canceled')"]
+        : [bi('分配席位','Assign seat'), "empToast('已为该员工分配席位','Seat assigned')"]);
+      items.push([bi('修改发薪组','Change pay group'), "location.href='chowbus-payroll-pay-schedule.html'"]);
+      items.push([bi('查看员工资料','View profile'), DETAIL]);
+      items.push([bi('修改薪资&入职日期','Edit pay & hire date'), DETAIL]);
+      items.push([bi('修改员工 payroll 资料','Edit payroll info'), DETAIL]);
+      if(r.hist!=='imported') items.push([bi('导入历史薪资数据','Import pay history'), "location.href='chowbus-payroll-import-pay-history.html'"]);
     }
-    items.push(['import', bi('导入历史薪资数据','Import pay history'), "location.href='chowbus-payroll-import-pay-history.html'"]);
-    items.push(['view', bi('查看员工资料','View profile'), "location.href='chowbus-payroll-employee-detail.html'"]);
-    menu.innerHTML = items.map(it=>'<button onclick="'+it[2]+';closeRowMenu()">'+it[1]+'</button>').join('');
+    menu.innerHTML = items.map(it=>'<button onclick="'+it[1]+';closeRowMenu()">'+it[0]+'</button>').join('');
     const b=ev.currentTarget.getBoundingClientRect();
     menu.style.top=(b.bottom+6)+'px';
     let left=b.right-190; if(left<8)left=8;
@@ -317,6 +336,7 @@
     menu.classList.add('open');
   }
   function closeRowMenu(){ document.getElementById('rowMenu').classList.remove('open'); }
+  function empToast(zh,en){ const t=document.getElementById('empToast'); document.getElementById('empToastMsg').textContent=document.body.classList.contains('lang-en')?en:zh; t.classList.add('show'); clearTimeout(t._tm); t._tm=setTimeout(()=>t.classList.remove('show'),2200); }
   document.addEventListener('click', e=>{ if(!e.target.closest('.row-menu')&&!e.target.closest('.row-menu-btn')) closeRowMenu(); });
 
   /* ===== 添加员工到 payroll 弹窗 ===== */
