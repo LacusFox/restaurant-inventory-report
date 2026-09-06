@@ -113,6 +113,40 @@
   .ps-dl{color:var(--brand);font-weight:600;cursor:pointer;background:none;border:none;font-size:14px;}
   .ps-dl:hover{text-decoration:underline;}
 
+  /* ===== 分配席位 & 发薪组 弹窗 ===== */
+  .as-ov{position:fixed;inset:0;background:rgba(17,24,39,.45);display:none;align-items:center;justify-content:center;z-index:1250;}
+  .as-ov.open{display:flex;}
+  .as-modal{background:#fff;border-radius:16px;width:640px;max-width:calc(100vw - 40px);max-height:calc(100vh - 60px);display:flex;flex-direction:column;box-shadow:0 24px 60px rgba(0,0,0,.28);}
+  .as-h{display:flex;align-items:center;justify-content:space-between;padding:24px 28px 4px;}
+  .as-h .t{font-size:20px;font-weight:800;color:var(--t1);}
+  .as-x{border:none;background:transparent;font-size:20px;color:var(--t2);cursor:pointer;}
+  .as-body{padding:16px 28px;overflow-y:auto;}
+  .as-seat{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;padding-bottom:18px;border-bottom:1px solid var(--border);}
+  .as-seat .st{font-size:16px;font-weight:800;color:var(--t1);}
+  .as-seat .ss{font-size:13px;color:var(--t2);margin-top:4px;line-height:1.6;}
+  .as-tog{width:46px;height:26px;border-radius:20px;background:#d1d5db;position:relative;cursor:pointer;transition:.15s;flex-shrink:0;margin-top:2px;}
+  .as-tog.on{background:var(--brand);}
+  .as-tog::after{content:"";position:absolute;top:3px;left:3px;width:20px;height:20px;border-radius:50%;background:#fff;transition:.15s;}
+  .as-tog.on::after{left:23px;}
+  .as-gh{font-size:16px;font-weight:800;color:var(--t1);margin:18px 0 12px;}
+  .as-grp{border:1.5px solid var(--border);border-radius:12px;padding:15px 18px;display:flex;align-items:center;gap:14px;cursor:pointer;margin-bottom:12px;transition:.12s;}
+  .as-grp:hover{border-color:#c4c8cf;}
+  .as-grp.on{border-color:var(--brand);background:var(--brand-sub);}
+  .as-radio{width:20px;height:20px;border:2px solid #c4c8cf;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;}
+  .as-grp.on .as-radio{border-color:var(--brand);}
+  .as-grp.on .as-radio::after{content:"";width:10px;height:10px;border-radius:50%;background:var(--brand);}
+  .as-gt{font-size:16px;font-weight:700;color:var(--t1);}
+  .as-gs{font-size:13px;color:var(--t2);margin-top:3px;}
+  .as-next{margin-left:auto;font-size:13px;color:var(--t2);white-space:nowrap;}
+  .as-banner{display:flex;gap:10px;align-items:center;background:#f5f6f8;border-radius:10px;padding:13px 16px;font-size:13.5px;color:var(--tb);margin-top:4px;}
+  .as-banner .bi{color:#9ca3af;flex-shrink:0;}
+  .as-banner a{color:var(--brand);font-weight:700;text-decoration:none;}
+  .as-foot{display:flex;justify-content:flex-end;gap:12px;padding:16px 28px 24px;border-top:1px solid var(--border);}
+  .as-foot button{border-radius:10px;padding:10px 26px;font-size:14px;font-weight:700;cursor:pointer;}
+  .as-cancel{background:#fff;border:1px solid #DCDCDC;color:var(--tb);}
+  .as-save{background:var(--brand);border:1px solid var(--brand);color:#fff;}
+  .as-save:hover{background:var(--brand-hover);}
+
   /* ===== 添加员工到 payroll 弹窗（穿梭框） ===== */
   .am-ov{position:fixed;inset:0;background:rgba(17,24,39,.45);display:none;align-items:center;justify-content:center;z-index:1200;}
   .am-ov.open{display:flex;}
@@ -241,6 +275,37 @@
         </tr></thead>
         <tbody id="psBody"></tbody>
       </table>
+    </div>
+  </div>
+</div>
+
+<!-- 分配席位 & 发薪组 弹窗 -->
+<div class="as-ov" id="asOverlay">
+  <div class="as-modal">
+    <div class="as-h">
+      <div class="t"><span class="zh">分配席位 &amp; 发薪组</span><span class="en">Assign Seat &amp; Pay Group</span></div>
+      <button class="as-x" onclick="closeAssign()">✕</button>
+    </div>
+    <div class="as-body">
+      <div class="as-seat">
+        <div>
+          <div class="st"><span class="zh">分配发薪席位</span><span class="en">Assign a payroll seat</span></div>
+          <div class="ss"><span class="zh">开启后将占用一个发薪席位，当前剩余 7 / 25。</span><span class="en">Turns on payroll for this employee and uses one seat. 7 / 25 remaining.</span></div>
+        </div>
+        <div class="as-tog on" id="asTog" onclick="asToggleSeat()"></div>
+      </div>
+      <div id="asGroupWrap">
+        <div class="as-gh"><span class="zh">发薪组（多选一）</span><span class="en">Pay group (choose one)</span></div>
+        <div id="asGroups"></div>
+        <div class="as-banner">
+          <span class="bi"><svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="10" cy="10" r="8"/><path d="M10 9v5M10 6.4v.1" stroke-linecap="round"/></svg></span>
+          <span><span class="zh">没有需要的发薪组，或需要设置其他发薪组？</span><span class="en">Need a different pay group? </span><a href="chowbus-payroll-pay-schedule.html"><span class="zh">前往发薪组设置页面添加 →</span><span class="en">Go to pay schedule settings →</span></a></span>
+        </div>
+      </div>
+    </div>
+    <div class="as-foot">
+      <button class="as-cancel" onclick="closeAssign()"><span class="zh">取消</span><span class="en">Cancel</span></button>
+      <button class="as-save" onclick="asSave()"><span class="zh">保存</span><span class="en">Save</span></button>
     </div>
   </div>
 </div>
@@ -393,7 +458,7 @@
       items.push([bi('修改员工 payroll 资料','Edit payroll info'), DETAIL]);
     } else {
       // 已入职、暂未分配席位
-      items.push([bi('分配席位&发薪组','Assign seat & pay group'), "location.href='chowbus-payroll-pay-schedule.html'"]);
+      items.push([bi('分配席位&发薪组','Assign seat & pay group'), "openAssign("+idx+")"]);
       items.push([bi('查看员工资料','View profile'), DETAIL]);
       items.push([bi('修改薪资&入职日期','Edit pay & hire date'), DETAIL]);
       items.push([bi('修改员工 payroll 资料','Edit payroll info'), DETAIL]);
@@ -423,6 +488,36 @@
     document.getElementById('psOverlay').classList.add('open');
   }
   function closePaystub(){ document.getElementById('psOverlay').classList.remove('open'); }
+
+  /* ===== 分配席位 & 发薪组 弹窗 ===== */
+  const PAYGROUPS=[
+    {zh:'周薪',   en:'Weekly',       dzh:'每周五发薪 · 周一至周日', den:'Pay every Friday · Mon–Sun', next:'09/11/2026'},
+    {zh:'双周薪', en:'Bi-weekly',    dzh:'每两周五发薪 · 14 天',    den:'Every other Friday · 14 days', next:'09/18/2026'},
+    {zh:'半月薪', en:'Semi-monthly', dzh:'每月 15 日与月末',        den:'15th & month end', next:'09/15/2026'},
+    {zh:'月薪',   en:'Monthly',      dzh:'每月最后一个工作日',      den:'Last business day of month', next:'09/30/2026'},
+  ];
+  let asSeatOn=true, asGroup=0;
+  function openAssign(idx){
+    asSeatOn=true; asGroup=0;
+    document.getElementById('asTog').classList.add('on');
+    document.getElementById('asGroupWrap').style.display='';
+    asRenderGroups();
+    document.getElementById('asOverlay').classList.add('open');
+  }
+  function closeAssign(){ document.getElementById('asOverlay').classList.remove('open'); }
+  function asToggleSeat(){ asSeatOn=!asSeatOn; document.getElementById('asTog').classList.toggle('on',asSeatOn); document.getElementById('asGroupWrap').style.display=asSeatOn?'':'none'; }
+  function asPickGroup(i){ asGroup=i; asRenderGroups(); }
+  function asRenderGroups(){
+    document.getElementById('asGroups').innerHTML = PAYGROUPS.map((g,i)=>
+      '<div class="as-grp '+(asGroup===i?'on':'')+'" onclick="asPickGroup('+i+')"><div class="as-radio"></div>'+
+      '<div><div class="as-gt">'+bi(g.zh,g.en)+'</div><div class="as-gs">'+bi(g.dzh,g.den)+'</div></div>'+
+      '<div class="as-next">'+bi('下次发薪 '+g.next,'Next pay '+g.next)+'</div></div>').join('');
+  }
+  function asSave(){
+    if(asSeatOn){ empToast('已分配席位，并加入「'+PAYGROUPS[asGroup].zh+'」发薪组','Seat assigned · '+PAYGROUPS[asGroup].en+' pay group'); }
+    else { empToast('未分配发薪席位','No seat assigned'); }
+    closeAssign();
+  }
   document.addEventListener('click', e=>{ if(!e.target.closest('.row-menu')&&!e.target.closest('.row-menu-btn')) closeRowMenu(); });
 
   /* ===== 添加员工到 payroll 弹窗 ===== */
