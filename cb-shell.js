@@ -71,7 +71,6 @@
       '</div>'+
       '<div class="cb-vsep"></div>'+
       '<span class="cb-region">USA<svg width="13" height="13" viewBox="0 0 14 14" fill="none" style="color:#374151"><path d="M3 5.5 7 9.5l4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>'+
-      coSwitcher()+
       '<div class="cb-hright"><span>sisi.hu@chowbus.com</span><div class="cb-lang" onclick="toggleLanguage()"><span class="lz">中文</span><span class="le">EN</span></div></div>'+
     '</div>';
   }
