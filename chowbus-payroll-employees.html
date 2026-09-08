@@ -173,6 +173,52 @@
   .iv-send{background:var(--brand);border:1px solid var(--brand);color:#fff;}
   .iv-send:hover{background:var(--brand-hover);}
 
+  /* ===== 仍需员工签字 提示弹窗 ===== */
+  .sn-ov{position:fixed;inset:0;background:rgba(17,24,39,.45);display:none;align-items:center;justify-content:center;z-index:1290;}
+  .sn-ov.open{display:flex;}
+  .sn-modal{background:#fff;border-radius:16px;padding:28px 30px 22px;width:520px;max-width:calc(100vw - 40px);box-shadow:0 24px 60px rgba(0,0,0,.28);display:flex;gap:18px;}
+  .sn-ic{width:52px;height:52px;border-radius:50%;background:var(--brand-sub);color:var(--brand);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+  .sn-t{font-size:19px;font-weight:800;color:#111;margin-bottom:8px;}
+  .sn-s{font-size:14px;color:var(--t2);line-height:1.65;margin-bottom:20px;}
+  .sn-foot{display:flex;justify-content:flex-end;gap:12px;}
+  .sn-foot button{border-radius:10px;padding:10px 20px;font-size:14px;font-weight:700;cursor:pointer;}
+  .sn-cancel{background:#fff;border:1px solid #DCDCDC;color:var(--tb);}
+  .sn-go{background:var(--brand);border:1px solid var(--brand);color:#fff;}
+  .sn-go:hover{background:var(--brand-hover);}
+
+  /* ===== check 员工 onboarding 弹窗 ===== */
+  .eo-ov{position:fixed;inset:0;background:rgba(20,22,30,.5);display:none;z-index:1300;align-items:center;justify-content:center;padding:24px;}
+  .eo-ov.open{display:flex;}
+  .eo-modal{position:relative;background:#fff;width:min(1080px,96vw);height:min(86vh,760px);border-radius:16px;box-shadow:0 30px 80px rgba(0,0,0,.35);display:flex;overflow:hidden;}
+  .eo-x{position:absolute;top:18px;right:22px;font-size:24px;color:#9aa0aa;cursor:pointer;z-index:3;line-height:1;}
+  .eo-x:hover{color:#333;}
+  .eo-side{width:300px;flex:0 0 auto;border-right:1px solid #EFF0F3;padding:26px 24px;overflow-y:auto;}
+  .eo-logo{font-size:27px;font-weight:900;font-style:italic;letter-spacing:-1px;color:#111;padding-bottom:20px;border-bottom:1px solid #EFF0F3;margin-bottom:20px;}
+  .eo-yp{font-size:18px;font-weight:800;color:#111;}
+  .eo-yp-sub{font-size:13.5px;color:#6b7280;margin-top:6px;line-height:1.5;margin-bottom:22px;}
+  .eo-steps{display:flex;flex-direction:column;gap:6px;}
+  .eo-step{display:flex;gap:12px;align-items:center;padding:12px;border-radius:10px;cursor:pointer;border:1px solid transparent;transition:.12s;}
+  .eo-step:hover{background:#f3f4f6;}
+  .eo-step.active{background:#F5F7FF;border-color:#C7D2FE;}
+  .eo-chk{width:22px;height:22px;border-radius:50%;border:2px solid #22A353;color:#22A353;display:inline-flex;align-items:center;justify-content:center;font-size:12px;font-weight:900;flex:0 0 auto;}
+  .eo-chk.todo{border-color:#c4c8cf;color:transparent;}
+  .eo-step-t{font-size:15px;font-weight:700;color:#111;}
+  .eo-step-s{font-size:12.5px;color:#6b7280;margin-top:2px;}
+  .eo-main{flex:1;overflow-y:auto;padding:44px 46px;}
+  .eo-h1{font-size:26px;font-weight:800;color:#111;margin-bottom:8px;}
+  .eo-sub{font-size:15px;color:#6b7280;line-height:1.6;margin-bottom:22px;}
+  .eo-hr{height:1px;background:#EFF0F3;margin:0 0 24px;max-width:640px;}
+  .eo-field{margin-bottom:22px;max-width:640px;}
+  .eo-label{font-size:15px;font-weight:800;color:#111;margin-bottom:3px;display:block;}
+  .eo-label .eo-req{color:#e0455e;}
+  .eo-desc{font-size:13.5px;color:#8a8f9a;margin-bottom:9px;}
+  .eo-input,.eo-select{width:100%;padding:13px 14px;border:1px solid #DADCE0;border-radius:10px;font-size:14.5px;background:#fff;color:#111;font-family:inherit;}
+  .eo-input:focus,.eo-select:focus{outline:none;border-color:#2b4eff;box-shadow:0 0 0 3px rgba(43,78,255,.12);}
+  select.eo-select{appearance:none;cursor:pointer;}
+  .eo-foot{display:flex;justify-content:flex-end;margin-top:8px;max-width:640px;}
+  .eo-btn{background:#2b4eff;color:#fff;border:none;border-radius:10px;padding:13px 30px;font-size:15px;font-weight:700;cursor:pointer;}
+  .eo-btn:hover{background:#2140db;}
+
   /* ===== 添加员工到 payroll 弹窗（穿梭框） ===== */
   .am-ov{position:fixed;inset:0;background:rgba(17,24,39,.45);display:none;align-items:center;justify-content:center;z-index:1200;}
   .am-ov.open{display:flex;}
@@ -366,6 +412,35 @@
   </div>
 </div>
 
+<!-- 仍需员工签字 提示 -->
+<div class="sn-ov" id="snOverlay">
+  <div class="sn-modal">
+    <div class="sn-ic"><svg width="26" height="26" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="10" cy="10" r="8"/><path d="M10 9v5M10 6.4v.1" stroke-linecap="round"/></svg></div>
+    <div>
+      <div class="sn-t"><span class="zh">仍需员工签字</span><span class="en">Employee signature still required</span></div>
+      <div class="sn-s"><span class="zh">帮助员工填写个人资料后，依旧需要发送 OB 短信或邮件给员工，完成签字采集。</span><span class="en">After you fill in the employee's info, you still need to send them an onboarding SMS or email to collect their signature.</span></div>
+      <div class="sn-foot">
+        <button class="sn-cancel" onclick="closeSignNotice()"><span class="zh">取消</span><span class="en">Cancel</span></button>
+        <button class="sn-go" onclick="snContinue()"><span class="zh">知道了，继续填写</span><span class="en">Got it, continue</span></button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- check 员工 onboarding 弹窗 -->
+<div class="eo-ov" id="eoOverlay">
+  <div class="eo-modal">
+    <span class="eo-x" onclick="closeEmpOnboard()">✕</span>
+    <aside class="eo-side">
+      <div class="eo-logo">check</div>
+      <div class="eo-yp">Your payroll</div>
+      <div class="eo-yp-sub">Payroll setup requirements.</div>
+      <div class="eo-steps" id="eoSteps"></div>
+    </aside>
+    <div class="eo-main" id="eoMain"></div>
+  </div>
+</div>
+
 <!-- 添加员工到 payroll 弹窗 -->
 <div class="am-ov" id="amOverlay">
   <div class="am-modal">
@@ -500,7 +575,7 @@
     if(r.onboard){
       // 资料待完善（待入职）：以完善资料为主
       items.push([bi('发送 OB 短信/邮件','Send onboarding SMS/email'), "openInvite("+idx+")"]);
-      items.push([bi('填写员工 payroll 资料','Fill payroll info'), DETAIL]);
+      items.push([bi('填写员工 payroll 资料','Fill payroll info'), "openSignNotice("+idx+")"]);
       items.push([bi('修改薪资&入职日期','Edit pay & hire date'), DETAIL]);
       items.push([bi('导入历史薪资数据','Import pay history'), "location.href='chowbus-payroll-import-pay-history.html'"]);
       items.push([bi('查看员工资料','View profile'), DETAIL]);
@@ -602,6 +677,60 @@
     closeInvite();
   }
   function isEnLang(){ return document.body.classList.contains('lang-en'); }
+
+  /* ===== 填写员工 payroll 资料：仍需签字提示 → check onboarding ===== */
+  let eoIdx=null, eoStep=0;
+  function openSignNotice(idx){ eoIdx=idx; document.getElementById('snOverlay').classList.add('open'); }
+  function closeSignNotice(){ document.getElementById('snOverlay').classList.remove('open'); }
+  function snContinue(){ closeSignNotice(); openEmpOnboard(eoIdx); }
+
+  const EO_STEPS=[['personal','Personal info'],['payment','Payment method'],['tax','Tax withholding']];
+  function openEmpOnboard(idx){ eoIdx=idx; eoStep=0; eoRender(); document.getElementById('eoOverlay').classList.add('open'); }
+  function closeEmpOnboard(){ document.getElementById('eoOverlay').classList.remove('open'); }
+  function eoGo(i){ eoStep=i; eoRender(); }
+  function eoNext(){
+    if(eoStep<EO_STEPS.length-1){ eoStep++; eoRender(); }
+    else { closeEmpOnboard(); empToast('已保存员工 payroll 资料，请发送 OB 短信/邮件完成签字采集','Saved · send onboarding invite to collect signature'); }
+  }
+  function eoRender(){
+    document.getElementById('eoSteps').innerHTML = EO_STEPS.map((s,i)=>
+      '<div class="eo-step '+(i===eoStep?'active':'')+'" onclick="eoGo('+i+')"><span class="eo-chk">✓</span>'+
+      '<div><div class="eo-step-t">'+s[1]+'</div><div class="eo-step-s">Complete</div></div></div>').join('');
+    document.getElementById('eoMain').innerHTML = eoMainHtml();
+  }
+  function eoField(label,desc,req,inputHtml){
+    return '<div class="eo-field"><label class="eo-label">'+label+(req?' <span class="eo-req">*</span>':'')+'</label>'+(desc?'<div class="eo-desc">'+desc+'</div>':'')+inputHtml+'</div>';
+  }
+  function eoMainHtml(){
+    const r=ROSTER[eoIdx]||{};
+    const parts=(r.official||'').split(' ');
+    const first=parts[0]||'', last=parts.slice(1).join(' ')||'';
+    const btn='<div class="eo-foot"><button class="eo-btn" onclick="eoNext()">'+(eoStep<2?'Continue':'Finish')+'</button></div>';
+    if(eoStep===0){
+      return '<div class="eo-h1">Personal Information</div><div class="eo-sub">We will need additional details in order to properly onboard you.</div><div class="eo-hr"></div>'+
+        eoField('First Name','Employee\'s first name',false,'<input class="eo-input" value="'+first+'">')+
+        eoField('Middle Name','Employee\'s middle name, if available',false,'<input class="eo-input" placeholder="Enter middle name">')+
+        eoField('Last Name','Employee\'s last name',true,'<input class="eo-input" value="'+last+'">')+
+        eoField('Date of Birth','Employee\'s date of birth',true,'<input class="eo-input" type="text" placeholder="MM/DD/YYYY">')+
+        eoField('Social Security Number','Employee\'s SSN',true,'<input class="eo-input" placeholder="XXX-XX-XXXX">')+
+        eoField('Home Address','Employee\'s residential address',true,'<input class="eo-input" placeholder="Street, City, State, ZIP">')+
+        btn;
+    }
+    if(eoStep===1){
+      return '<div class="eo-h1">Payment Method</div><div class="eo-sub">How would the employee like to get paid?</div><div class="eo-hr"></div>'+
+        eoField('Payment method','',true,'<select class="eo-select"><option>Direct deposit</option><option>Paper check</option></select>')+
+        eoField('Routing number','9-digit bank routing number',true,'<input class="eo-input" placeholder="XXXXXXXXX">')+
+        eoField('Account number','Bank account number',true,'<input class="eo-input" placeholder="Account number">')+
+        eoField('Account type','',true,'<select class="eo-select"><option>Checking</option><option>Savings</option></select>')+
+        btn;
+    }
+    return '<div class="eo-h1">Tax Withholding</div><div class="eo-sub">Federal and state withholding details for this employee.</div><div class="eo-hr"></div>'+
+      eoField('Federal filing status','From the employee\'s Form W-4',true,'<select class="eo-select"><option>Single or Married filing separately</option><option>Married filing jointly</option><option>Head of household</option></select>')+
+      eoField('Dependents total amount','',false,'<input class="eo-input" placeholder="$0.00">')+
+      eoField('State','Work state',true,'<select class="eo-select"><option>Illinois (IL)</option></select>')+
+      eoField('Additional withholding','Extra amount withheld each pay period',false,'<input class="eo-input" placeholder="$0.00">')+
+      btn;
+  }
   document.addEventListener('click', e=>{ if(!e.target.closest('.row-menu')&&!e.target.closest('.row-menu-btn')) closeRowMenu(); });
 
   /* ===== 添加员工到 payroll 弹窗 ===== */
