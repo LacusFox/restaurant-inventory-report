@@ -80,7 +80,7 @@
           <div style="overflow-x:auto;">
             <table class="ts-tbl">
               <thead><tr>
-                <th>#</th><th>Name</th><th>Address line 1</th><th>Address line 2</th><th>City</th><th>State</th><th>ZIP</th>
+                <th>#</th><th>Name</th><th>Restaurant ID</th><th>Address line 1</th><th>Address line 2</th><th>City</th><th>State</th><th>ZIP</th>
               </tr></thead>
               <tbody id="tsBody"></tbody>
             </table>
@@ -106,17 +106,9 @@
     <label class="wk-lb">Name <span class="rq">*</span></label>
     <div class="wk-desc">This is used for internal reference only.</div>
     <input class="wk-input" id="wkName" placeholder="Workplace name">
-    <div class="wk-sec">Address<span class="rq" style="color:#e0455e">*</span></div>
-    <input class="wk-input" id="wkA1" placeholder="Address line 1">
-    <input class="wk-input" id="wkA2" placeholder="Address line 2">
-    <input class="wk-input" id="wkCity" placeholder="City">
-    <div class="wk-row2">
-      <select class="wk-select" id="wkState">
-        <option value="">State</option>
-        <option>IL</option><option>NY</option><option>CA</option><option>TX</option><option>WA</option><option>NJ</option>
-      </select>
-      <input class="wk-input" id="wkZip" placeholder="ZIP">
-    </div>
+    <label class="wk-lb">Location Mapping <span class="rq">*</span></label>
+    <div class="wk-desc">Match this workplace to a Location in your system. Address and Restaurant ID are filled automatically.</div>
+    <select class="wk-select" id="wkLoc"></select>
     <button class="wk-save" onclick="saveWk()">Save workplace <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10.5 8 14l8-8"/></svg></button>
   </div>
 </div>
@@ -127,28 +119,40 @@
 <script>
   renderShell('company');
 
+  /* 系统内的 Location（含 Restaurant ID 与地址），供 Location Mapping 下拉匹配 */
+  const LOCATIONS=[
+    {loc:'Curry Flurry - Chicago Loop', rid:'12555', a1:'200 W Madison St',   a2:'Suite 100', city:'Chicago',    state:'IL', zip:'60606'},
+    {loc:'Curry Flurry - Chinatown',    rid:'12300', a1:'2227 S Wentworth Ave',a2:'',          city:'Chicago',    state:'IL', zip:'60616'},
+    {loc:'Curry Flurry - Naperville',   rid:'12811', a1:'55 S Main St',        a2:'',          city:'Naperville', state:'IL', zip:'60540'},
+    {loc:'Curry Flurry - Evanston',     rid:'12902', a1:'1620 Orrington Ave',  a2:'',          city:'Evanston',   state:'IL', zip:'60201'},
+  ];
   let WORKPLACES=[
-    {name:'200 W Madison St', a1:'200 W Madison St', a2:'Suite 100', city:'Chicago', state:'IL', zip:'60606'},
-    {name:'moli', a1:'2227 S Wentworth Ave, Chicago, IL 60616', a2:'', city:'Port Vern', state:'IL', zip:'60616'},
+    {name:'200 W Madison St', rid:'12555', a1:'200 W Madison St', a2:'Suite 100', city:'Chicago', state:'IL', zip:'60606'},
+    {name:'moli', rid:'12300', a1:'2227 S Wentworth Ave, Chicago, IL 60616', a2:'', city:'Port Vern', state:'IL', zip:'60616'},
   ];
   function tsRender(){
     document.getElementById('tsCnt').textContent = WORKPLACES.length + ' workplace' + (WORKPLACES.length===1?'':'s');
     document.getElementById('tsBody').innerHTML = WORKPLACES.map((w,i)=>
-      '<tr><td class="idx">'+(i+1)+'</td><td>'+w.name+'</td><td>'+w.a1+'</td><td'+(w.a2?'':' class="ts-empty-a2"')+'>'+(w.a2||'—')+'</td><td>'+w.city+'</td><td>'+w.state+'</td><td>'+w.zip+'</td></tr>').join('');
+      '<tr><td class="idx">'+(i+1)+'</td><td>'+w.name+'</td><td>'+(w.rid||'—')+'</td><td>'+w.a1+'</td><td'+(w.a2?'':' class="ts-empty-a2"')+'>'+(w.a2||'—')+'</td><td>'+w.city+'</td><td>'+w.state+'</td><td>'+w.zip+'</td></tr>').join('');
   }
   function tsSync(){ document.getElementById('tsCont').disabled = !document.getElementById('tsConfirm').checked; }
   function tsContinue(){ showToast('Workplaces confirmed'); setTimeout(()=>location.href='chowbus-payroll-company-setup.html', 1000); }
   tsRender();
 
-  function openWk(){ ['wkName','wkA1','wkA2','wkCity','wkZip'].forEach(id=>document.getElementById(id).value=''); document.getElementById('wkState').value=''; document.getElementById('wkOverlay').classList.add('open'); }
+  function openWk(){
+    document.getElementById('wkName').value='';
+    document.getElementById('wkLoc').innerHTML = '<option value="">Select a location</option>' +
+      LOCATIONS.map((l,i)=>'<option value="'+i+'">'+l.loc+' · #'+l.rid+'</option>').join('');
+    document.getElementById('wkOverlay').classList.add('open');
+  }
   function closeWk(){ document.getElementById('wkOverlay').classList.remove('open'); }
   function saveWk(){
     const name=document.getElementById('wkName').value.trim();
-    const a1=document.getElementById('wkA1').value.trim();
-    const state=document.getElementById('wkState').value;
+    const li=document.getElementById('wkLoc').value;
     if(!name){ showToast('Please enter a name'); return; }
-    if(!a1 || !state){ showToast('Please complete the address'); return; }
-    WORKPLACES.push({name, a1, a2:document.getElementById('wkA2').value.trim(), city:document.getElementById('wkCity').value.trim(), state, zip:document.getElementById('wkZip').value.trim()});
+    if(li===''){ showToast('Please select a location'); return; }
+    const L=LOCATIONS[li];
+    WORKPLACES.push({name, rid:L.rid, a1:L.a1, a2:L.a2, city:L.city, state:L.state, zip:L.zip});
     closeWk(); tsRender();
     document.getElementById('tsConfirm').checked=false; tsSync();
   }
