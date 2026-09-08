@@ -126,6 +126,15 @@
             <span class="entry-arrow">›</span>
           </div>
 
+          <div class="entry-card" id="teamSetupCard" hidden onclick="cbNav('chowbus-payroll-team-setup.html')">
+            <div class="entry-ic">🏬</div>
+            <div class="entry-body">
+              <div class="entry-title"><span class="zh">工作地点设置</span><span class="en">Team Setup</span></div>
+              <div class="entry-desc"><span class="zh">登记所有营业中的工作地点（应税辖区），用于薪酬与税务申报。</span><span class="en">Account for all active workplaces (taxable jurisdictions) for payroll and tax filing.</span></div>
+            </div>
+            <span class="entry-arrow">›</span>
+          </div>
+
         </div>
       </div>
     </div>
@@ -157,6 +166,7 @@
 <script src="cb-shell.js"></script>
 <script>
   renderShell('company');
+  if(window.cbIsPlanB && window.cbIsPlanB()){ document.getElementById('teamSetupCard').hidden=false; }   // Team Setup 在 Plan B 显示
 
   function soon(en,zh){
     const t=document.getElementById('toast');

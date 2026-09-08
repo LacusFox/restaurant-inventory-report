@@ -17,7 +17,11 @@
     devices:'<path d="M3.5 5h13v8h-13zM7.5 16.4h5M10 13v3.4"/>',
     account:'<path d="M10 10a3 3 0 1 0 0-6 3 3 0 0 0 0 6ZM4.6 16.4c0-3 2.6-4.8 5.4-4.8s5.4 1.8 5.4 4.8"/>',
     smart:'<path d="M4.6 10.6 8.4 14.4 15.4 5.6"/>',
-    pay:'<path d="M10 4v12M12.6 6.6C12 5.8 11 5.4 10 5.4c-1.5 0-2.5.8-2.5 2 0 2.6 5 1.5 5 4.1 0 1.2-1 2-2.5 2-1.1 0-2.1-.5-2.7-1.3"/>'
+    pay:'<path d="M10 4v12M12.6 6.6C12 5.8 11 5.4 10 5.4c-1.5 0-2.5.8-2.5 2 0 2.6 5 1.5 5 4.1 0 1.2-1 2-2.5 2-1.1 0-2.1-.5-2.7-1.3"/>',
+    building:'<path d="M4 17V6l6-3 6 3v11M4 17h12M8 8h.01M8 11h.01M12 8h.01M12 11h.01M8 17v-3h4v3"/>',
+    run:'<path d="M6.5 4.5v11l9-5.5z"/>',
+    ein:'<path d="M3.5 6h13v8h-13zM3.5 9.2h13M6.2 12h3M11.5 12h2.3"/>',
+    gear:'<path d="M10 12.4a2.4 2.4 0 1 0 0-4.8 2.4 2.4 0 0 0 0 4.8ZM10 3.5v1.8M10 14.7v1.8M16.5 10h-1.8M5.3 10H3.5M14.6 5.4l-1.3 1.3M6.7 13.3l-1.3 1.3M14.6 14.6l-1.3-1.3M6.7 6.7 5.4 5.4"/>'
   };
   function itm(key,zh,en,chev){
     return '<div class="cb-item"><svg width="19" height="19" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.35" stroke-linecap="round" stroke-linejoin="round">'+IC[key]+'</svg><span class="lb"><span class="zh">'+zh+'</span><span class="en">'+en+'</span></span>'+(chev?CHEV:'')+'</div>';
@@ -30,9 +34,18 @@
     ['run','跑薪','Run Payroll','chowbus-payroll-run-payroll.html'],
     ['taxes','税务与申报','Taxes &amp; Filings','chowbus-payroll-taxes-filings.html']
   ];
-  /* RG 视角：侧边栏仅保留「公司列表」，其余功能进入某个 EIN 详情后以三级 Tab 展示 */
+  /* RG 视角（Plan A）：侧边栏仅保留「公司列表」，其余功能进入某个 EIN 详情后以三级 Tab 展示 */
   var RG_SUBS = [
     ['companylist','公司列表','Company List','chowbus-payroll-company-list.html']
+  ];
+  /* Plan B：Payroll 功能全部升级为一级菜单 + 底部「管理 EIN」 */
+  var PLANB_SUBS = [
+    ['setup','初始化设置','Payroll Setup','chowbus-payroll-overview-init.html','gear'],
+    ['company','公司设置','Company Setup','chowbus-payroll-company-setup.html','building'],
+    ['employees','发薪员工管理','Payroll Employees','chowbus-payroll-employees.html','team'],
+    ['run','跑薪','Run Payroll','chowbus-payroll-run-payroll.html','run'],
+    ['taxes','税务与申报','Taxes &amp; Filings','chowbus-payroll-taxes-filings.html','txn'],
+    ['einmanage','管理 EIN','Manage EIN','chowbus-payroll-ein-manage.html','ein']
   ];
 
   /* ===== RG 视角：公司（EIN）列表，供公司列表页与头部切换共用 ===== */
@@ -49,11 +62,13 @@
   /* ===== 门店切换 ===== */
   var STORES = [
     {id:'12555', name:'may localserver -12555-Curry Flurry(12555)'},
-    {id:'12300', name:'RG Backend - Curry Flurry(12300)', rg:true}
+    {id:'12300', name:'RG Backend - Curry Flurry(12300)', rg:true},
+    {id:'planb', name:'RG Backend · Plan B - Curry Flurry(12300)', planb:true}
   ];
   function getStore(){ try{ return localStorage.getItem('cbStore')||'12555'; }catch(e){ return '12555'; } }
   function curStore(){ var id=getStore(); return STORES.filter(function(s){return s.id===id;})[0]||STORES[0]; }
   function isRG(){ return curStore().rg===true; }
+  function isPlanB(){ return curStore().planb===true; }
   window.cbSetStore = function(id){ try{ localStorage.setItem('cbStore', id); }catch(e){} location.reload(); };
   window.cbToggleStore = function(ev){ ev.stopPropagation(); var p=document.getElementById('cbStorePop'); if(p) p.classList.toggle('open'); };
 
@@ -71,11 +86,12 @@
       '</div>'+
       '<div class="cb-vsep"></div>'+
       '<span class="cb-region">USA<svg width="13" height="13" viewBox="0 0 14 14" fill="none" style="color:#374151"><path d="M3 5.5 7 9.5l4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>'+
+      coSwitcher()+
       '<div class="cb-hright"><span>sisi.hu@chowbus.com</span><div class="cb-lang" onclick="toggleLanguage()"><span class="lz">中文</span><span class="le">EN</span></div></div>'+
     '</div>';
   }
   function coSwitcher(){
-    if(!isRG()) return '';   // 公司（EIN）切换仅 RG 视角
+    if(!isPlanB()) return '';   // EIN 切换仅 Plan B 顶部展示
     var cur = window.cbGetCompany();
     var opts = window.CB_COMPANIES.map(function(c,i){
       return '<div class="cb-co-opt '+(c.ein===cur.ein?'on':'')+'" onclick="cbSetCompany('+i+')"><div><div class="con">'+c.trade+'</div><div class="coe">EIN '+c.ein+'</div></div></div>';
@@ -88,6 +104,13 @@
   }
 
   function buildSidebar(active){
+    if(isPlanB()){
+      /* Plan B：Payroll 各功能升级为一级菜单 */
+      return PLANB_SUBS.map(function(s){
+        var on = s[0]===active;
+        return '<div class="cb-item pb-item '+(on?'pb-active':'')+'" onclick="location.href=\''+s[3]+'\'"><svg width="19" height="19" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.35" stroke-linecap="round" stroke-linejoin="round">'+IC[s[4]]+'</svg><span class="lb"><span class="zh">'+s[1]+'</span><span class="en">'+s[2]+'</span></span></div>';
+      }).join('');
+    }
     var list = isRG() ? RG_SUBS : SUBS.filter(function(s){ return !s[4]; });
     var subHtml = list.map(function(s){
       var on = s[0]===active;
@@ -116,6 +139,7 @@
   }
 
   window.cbIsRG = isRG;
+  window.cbIsPlanB = isPlanB;
   /* 内嵌模式下导航保持 embed（避免 Tab iframe 内出现外壳） */
   window.cbNav = function(url){ var e=false; try{ e=new URLSearchParams(location.search).get('embed')==='1'; }catch(x){} location.href = url + (e ? (url.indexOf('?')>=0?'&':'?')+'embed=1' : ''); };
 
@@ -140,7 +164,11 @@
       '.cb-co-opt.on{background:#fff0f5;}'+
       '.cb-co-opt .con{font-size:13.5px;font-weight:700;color:#111;}'+
       '.cb-co-opt.on .con{color:#e00051;}'+
-      '.cb-co-opt .coe{font-size:12px;color:#6b7280;margin-top:2px;}';
+      '.cb-co-opt .coe{font-size:12px;color:#6b7280;margin-top:2px;}'+
+      '.cb-item.pb-item{cursor:pointer;}'+
+      '.cb-item.pb-item:hover{background:#f7f7f8;}'+
+      '.cb-item.pb-active{background:var(--brand-sub,#fff0f5);}'+
+      '.cb-item.pb-active .lb,.cb-item.pb-active svg{color:var(--brand,#e00051);}';
     document.head.appendChild(st);
   }
   document.addEventListener('click', function(e){

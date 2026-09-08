@@ -147,31 +147,47 @@
   .as-save{background:var(--brand);border:1px solid var(--brand);color:#fff;}
   .as-save:hover{background:var(--brand-hover);}
 
-  /* ===== 发送入职短信/邮件 弹窗 ===== */
+  /* ===== 邀请员工 onboarding 弹窗（两栏） ===== */
   .iv-ov{position:fixed;inset:0;background:rgba(17,24,39,.45);display:none;align-items:center;justify-content:center;z-index:1260;}
   .iv-ov.open{display:flex;}
-  .iv-modal{background:#fff;border-radius:16px;width:480px;max-width:calc(100vw - 40px);box-shadow:0 24px 60px rgba(0,0,0,.28);}
-  .iv-h{display:flex;align-items:center;justify-content:space-between;padding:24px 26px 4px;}
-  .iv-h .t{font-size:19px;font-weight:800;color:var(--t1);}
-  .iv-x{border:none;background:transparent;font-size:20px;color:var(--t2);cursor:pointer;}
-  .iv-sub{padding:8px 26px 0;font-size:13.5px;color:var(--t2);line-height:1.6;}
-  .iv-body{padding:18px 26px 4px;}
+  .iv-modal{background:#fff;border-radius:16px;width:860px;max-width:calc(100vw - 40px);max-height:calc(100vh - 60px);display:flex;flex-direction:column;box-shadow:0 24px 60px rgba(0,0,0,.28);}
+  .iv-h{display:flex;align-items:flex-start;justify-content:space-between;padding:24px 28px 0;}
+  .iv-h .t{font-size:20px;font-weight:800;color:var(--t1);}
+  .iv-x{border:none;background:transparent;font-size:20px;color:var(--t2);cursor:pointer;line-height:1;}
+  .iv-sub{padding:8px 28px 0;font-size:13.5px;color:var(--t2);line-height:1.65;}
+  .iv-cols{display:grid;grid-template-columns:1fr 1fr;gap:0;padding:20px 0 0;}
+  .iv-col{padding:4px 28px 24px;}
+  .iv-col.left{border-right:1px solid var(--border);display:flex;flex-direction:column;}
+  .iv-ct{display:flex;align-items:center;gap:8px;font-size:15px;font-weight:800;color:var(--t1);margin-bottom:16px;}
+  .iv-ct .ci{color:var(--brand);} .iv-ct.g .ci{color:#16a34a;}
   .iv-fld{margin-bottom:16px;}
   .iv-lb{font-size:13px;font-weight:700;color:var(--tb);margin-bottom:7px;display:block;}
-  .iv-lb .req{color:var(--brand);margin-left:2px;}
   .iv-inp{width:100%;height:42px;border:1px solid var(--border);border-radius:9px;padding:0 13px;font-size:14px;color:var(--t1);font-family:inherit;}
   .iv-inp:focus{outline:none;border-color:var(--brand);}
-  .iv-ch-h{font-size:13px;font-weight:700;color:var(--tb);margin:2px 0 10px;}
-  .iv-chs{display:flex;gap:12px;}
-  .iv-chip{flex:1;display:flex;align-items:center;gap:9px;border:1.5px solid var(--border);border-radius:10px;padding:12px 14px;font-size:14px;font-weight:600;color:var(--tb);cursor:pointer;transition:.12s;}
-  .iv-chip.on{border-color:var(--brand);background:var(--brand-sub);color:var(--brand);}
-  .iv-cb{width:18px;height:18px;border:1.6px solid #c4c8cf;border-radius:5px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
-  .iv-chip.on .iv-cb{background:var(--brand);border-color:var(--brand);color:#fff;}
-  .iv-foot{display:flex;justify-content:flex-end;gap:12px;padding:18px 26px 24px;}
-  .iv-foot button{border-radius:10px;padding:10px 24px;font-size:14px;font-weight:700;cursor:pointer;}
-  .iv-cancel{background:#fff;border:1px solid #DCDCDC;color:var(--tb);}
-  .iv-send{background:var(--brand);border:1px solid var(--brand);color:#fff;}
+  .iv-inp.lock{background:#f5f6f8;color:var(--t2);position:relative;}
+  .iv-lockwrap{position:relative;}
+  .iv-lockwrap .lk{position:absolute;right:12px;top:50%;transform:translateY(-50%);color:#9ca3af;}
+  .iv-hint{font-size:12.5px;color:var(--t2);line-height:1.6;margin-top:2px;}
+  .iv-send{margin-top:auto;align-self:flex-start;background:var(--brand);border:none;color:#fff;border-radius:10px;padding:12px 22px;font-size:14.5px;font-weight:700;cursor:pointer;}
   .iv-send:hover{background:var(--brand-hover);}
+  .iv-search{position:relative;margin-bottom:12px;}
+  .iv-search svg{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:#9ca3af;}
+  .iv-search input{width:100%;height:40px;border:1px solid var(--border);border-radius:9px;padding:0 12px 0 34px;font-size:13.5px;font-family:inherit;}
+  .iv-search input:focus{outline:none;border-color:var(--brand);}
+  .iv-elist{border:1px solid var(--border);border-radius:12px;overflow:hidden;max-height:300px;overflow-y:auto;}
+  .iv-erow{display:flex;align-items:center;gap:12px;padding:14px 16px;border-bottom:1px solid #f1f2f4;cursor:pointer;}
+  .iv-erow:last-child{border-bottom:none;}
+  .iv-erow:hover{background:#fafafa;}
+  .iv-erow.on{background:var(--brand-sub);}
+  .iv-en{font-size:15px;font-weight:700;color:var(--t1);}
+  .iv-er{font-size:12.5px;color:var(--t2);margin-top:2px;}
+  .iv-ssn{margin-left:auto;font-size:13.5px;color:var(--t2);letter-spacing:.06em;font-variant-numeric:tabular-nums;white-space:nowrap;}
+  .iv-erad{width:18px;height:18px;border:1.7px solid #c4c8cf;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;}
+  .iv-erow.on .iv-erad{border-color:var(--brand);}
+  .iv-erow.on .iv-erad::after{content:"";width:9px;height:9px;border-radius:50%;background:var(--brand);}
+  .iv-assoc{margin-top:14px;align-self:flex-end;background:#fff;border:1px solid #DCDCDC;color:var(--tb);border-radius:10px;padding:11px 22px;font-size:14px;font-weight:700;cursor:pointer;}
+  .iv-assoc:hover{border-color:var(--brand);color:var(--brand);}
+  .iv-col.right{display:flex;flex-direction:column;}
 
   /* ===== 仍需员工签字 提示弹窗 ===== */
   .sn-ov{position:fixed;inset:0;background:rgba(17,24,39,.45);display:none;align-items:center;justify-content:center;z-index:1290;}
@@ -401,32 +417,34 @@
   </div>
 </div>
 
-<!-- 发送入职短信/邮件 弹窗 -->
+<!-- 邀请员工 onboarding 弹窗（两栏） -->
 <div class="iv-ov" id="ivOverlay">
   <div class="iv-modal">
     <div class="iv-h">
-      <div class="t"><span class="zh">发送入职短信/邮件</span><span class="en">Send onboarding invite</span></div>
+      <div class="t"><span class="zh">邀请员工 onboarding</span><span class="en">Invite employee to onboard</span></div>
       <button class="iv-x" onclick="closeInvite()">✕</button>
     </div>
-    <div class="iv-sub"><span class="zh">系统将向员工发送 payroll 入职链接。发送前请先维护手机号与邮箱。</span><span class="en">We'll send the payroll onboarding link to the employee. Please confirm their phone and email first.</span></div>
-    <div class="iv-body">
-      <div class="iv-fld">
-        <label class="iv-lb"><span class="zh">手机号</span><span class="en">Phone</span><span class="req">*</span></label>
-        <input class="iv-inp" id="ivPhone" placeholder="+1 (000) 000-0000">
+    <div class="iv-sub"><span class="zh">若该员工同时在其他门店工作且已完成 onboarding，可直接在右侧选择对应员工进行匹配；已完成 onboarding 的员工无需、也无法再次 onboarding。</span><span class="en">If this employee already onboarded at another store, match them on the right. Onboarded employees don't need to onboard again.</span></div>
+    <div class="iv-cols">
+      <div class="iv-col left">
+        <div class="iv-ct"><span class="ci"><svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 5h14v10H3zM3 6l7 5 7-5" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="zh">未 onboarding，发送邀请</span><span class="en">Not onboarded · send invite</span></div>
+        <div class="iv-fld">
+          <label class="iv-lb"><span class="zh">员工邮箱（来自员工档案，不可修改）</span><span class="en">Email (from employee profile, locked)</span></label>
+          <div class="iv-lockwrap"><input class="iv-inp lock" id="ivEmail" readonly><span class="lk"><svg width="15" height="15" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="4" y="9" width="12" height="8" rx="1.5"/><path d="M7 9V6.5a3 3 0 0 1 6 0V9"/></svg></span></div>
+        </div>
+        <div class="iv-fld">
+          <label class="iv-lb"><span class="zh">手机号（可选，同时发短信提醒）</span><span class="en">Phone (optional, also sends SMS)</span></label>
+          <input class="iv-inp" id="ivPhone" placeholder="补充手机号">
+        </div>
+        <div class="iv-hint"><span class="zh">员工点击邮件链接后自行填写税表、SSN 与收款信息，完成后本页状态自动更新。</span><span class="en">The employee fills in tax forms, SSN and payment info via the emailed link; status updates automatically.</span></div>
+        <button class="iv-send" onclick="sendInvite()"><span class="zh">发送邀请邮件</span><span class="en">Send invite email</span></button>
       </div>
-      <div class="iv-fld">
-        <label class="iv-lb"><span class="zh">邮箱</span><span class="en">Email</span><span class="req">*</span></label>
-        <input class="iv-inp" id="ivEmail" placeholder="name@example.com">
+      <div class="iv-col right">
+        <div class="iv-ct g"><span class="ci"><svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="10" cy="10" r="8"/><path d="M6.5 10.2 9 12.6l4.5-5" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="zh">关联已 onboarding 员工（<span id="ivCnt">0</span>）</span><span class="en">Link an onboarded employee (<span id="ivCnt2">0</span>)</span></div>
+        <div class="iv-search"><svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="9" cy="9" r="6"/><path d="m14 14 3.5 3.5" stroke-linecap="round"/></svg><input id="ivSearch" oninput="ivRenderList()" placeholder="搜索姓名 / SSN 后四位"></div>
+        <div class="iv-elist" id="ivElist"></div>
+        <button class="iv-assoc" onclick="ivAssociate()"><span class="zh">确认关联</span><span class="en">Confirm link</span></button>
       </div>
-      <div class="iv-ch-h"><span class="zh">发送方式</span><span class="en">Send via</span></div>
-      <div class="iv-chs">
-        <div class="iv-chip on" id="ivChSms" onclick="ivToggle('sms')"><span class="iv-cb">✓</span><span class="zh">短信</span><span class="en">SMS</span></div>
-        <div class="iv-chip on" id="ivChEmail" onclick="ivToggle('email')"><span class="iv-cb">✓</span><span class="zh">邮件</span><span class="en">Email</span></div>
-      </div>
-    </div>
-    <div class="iv-foot">
-      <button class="iv-cancel" onclick="closeInvite()"><span class="zh">取消</span><span class="en">Cancel</span></button>
-      <button class="iv-send" onclick="sendInvite()"><span class="zh">发送邀请</span><span class="en">Send invite</span></button>
     </div>
   </div>
 </div>
@@ -603,7 +621,7 @@
     const items=[];
     if(r.onboard){
       // 资料待完善（待入职）：以完善资料为主
-      items.push([bi('发送 OB 短信/邮件','Send onboarding SMS/email'), "openInvite("+idx+")"]);
+      items.push([bi('邀请员工 OB','Invite to onboard'), "openInvite("+idx+")"]);
       items.push([bi('填写员工 payroll 资料','Fill payroll info'), "openSignNotice("+idx+")"]);
       items.push([bi('修改薪资&入职日期','Edit pay & hire date'), DETAIL]);
       items.push([bi('导入历史薪资数据','Import pay history'), "location.href='chowbus-payroll-import-pay-history.html'"]);
@@ -681,30 +699,50 @@
     closeAssign();
   }
 
-  /* ===== 发送入职短信/邮件 弹窗 ===== */
-  let ivIdx=null, ivSms=true, ivEmailOn=true;
+  /* ===== 邀请员工 onboarding 弹窗（两栏） ===== */
+  const IV_ONBOARDED=[
+    {name:'Wei Huang',   role:'餐厅老板', roleEn:'Owner',   ssn:'2264'},
+    {name:'Ming Tan',    role:'服务员',   roleEn:'Server',  ssn:'8817'},
+    {name:'Ruiqi Zhang', role:'经理',     roleEn:'Manager', ssn:'5502'},
+    {name:'Yang Feng',   role:'收银员',   roleEn:'Cashier', ssn:'3391'},
+    {name:'Yiran Chen',  role:'经理',     roleEn:'Manager', ssn:'7745'},
+    {name:'Maria Lopez', role:'服务员',   roleEn:'Server',  ssn:'1180'},
+    {name:'Kenji Tanaka',role:'厨师',     roleEn:'Cook',    ssn:'6642'},
+    {name:'Diego Ramirez',role:'厨师',    roleEn:'Line Cook',ssn:'9033'},
+  ];
+  let ivIdx=null, ivPick=null;
   function openInvite(idx){
-    ivIdx=idx; ivSms=true; ivEmailOn=true;
+    ivIdx=idx; ivPick=null;
     const r=ROSTER[idx];
+    let local = (r.official||'').toLowerCase().replace(/[^a-z]+/g,'.').replace(/^\.|\.$/g,'');
+    document.getElementById('ivEmail').value = r.email || ((local?local:'employee')+'@chowbus.com');
     document.getElementById('ivPhone').value = r.phone||'';
-    document.getElementById('ivEmail').value = r.email||'';
-    document.getElementById('ivChSms').classList.add('on');
-    document.getElementById('ivChEmail').classList.add('on');
+    document.getElementById('ivSearch').value='';
+    document.getElementById('ivCnt').textContent = IV_ONBOARDED.length;
+    document.getElementById('ivCnt2').textContent = IV_ONBOARDED.length;
+    ivRenderList();
     document.getElementById('ivOverlay').classList.add('open');
   }
   function closeInvite(){ document.getElementById('ivOverlay').classList.remove('open'); }
-  function ivToggle(k){ if(k==='sms'){ivSms=!ivSms; document.getElementById('ivChSms').classList.toggle('on',ivSms);} else {ivEmailOn=!ivEmailOn; document.getElementById('ivChEmail').classList.toggle('on',ivEmailOn);} }
+  function ivRenderList(){
+    const q=(document.getElementById('ivSearch').value||'').toLowerCase().trim();
+    const rows=IV_ONBOARDED.map((e,i)=>({e,i})).filter(({e})=> !q || e.name.toLowerCase().includes(q) || e.ssn.includes(q));
+    document.getElementById('ivElist').innerHTML = rows.map(({e,i})=>
+      '<div class="iv-erow '+(ivPick===i?'on':'')+'" onclick="ivSelect('+i+')"><span class="iv-erad"></span>'+
+      '<div><div class="iv-en">'+e.name+'</div><div class="iv-er">'+(isEnLang()?e.roleEn:e.role)+'</div></div>'+
+      '<span class="iv-ssn">••• •• '+e.ssn+'</span></div>').join('') || '<div style="padding:26px;text-align:center;color:#c4c8cf;font-size:13px;">无匹配 / No match</div>';
+  }
+  function ivSelect(i){ ivPick = (ivPick===i?null:i); ivRenderList(); }
   function sendInvite(){
-    const en=isEnLang();
-    const phone=document.getElementById('ivPhone').value.trim();
     const email=document.getElementById('ivEmail').value.trim();
-    if(!ivSms && !ivEmailOn){ empToast('请至少选择一种发送方式','Pick at least one channel'); return; }
-    if(ivSms && !phone){ empToast('请先维护手机号','Please add a phone number'); return; }
-    if(ivEmailOn && !email){ empToast('请先维护邮箱','Please add an email'); return; }
-    if(ivIdx!=null){ ROSTER[ivIdx].phone=phone; ROSTER[ivIdx].email=email; }   // 维护联系方式
-    const via = [ivSms?'短信':'', ivEmailOn?'邮件':''].filter(Boolean).join(' + ');
-    const viaEn = [ivSms?'SMS':'', ivEmailOn?'Email':''].filter(Boolean).join(' + ');
-    empToast('入职邀请已通过'+via+'发送', 'Onboarding invite sent via '+viaEn);
+    const phone=document.getElementById('ivPhone').value.trim();
+    if(ivIdx!=null){ ROSTER[ivIdx].phone=phone; }
+    empToast('邀请邮件已发送至 '+email+(phone?'（并发短信）':''), 'Invite email sent to '+email);
+    closeInvite();
+  }
+  function ivAssociate(){
+    if(ivPick==null){ empToast('请选择要关联的已 onboarding 员工','Select an onboarded employee to link'); return; }
+    empToast('已关联「'+IV_ONBOARDED[ivPick].name+'」的 onboarding 资料', 'Linked '+IV_ONBOARDED[ivPick].name+"'s onboarding");
     closeInvite();
   }
   function isEnLang(){ return document.body.classList.contains('lang-en'); }
