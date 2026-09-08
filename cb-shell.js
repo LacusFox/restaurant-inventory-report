@@ -36,8 +36,20 @@
     ['company','公司设置','Company Setup','chowbus-payroll-company-setup.html'],
     ['run','跑薪','Run Payroll','chowbus-payroll-run-payroll.html'],
     ['employees','发薪员工管理','Payroll Employees','chowbus-payroll-employees.html'],
-    ['taxes','税务与申报','Taxes &amp; Filings','chowbus-payroll-taxes-filings.html']
+    ['taxes','税务与申报','Taxes &amp; Filings','chowbus-payroll-taxes-filings.html'],
+    ['companylist','公司列表','Company List','chowbus-payroll-company-list.html']
   ];
+
+  /* ===== RG 视角：公司（EIN）列表，供公司列表页与头部切换共用 ===== */
+  window.CB_COMPANIES = [
+    {ein:'88-1234567', legal:'Curry Flurry LLC',            trade:'Curry Flurry',       phone:'(312) 555-0110', addr:'200 W Madison St, Suite 100, Chicago, IL 60606'},
+    {ein:'47-2029581', legal:'Wentworth Dining Group LLC',  trade:'Wentworth Dining',   phone:'(773) 555-0143', addr:'2227 S Wentworth Ave, Chicago, IL 60616'},
+    {ein:'82-4471903', legal:'Evanston Flavors Inc',        trade:'Evanston Flavors',   phone:'(847) 555-0198', addr:'1620 Orrington Ave, Evanston, IL 60201'}
+  ];
+  function getCompanyIdx(){ try{ var v=parseInt(localStorage.getItem('cbCompany')); return (v>=0&&v<window.CB_COMPANIES.length)?v:0; }catch(e){ return 0; } }
+  window.cbGetCompany = function(){ return window.CB_COMPANIES[getCompanyIdx()]; };
+  window.cbSetCompany = function(i){ try{ localStorage.setItem('cbCompany', i); }catch(e){} location.reload(); };
+  window.cbToggleCo = function(ev){ ev.stopPropagation(); var p=document.getElementById('cbCoPop'); if(p) p.classList.toggle('open'); };
 
   /* ===== 门店切换 ===== */
   var STORES = [
@@ -64,8 +76,21 @@
       '</div>'+
       '<div class="cb-vsep"></div>'+
       '<span class="cb-region">USA<svg width="13" height="13" viewBox="0 0 14 14" fill="none" style="color:#374151"><path d="M3 5.5 7 9.5l4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>'+
+      coSwitcher()+
       '<div class="cb-hright"><span>sisi.hu@chowbus.com</span><div class="cb-lang" onclick="toggleLanguage()"><span class="lz">中文</span><span class="le">EN</span></div></div>'+
     '</div>';
+  }
+  function coSwitcher(){
+    if(!isRG()) return '';   // 公司（EIN）切换仅 RG 视角
+    var cur = window.cbGetCompany();
+    var opts = window.CB_COMPANIES.map(function(c,i){
+      return '<div class="cb-co-opt '+(c.ein===cur.ein?'on':'')+'" onclick="cbSetCompany('+i+')"><div><div class="con">'+c.trade+'</div><div class="coe">EIN '+c.ein+'</div></div></div>';
+    }).join('');
+    return '<div class="cb-vsep"></div>'+
+      '<div class="cb-co-wrap">'+
+        '<span class="cb-co" onclick="cbToggleCo(event)"><svg width="14" height="14" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" style="margin-right:2px"><path d="M4 17V6l6-3 6 3v11M4 17h12M8 8h.01M8 11h.01M12 8h.01M12 11h.01M8 17v-3h4v3"/></svg><span class="cot">'+cur.trade+' · EIN '+cur.ein+'</span><svg width="13" height="13" viewBox="0 0 14 14" fill="none" style="color:#374151"><path d="M3 5.5 7 9.5l4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>'+
+        '<div class="cb-co-pop" id="cbCoPop">'+opts+'</div>'+
+      '</div>';
   }
 
   function buildSidebar(active){
@@ -108,10 +133,24 @@
       '.cb-store-opt{padding:10px 12px;border-radius:8px;font-size:13px;color:#374151;cursor:pointer;white-space:nowrap;display:flex;align-items:center;gap:8px;}'+
       '.cb-store-opt:hover{background:#fff0f5;color:#e00051;}'+
       '.cb-store-opt.on{color:#e00051;font-weight:700;background:#fff0f5;}'+
-      '.cb-store-opt .rgtag{margin-left:auto;font-size:11px;background:#eef0fe;color:#4a52c0;border-radius:5px;padding:1px 7px;font-weight:700;}';
+      '.cb-store-opt .rgtag{margin-left:auto;font-size:11px;background:#eef0fe;color:#4a52c0;border-radius:5px;padding:1px 7px;font-weight:700;}'+
+      '.cb-co-wrap{position:relative;display:inline-flex;align-items:center;}'+
+      '.cb-co{display:inline-flex;align-items:center;gap:5px;font-size:13px;color:#374151;cursor:pointer;font-weight:600;}'+
+      '.cb-co .cot{white-space:nowrap;}'+
+      '.cb-co-pop{position:absolute;top:32px;left:0;background:#fff;border:1px solid #e5e7eb;border-radius:10px;box-shadow:0 12px 32px rgba(0,0,0,.16);padding:6px;min-width:260px;z-index:1600;display:none;}'+
+      '.cb-co-pop.open{display:block;}'+
+      '.cb-co-opt{padding:9px 12px;border-radius:8px;cursor:pointer;}'+
+      '.cb-co-opt:hover{background:#fff0f5;}'+
+      '.cb-co-opt.on{background:#fff0f5;}'+
+      '.cb-co-opt .con{font-size:13.5px;font-weight:700;color:#111;}'+
+      '.cb-co-opt.on .con{color:#e00051;}'+
+      '.cb-co-opt .coe{font-size:12px;color:#6b7280;margin-top:2px;}';
     document.head.appendChild(st);
   }
-  document.addEventListener('click', function(e){ if(!e.target.closest('.cb-store-wrap')){ var p=document.getElementById('cbStorePop'); if(p) p.classList.remove('open'); } });
+  document.addEventListener('click', function(e){
+    if(!e.target.closest('.cb-store-wrap')){ var p=document.getElementById('cbStorePop'); if(p) p.classList.remove('open'); }
+    if(!e.target.closest('.cb-co-wrap')){ var q=document.getElementById('cbCoPop'); if(q) q.classList.remove('open'); }
+  });
 
   window.renderShell = function(active){
     var app = document.querySelector('.cb-app');

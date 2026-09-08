@@ -219,6 +219,25 @@
   .eo-btn{background:#2b4eff;color:#fff;border:none;border-radius:10px;padding:13px 30px;font-size:15px;font-weight:700;cursor:pointer;}
   .eo-btn:hover{background:#2140db;}
 
+  /* ===== 分配 workplace 弹窗 ===== */
+  .wp-ov{position:fixed;inset:0;background:rgba(17,24,39,.45);display:none;align-items:center;justify-content:center;z-index:1260;}
+  .wp-ov.open{display:flex;}
+  .wp-modal{background:#fff;border-radius:16px;width:520px;max-width:calc(100vw - 40px);box-shadow:0 24px 60px rgba(0,0,0,.28);}
+  .wp-h{display:flex;align-items:center;justify-content:space-between;padding:22px 26px 4px;}
+  .wp-t{font-size:19px;font-weight:800;color:var(--t1);}
+  .wp-sub{padding:6px 26px 0;font-size:13.5px;color:var(--t2);}
+  .wp-list{padding:14px 26px 6px;max-height:320px;overflow-y:auto;}
+  .wp-row{display:flex;align-items:center;gap:12px;padding:12px 4px;border-bottom:1px solid #F1F2F4;font-size:14.5px;color:var(--t1);cursor:pointer;}
+  .wp-row:last-child{border-bottom:none;}
+  .wp-cb{width:19px;height:19px;border:1.7px solid #c4c8cf;border-radius:5px;display:flex;align-items:center;justify-content:center;flex-shrink:0;color:#fff;}
+  .wp-row.on .wp-cb{background:var(--brand);border-color:var(--brand);}
+  .wp-meta{margin-left:auto;font-size:12.5px;color:#9ca3af;white-space:nowrap;}
+  .wp-foot{display:flex;justify-content:flex-end;gap:12px;padding:16px 26px 22px;}
+  .wp-foot button{border-radius:10px;padding:10px 22px;font-size:14px;font-weight:700;cursor:pointer;}
+  .wp-cancel{background:#fff;border:1px solid #DCDCDC;color:var(--tb);}
+  .wp-save{background:var(--brand);border:1px solid var(--brand);color:#fff;}
+  .wp-save:hover{background:var(--brand-hover);}
+
   /* ===== 添加员工到 payroll 弹窗（穿梭框） ===== */
   .am-ov{position:fixed;inset:0;background:rgba(17,24,39,.45);display:none;align-items:center;justify-content:center;z-index:1200;}
   .am-ov.open{display:flex;}
@@ -441,6 +460,16 @@
   </div>
 </div>
 
+<!-- 分配 workplace 弹窗 -->
+<div class="wp-ov" id="wpOverlay">
+  <div class="wp-modal">
+    <div class="wp-h"><div class="wp-t"><span class="zh">分配 Workplace</span><span class="en">Assign Workplace</span></div><button class="am-x" onclick="closeWpAssign()">✕</button></div>
+    <div class="wp-sub"><span class="zh">为「<b id="wpEmp"></b>」选择所属工作地点（可多选）。</span><span class="en">Select the workplaces for <b id="wpEmpEn"></b> (multiple allowed).</span></div>
+    <div class="wp-list" id="wpList"></div>
+    <div class="wp-foot"><button class="wp-cancel" onclick="closeWpAssign()"><span class="zh">取消</span><span class="en">Cancel</span></button><button class="wp-save" onclick="saveWpAssign()"><span class="zh">保存</span><span class="en">Save</span></button></div>
+  </div>
+</div>
+
 <!-- 添加员工到 payroll 弹窗 -->
 <div class="am-ov" id="amOverlay">
   <div class="am-modal">
@@ -584,12 +613,14 @@
       items.push([bi('查看工资单','View pay stubs'), "openPaystub("+idx+")"]);
       items.push([bi('取消席位','Cancel seat'), "empToast('已取消该员工席位','Seat canceled')"]);
       items.push([bi('修改发薪组','Change pay group'), "openAssign("+idx+")"]);
+      items.push([bi('分配 workplace','Assign workplace'), "openWpAssign("+idx+")"]);
       items.push([bi('查看员工资料','View profile'), DETAIL]);
       items.push([bi('修改薪资&入职日期','Edit pay & hire date'), DETAIL]);
       items.push([bi('修改员工 payroll 资料','Edit payroll info'), DETAIL]);
     } else {
       // 已入职、暂未分配席位
       items.push([bi('分配席位&发薪组','Assign seat & pay group'), "openAssign("+idx+")"]);
+      items.push([bi('分配 workplace','Assign workplace'), "openWpAssign("+idx+")"]);
       items.push([bi('查看员工资料','View profile'), DETAIL]);
       items.push([bi('修改薪资&入职日期','Edit pay & hire date'), DETAIL]);
       items.push([bi('修改员工 payroll 资料','Edit payroll info'), DETAIL]);
@@ -677,6 +708,33 @@
     closeInvite();
   }
   function isEnLang(){ return document.body.classList.contains('lang-en'); }
+
+  /* ===== 分配 workplace 弹窗 ===== */
+  const WP_POOL=[
+    {name:'200 W Madison St', rid:'12555', city:'Chicago, IL'},
+    {name:'moli',             rid:'12300', city:'Chicago, IL'},
+    {name:'Naperville',       rid:'12811', city:'Naperville, IL'},
+    {name:'Evanston',         rid:'12902', city:'Evanston, IL'},
+  ];
+  let wpIdx=null, wpSel=new Set();
+  function openWpAssign(idx){
+    wpIdx=idx; wpSel=new Set(ROSTER[idx].workplaces||[0]);
+    document.getElementById('wpEmp').textContent=ROSTER[idx].official;
+    document.getElementById('wpEmpEn').textContent=ROSTER[idx].official;
+    wpRender();
+    document.getElementById('wpOverlay').classList.add('open');
+  }
+  function closeWpAssign(){ document.getElementById('wpOverlay').classList.remove('open'); }
+  function wpToggle(i){ wpSel.has(i)?wpSel.delete(i):wpSel.add(i); wpRender(); }
+  function wpRender(){
+    document.getElementById('wpList').innerHTML = WP_POOL.map((w,i)=>
+      '<div class="wp-row '+(wpSel.has(i)?'on':'')+'" onclick="wpToggle('+i+')"><span class="wp-cb">'+(wpSel.has(i)?'<svg width="12" height="12" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10.5 8 14l8-8"/></svg>':'')+'</span><span>'+w.name+'</span><span class="wp-meta">#'+w.rid+' · '+w.city+'</span></div>').join('');
+  }
+  function saveWpAssign(){
+    if(wpSel.size===0){ empToast('请至少选择一个工作地点','Select at least one workplace'); return; }
+    if(wpIdx!=null){ ROSTER[wpIdx].workplaces=[...wpSel]; }
+    closeWpAssign(); empToast('已为该员工分配 '+wpSel.size+' 个工作地点', wpSel.size+' workplace(s) assigned');
+  }
 
   /* ===== 填写员工 payroll 资料：仍需签字提示 → check onboarding ===== */
   let eoIdx=null, eoStep=0;

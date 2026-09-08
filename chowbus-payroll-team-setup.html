@@ -51,6 +51,25 @@
   .wk-row2{display:grid;grid-template-columns:1fr 150px;gap:12px;}
   .wk-save{width:100%;background:#2b4eff;color:#fff;border:none;border-radius:10px;padding:15px;font-size:15px;font-weight:700;cursor:pointer;margin-top:8px;display:flex;align-items:center;justify-content:center;gap:8px;}
   .wk-save:hover{background:#2140db;}
+  .ts-match{border:1px solid #C7D2FE;background:#F5F7FF;color:#2b4eff;border-radius:8px;padding:6px 13px;font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap;}
+  .ts-match:hover{background:#e9eeff;}
+
+  /* 匹配员工 弹窗 */
+  .me-modal{background:#fff;border-radius:16px;width:520px;max-width:calc(100vw - 40px);box-shadow:0 30px 80px rgba(0,0,0,.35);}
+  .me-h{display:flex;align-items:center;justify-content:space-between;padding:22px 26px 4px;}
+  .me-t{font-size:19px;font-weight:800;color:#111;}
+  .me-sub{padding:6px 26px 0;font-size:13.5px;color:#6b7280;}
+  .me-list{padding:14px 26px 6px;max-height:340px;overflow-y:auto;}
+  .me-row{display:flex;align-items:center;gap:12px;padding:11px 4px;border-bottom:1px solid #F1F2F4;font-size:14.5px;color:#111;cursor:pointer;}
+  .me-row:last-child{border-bottom:none;}
+  .me-cb{width:19px;height:19px;border:1.7px solid #c4c8cf;border-radius:5px;display:flex;align-items:center;justify-content:center;flex-shrink:0;color:#fff;}
+  .me-row.on .me-cb{background:#2b4eff;border-color:#2b4eff;}
+  .me-role{margin-left:auto;font-size:12.5px;color:#9ca3af;}
+  .me-foot{display:flex;justify-content:flex-end;gap:12px;padding:16px 26px 22px;}
+  .me-foot button{border-radius:10px;padding:10px 22px;font-size:14px;font-weight:700;cursor:pointer;}
+  .me-cancel{background:#fff;border:1px solid #DCDCDC;color:#374151;}
+  .me-save2{background:#2b4eff;border:1px solid #2b4eff;color:#fff;}
+  .me-save2:hover{background:#2140db;}
 
   .toast{position:fixed;left:50%;bottom:32px;transform:translateX(-50%) translateY(24px);opacity:0;pointer-events:none;background:#1f2937;color:#fff;border-radius:10px;padding:12px 18px;font-size:14px;box-shadow:0 12px 32px rgba(0,0,0,.28);z-index:1500;transition:all .3s cubic-bezier(.2,.8,.3,1);}
   .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
@@ -80,16 +99,12 @@
           <div style="overflow-x:auto;">
             <table class="ts-tbl">
               <thead><tr>
-                <th>#</th><th>Name</th><th>Restaurant ID</th><th>Address line 1</th><th>Address line 2</th><th>City</th><th>State</th><th>ZIP</th>
+                <th>#</th><th>Name</th><th>Restaurant ID</th><th>Address line 1</th><th>Address line 2</th><th>City</th><th>State</th><th>ZIP</th><th>Action</th>
               </tr></thead>
               <tbody id="tsBody"></tbody>
             </table>
           </div>
 
-          <div class="ts-foot">
-            <label class="ts-conf"><input type="checkbox" id="tsConfirm" onchange="tsSync()"> I confirm these are all my workplaces</label>
-            <button class="ts-cont" id="tsCont" disabled onclick="tsContinue()">Continue <svg width="15" height="15" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10h11M11 5l5 5-5 5"/></svg></button>
-          </div>
         </div>
       </div>
     </div>
@@ -113,6 +128,16 @@
   </div>
 </div>
 
+<!-- 匹配员工 弹窗 -->
+<div class="wk-ov" id="meOverlay">
+  <div class="me-modal">
+    <div class="me-h"><div class="me-t">Match employees</div><button class="wk-x" onclick="closeMe()">✕</button></div>
+    <div class="me-sub"><span class="zh">为「<b id="meWp"></b>」选择在此工作地点的员工。</span><span class="en">Select employees who work at <b id="meWpEn"></b>.</span></div>
+    <div class="me-list" id="meList"></div>
+    <div class="me-foot"><button class="me-cancel" onclick="closeMe()"><span class="zh">取消</span><span class="en">Cancel</span></button><button class="me-save2" onclick="saveMe()"><span class="zh">保存</span><span class="en">Save</span></button></div>
+  </div>
+</div>
+
 <div class="toast" id="toast"><span id="toastMsg"></span></div>
 
 <script src="cb-shell.js"></script>
@@ -133,11 +158,39 @@
   function tsRender(){
     document.getElementById('tsCnt').textContent = WORKPLACES.length + ' workplace' + (WORKPLACES.length===1?'':'s');
     document.getElementById('tsBody').innerHTML = WORKPLACES.map((w,i)=>
-      '<tr><td class="idx">'+(i+1)+'</td><td>'+w.name+'</td><td>'+(w.rid||'—')+'</td><td>'+w.a1+'</td><td'+(w.a2?'':' class="ts-empty-a2"')+'>'+(w.a2||'—')+'</td><td>'+w.city+'</td><td>'+w.state+'</td><td>'+w.zip+'</td></tr>').join('');
+      '<tr><td class="idx">'+(i+1)+'</td><td>'+w.name+'</td><td>'+(w.rid||'—')+'</td><td>'+w.a1+'</td><td'+(w.a2?'':' class="ts-empty-a2"')+'>'+(w.a2||'—')+'</td><td>'+w.city+'</td><td>'+w.state+'</td><td>'+w.zip+'</td>'+
+      '<td><button class="ts-match" onclick="openMe('+i+')">匹配员工 · '+((w.emps&&w.emps.length)||0)+'</button></td></tr>').join('');
   }
-  function tsSync(){ document.getElementById('tsCont').disabled = !document.getElementById('tsConfirm').checked; }
-  function tsContinue(){ showToast('Workplaces confirmed'); setTimeout(()=>location.href='chowbus-payroll-company-setup.html', 1000); }
   tsRender();
+
+  /* ===== 匹配员工 ===== */
+  const ME_POOL=[
+    {name:'Bohong Xu', role:'Super Admin'},
+    {name:'Ruiqi Zhang', role:'Manager'},
+    {name:'Wei Huang', role:'Owner'},
+    {name:'Yang Feng', role:'Manager / Server'},
+    {name:'司机 2号', role:'Driver'},
+    {name:'Maria Lopez', role:'Server'},
+    {name:'Kenji Tanaka', role:'Cook'},
+  ];
+  let meWp=null, meSel=new Set();
+  function openMe(i){
+    meWp=i; meSel=new Set(WORKPLACES[i].emps||[]);
+    document.getElementById('meWp').textContent=WORKPLACES[i].name;
+    document.getElementById('meWpEn').textContent=WORKPLACES[i].name;
+    meRender();
+    document.getElementById('meOverlay').classList.add('open');
+  }
+  function closeMe(){ document.getElementById('meOverlay').classList.remove('open'); }
+  function meToggle(i){ meSel.has(i)?meSel.delete(i):meSel.add(i); meRender(); }
+  function meRender(){
+    document.getElementById('meList').innerHTML = ME_POOL.map((e,i)=>
+      '<div class="me-row '+(meSel.has(i)?'on':'')+'" onclick="meToggle('+i+')"><span class="me-cb">'+(meSel.has(i)?'<svg width="12" height="12" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10.5 8 14l8-8"/></svg>':'')+'</span>'+e.name+'<span class="me-role">'+e.role+'</span></div>').join('');
+  }
+  function saveMe(){
+    if(meWp!=null){ WORKPLACES[meWp].emps=[...meSel]; }
+    closeMe(); tsRender(); showToast(meSel.size+' 名员工已匹配到该工作地点', meSel.size+' employees matched');
+  }
 
   function openWk(){
     document.getElementById('wkName').value='';
@@ -152,9 +205,8 @@
     if(!name){ showToast('Please enter a name'); return; }
     if(li===''){ showToast('Please select a location'); return; }
     const L=LOCATIONS[li];
-    WORKPLACES.push({name, rid:L.rid, a1:L.a1, a2:L.a2, city:L.city, state:L.state, zip:L.zip});
+    WORKPLACES.push({name, rid:L.rid, a1:L.a1, a2:L.a2, city:L.city, state:L.state, zip:L.zip, emps:[]});
     closeWk(); tsRender();
-    document.getElementById('tsConfirm').checked=false; tsSync();
   }
 
   function showToast(msg){ const t=document.getElementById('toast'); document.getElementById('toastMsg').textContent=msg; t.classList.add('show'); clearTimeout(t._tm); t._tm=setTimeout(()=>t.classList.remove('show'),2200); }
