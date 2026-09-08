@@ -30,22 +30,57 @@
     ['run','跑薪','Run Payroll','chowbus-payroll-run-payroll.html'],
     ['taxes','税务与申报','Taxes &amp; Filings','chowbus-payroll-taxes-filings.html']
   ];
+  /* RG 视角：仅保留 Payroll 相关功能，顺序按需求 */
+  var RG_SUBS = [
+    ['setup','初始化设置','Payroll Setup','chowbus-payroll-overview-init.html'],
+    ['company','公司设置','Company Setup','chowbus-payroll-company-setup.html'],
+    ['run','跑薪','Run Payroll','chowbus-payroll-run-payroll.html'],
+    ['employees','发薪员工管理','Payroll Employees','chowbus-payroll-employees.html'],
+    ['taxes','税务与申报','Taxes &amp; Filings','chowbus-payroll-taxes-filings.html']
+  ];
 
-  var HEADER_HTML =
-    '<div class="cb-logo"><span class="wm">chowbus</span></div>'+
+  /* ===== 门店切换 ===== */
+  var STORES = [
+    {id:'12555', name:'may localserver -12555-Curry Flurry(12555)'},
+    {id:'12300', name:'RG Backend - Curry Flurry(12300)', rg:true}
+  ];
+  function getStore(){ try{ return localStorage.getItem('cbStore')||'12555'; }catch(e){ return '12555'; } }
+  function curStore(){ var id=getStore(); return STORES.filter(function(s){return s.id===id;})[0]||STORES[0]; }
+  function isRG(){ return curStore().rg===true; }
+  window.cbSetStore = function(id){ try{ localStorage.setItem('cbStore', id); }catch(e){} location.reload(); };
+  window.cbToggleStore = function(ev){ ev.stopPropagation(); var p=document.getElementById('cbStorePop'); if(p) p.classList.toggle('open'); };
+
+  function buildHeader(){
+    var cur = curStore();
+    var opts = STORES.map(function(s){
+      return '<div class="cb-store-opt '+(s.id===cur.id?'on':'')+'" onclick="cbSetStore(\''+s.id+'\')">'+s.name+(s.rg?'<span class="rgtag">RG</span>':'')+'</div>';
+    }).join('');
+    return '<div class="cb-logo"><span class="wm">chowbus</span></div>'+
     '<div class="cb-hbar">'+
       '<svg class="cb-collapse" width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M7.6 4.4h9.4M7.6 10h9.4M7.6 15.6h9.4M5 6.6 2.4 10 5 13.4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>'+
-      '<span class="cb-store">may localserver -12555-Curry Flurry(12555)<svg width="13" height="13" viewBox="0 0 14 14" fill="none" style="color:#374151"><path d="M3 5.5 7 9.5l4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>'+
+      '<div class="cb-store-wrap">'+
+        '<span class="cb-store" onclick="cbToggleStore(event)">'+cur.name+'<svg width="13" height="13" viewBox="0 0 14 14" fill="none" style="color:#374151"><path d="M3 5.5 7 9.5l4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>'+
+        '<div class="cb-store-pop" id="cbStorePop">'+opts+'</div>'+
+      '</div>'+
       '<div class="cb-vsep"></div>'+
       '<span class="cb-region">USA<svg width="13" height="13" viewBox="0 0 14 14" fill="none" style="color:#374151"><path d="M3 5.5 7 9.5l4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>'+
       '<div class="cb-hright"><span>sisi.hu@chowbus.com</span><div class="cb-lang" onclick="toggleLanguage()"><span class="lz">中文</span><span class="le">EN</span></div></div>'+
     '</div>';
+  }
 
   function buildSidebar(active){
-    var subHtml = SUBS.filter(function(s){ return !s[4]; }).map(function(s){
+    var list = isRG() ? RG_SUBS : SUBS.filter(function(s){ return !s[4]; });
+    var subHtml = list.map(function(s){
       var on = s[0]===active;
       return '<div class="cb-subitem '+(on?'active':'')+'" onclick="location.href=\''+s[3]+'\'"><span class="zh">'+s[1]+'</span><span class="en">'+s[2]+'</span>'+(on?'<span class="bar"></span>':'')+'</div>';
     }).join('');
+    var payroll =
+      '<div class="cb-item group-active"><svg width="19" height="19" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.35" stroke-linecap="round" stroke-linejoin="round">'+IC.pay+'</svg><span class="lb"><span class="zh">薪酬</span><span class="en">Payroll</span></span>'+CHEV+'</div>'+
+      '<div class="cb-sub">'+subHtml+'</div>';
+    if(isRG()){
+      /* RG 视角：仅展示 Payroll 相关功能 */
+      return payroll;
+    }
     return itm('home','首页','Home')+
       itm('adjust','调整管理','Adjustment Management')+
       itm('txn','交易','Transactions')+
@@ -58,17 +93,34 @@
       itm('account','账户','Account',true)+
       itm('smart','智能点餐','Smart Ordering',true)+
       /* ===== Payroll 一级 + 二级：置于侧边栏最底部 ===== */
-      '<div class="cb-item group-active"><svg width="19" height="19" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.35" stroke-linecap="round" stroke-linejoin="round">'+IC.pay+'</svg><span class="lb"><span class="zh">薪酬</span><span class="en">Payroll</span></span>'+CHEV+'</div>'+
-      '<div class="cb-sub">'+subHtml+'</div>';
+      payroll;
   }
+
+  window.cbIsRG = isRG;
+
+  function injectStoreCss(){
+    if(document.getElementById('cbStoreCss')) return;
+    var st=document.createElement('style'); st.id='cbStoreCss';
+    st.textContent=
+      '.cb-store-wrap{position:relative;display:inline-flex;}'+
+      '.cb-store-pop{position:absolute;top:34px;left:0;background:#fff;border:1px solid #e5e7eb;border-radius:10px;box-shadow:0 12px 32px rgba(0,0,0,.16);padding:6px;min-width:320px;z-index:1600;display:none;}'+
+      '.cb-store-pop.open{display:block;}'+
+      '.cb-store-opt{padding:10px 12px;border-radius:8px;font-size:13px;color:#374151;cursor:pointer;white-space:nowrap;display:flex;align-items:center;gap:8px;}'+
+      '.cb-store-opt:hover{background:#fff0f5;color:#e00051;}'+
+      '.cb-store-opt.on{color:#e00051;font-weight:700;background:#fff0f5;}'+
+      '.cb-store-opt .rgtag{margin-left:auto;font-size:11px;background:#eef0fe;color:#4a52c0;border-radius:5px;padding:1px 7px;font-weight:700;}';
+    document.head.appendChild(st);
+  }
+  document.addEventListener('click', function(e){ if(!e.target.closest('.cb-store-wrap')){ var p=document.getElementById('cbStorePop'); if(p) p.classList.remove('open'); } });
 
   window.renderShell = function(active){
     var app = document.querySelector('.cb-app');
     if(!app) return;
+    injectStoreCss();
     var main = app.querySelector('.cb-main');
     var header = document.createElement('header');
     header.className = 'cb-header';
-    header.innerHTML = HEADER_HTML;
+    header.innerHTML = buildHeader();
     var row = document.createElement('div');
     row.className = 'cb-row';
     var nav = document.createElement('nav');

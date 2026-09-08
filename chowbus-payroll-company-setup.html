@@ -14,6 +14,7 @@
   .init-link:hover{background:#ffe1ec;}
   .init-link svg{flex-shrink:0;}
 
+  [hidden]{display:none!important;}
   .entry-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:18px;}
   .entry-card{background:#fff;border:1px solid var(--border);border-radius:14px;padding:22px;display:flex;gap:16px;align-items:flex-start;cursor:pointer;transition:.18s;box-shadow:0 2px 12px rgba(0,0,0,.03);}
   .entry-card:hover{border-color:#E7A9B5;box-shadow:0 10px 26px rgba(204,28,76,.09);transform:translateY(-2px);}
@@ -125,6 +126,15 @@
             <span class="entry-arrow">›</span>
           </div>
 
+          <div class="entry-card" id="teamSetupCard" hidden onclick="location.href='chowbus-payroll-team-setup.html'">
+            <div class="entry-ic">🏬</div>
+            <div class="entry-body">
+              <div class="entry-title"><span class="zh">工作地点设置</span><span class="en">Team Setup</span></div>
+              <div class="entry-desc"><span class="zh">登记所有营业中的工作地点（应税辖区），用于薪酬与税务申报。</span><span class="en">Account for all active workplaces (taxable jurisdictions) for payroll and tax filing.</span></div>
+            </div>
+            <span class="entry-arrow">›</span>
+          </div>
+
         </div>
       </div>
     </div>
@@ -156,6 +166,7 @@
 <script src="cb-shell.js"></script>
 <script>
   renderShell('company');
+  if(window.cbIsRG && window.cbIsRG()){ document.getElementById('teamSetupCard').hidden=false; }   // Team Setup 仅 RG 视角显示
 
   function soon(en,zh){
     const t=document.getElementById('toast');

@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chowbus Payroll · Team Setup</title>
+<link rel="stylesheet" href="cb-inter.css">
+<link rel="stylesheet" href="cb-shell.css">
+<style>
+  .cb-scroll{background:#fff;}
+  .ts-wrap{max-width:1180px;margin:0 auto;padding:8px 4px 40px;}
+  .crumb{font-size:13px;color:#9aa0aa;margin-bottom:18px;cursor:pointer;display:inline-flex;align-items:center;gap:6px;}
+  .crumb:hover{color:#2b4eff;}
+
+  .ts-banner{display:flex;gap:14px;background:#EEF3FF;border:1px solid #D7E3FF;border-radius:12px;padding:16px 20px;margin-bottom:30px;}
+  .ts-banner .bic{color:#2b4eff;flex-shrink:0;margin-top:2px;}
+  .ts-banner .bt{font-size:16px;font-weight:800;color:#1b2a5c;}
+  .ts-banner .bs{font-size:14px;color:#3f5488;margin-top:4px;line-height:1.5;}
+
+  .ts-h{font-size:26px;font-weight:800;color:#111;}
+  .ts-cnt{font-size:14px;color:#6b7280;margin:6px 0 18px;}
+  .ts-add{display:inline-flex;align-items:center;gap:8px;background:#2b4eff;color:#fff;border:none;border-radius:10px;padding:12px 20px;font-size:14.5px;font-weight:700;cursor:pointer;margin-bottom:24px;}
+  .ts-add:hover{background:#2140db;}
+
+  table.ts-tbl{width:100%;border-collapse:collapse;}
+  table.ts-tbl thead th{font-size:14px;font-weight:800;color:#111;text-align:left;padding:12px 14px;border-bottom:1px solid #E7E8EC;white-space:nowrap;}
+  table.ts-tbl tbody td{padding:16px 14px;font-size:14.5px;color:#111;border-bottom:1px solid #F1F2F4;}
+  table.ts-tbl tbody td.idx{color:#9aa0aa;}
+  .ts-empty-a2{color:#c4c8cf;}
+
+  .ts-foot{display:flex;align-items:center;justify-content:flex-end;gap:22px;margin-top:34px;padding-top:20px;border-top:1px solid #EFF0F3;}
+  .ts-conf{display:inline-flex;align-items:center;gap:9px;font-size:14.5px;color:#374151;cursor:pointer;}
+  .ts-conf input{width:18px;height:18px;accent-color:#2b4eff;}
+  .ts-cont{display:inline-flex;align-items:center;gap:8px;background:#2b4eff;color:#fff;border:none;border-radius:10px;padding:13px 26px;font-size:15px;font-weight:700;cursor:pointer;transition:.15s;}
+  .ts-cont:disabled{background:#A9B8FF;cursor:not-allowed;}
+  .ts-cont:not(:disabled):hover{background:#2140db;}
+
+  /* Add workplace 弹窗 */
+  .wk-ov{position:fixed;inset:0;background:rgba(20,22,30,.5);display:none;align-items:center;justify-content:center;z-index:1300;padding:24px;}
+  .wk-ov.open{display:flex;}
+  .wk-modal{background:#fff;border-radius:16px;width:660px;max-width:calc(100vw - 40px);box-shadow:0 30px 80px rgba(0,0,0,.35);padding:28px 30px 30px;}
+  .wk-h{display:flex;align-items:center;justify-content:space-between;margin-bottom:22px;}
+  .wk-t{font-size:22px;font-weight:800;color:#111;}
+  .wk-x{width:34px;height:34px;border:1px solid #D7E3FF;border-radius:9px;background:#fff;color:#2b4eff;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;}
+  .wk-lb{font-size:15px;font-weight:800;color:#111;margin-bottom:3px;display:block;}
+  .wk-lb .rq{color:#e0455e;}
+  .wk-desc{font-size:13.5px;color:#8a8f9a;margin-bottom:9px;}
+  .wk-input,.wk-select{width:100%;padding:13px 14px;border:1px solid #DADCE0;border-radius:10px;font-size:14.5px;background:#fff;color:#111;font-family:inherit;margin-bottom:14px;}
+  .wk-input:focus,.wk-select:focus{outline:none;border-color:#2b4eff;box-shadow:0 0 0 3px rgba(43,78,255,.12);}
+  .wk-sec{font-size:15px;font-weight:800;color:#111;margin:8px 0 9px;}
+  .wk-row2{display:grid;grid-template-columns:1fr 150px;gap:12px;}
+  .wk-save{width:100%;background:#2b4eff;color:#fff;border:none;border-radius:10px;padding:15px;font-size:15px;font-weight:700;cursor:pointer;margin-top:8px;display:flex;align-items:center;justify-content:center;gap:8px;}
+  .wk-save:hover{background:#2140db;}
+
+  .toast{position:fixed;left:50%;bottom:32px;transform:translateX(-50%) translateY(24px);opacity:0;pointer-events:none;background:#1f2937;color:#fff;border-radius:10px;padding:12px 18px;font-size:14px;box-shadow:0 12px 32px rgba(0,0,0,.28);z-index:1500;transition:all .3s cubic-bezier(.2,.8,.3,1);}
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+</style>
+</head>
+<body class="lang-zh">
+
+<div class="cb-app">
+  <main class="cb-main">
+    <div class="cb-scroll">
+      <div class="cb-content">
+        <div class="ts-wrap">
+          <div class="crumb" onclick="location.href='chowbus-payroll-company-setup.html'">← <span class="zh">返回公司设置</span><span class="en">Back to Company Setup</span></div>
+
+          <div class="ts-banner">
+            <span class="bic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M16 19v-1a3 3 0 0 0-3-3H6a3 3 0 0 0-3 3v1"/><circle cx="9.5" cy="8" r="3"/><path d="M21 19v-1a3 3 0 0 0-2.2-2.9M15.5 5.2a3 3 0 0 1 0 5.6"/></svg></span>
+            <div>
+              <div class="bt">First, let's account for all your active workplaces</div>
+              <div class="bs">A workplace is defined as a taxable jurisdiction in which you do business.</div>
+            </div>
+          </div>
+
+          <div class="ts-h">Add workplaces</div>
+          <div class="ts-cnt" id="tsCnt">0 workplaces</div>
+          <button class="ts-add" onclick="openWk()"><svg width="15" height="15" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M10 4v12M4 10h12"/></svg>Add workplace</button>
+
+          <div style="overflow-x:auto;">
+            <table class="ts-tbl">
+              <thead><tr>
+                <th>#</th><th>Name</th><th>Address line 1</th><th>Address line 2</th><th>City</th><th>State</th><th>ZIP</th>
+              </tr></thead>
+              <tbody id="tsBody"></tbody>
+            </table>
+          </div>
+
+          <div class="ts-foot">
+            <label class="ts-conf"><input type="checkbox" id="tsConfirm" onchange="tsSync()"> I confirm these are all my workplaces</label>
+            <button class="ts-cont" id="tsCont" disabled onclick="tsContinue()">Continue <svg width="15" height="15" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10h11M11 5l5 5-5 5"/></svg></button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- Add workplace 弹窗 -->
+<div class="wk-ov" id="wkOverlay">
+  <div class="wk-modal">
+    <div class="wk-h">
+      <div class="wk-t">Add workplace</div>
+      <button class="wk-x" onclick="closeWk()">✕</button>
+    </div>
+    <label class="wk-lb">Name <span class="rq">*</span></label>
+    <div class="wk-desc">This is used for internal reference only.</div>
+    <input class="wk-input" id="wkName" placeholder="Workplace name">
+    <div class="wk-sec">Address<span class="rq" style="color:#e0455e">*</span></div>
+    <input class="wk-input" id="wkA1" placeholder="Address line 1">
+    <input class="wk-input" id="wkA2" placeholder="Address line 2">
+    <input class="wk-input" id="wkCity" placeholder="City">
+    <div class="wk-row2">
+      <select class="wk-select" id="wkState">
+        <option value="">State</option>
+        <option>IL</option><option>NY</option><option>CA</option><option>TX</option><option>WA</option><option>NJ</option>
+      </select>
+      <input class="wk-input" id="wkZip" placeholder="ZIP">
+    </div>
+    <button class="wk-save" onclick="saveWk()">Save workplace <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10.5 8 14l8-8"/></svg></button>
+  </div>
+</div>
+
+<div class="toast" id="toast"><span id="toastMsg"></span></div>
+
+<script src="cb-shell.js"></script>
+<script>
+  renderShell('company');
+
+  let WORKPLACES=[
+    {name:'200 W Madison St', a1:'200 W Madison St', a2:'Suite 100', city:'Chicago', state:'IL', zip:'60606'},
+    {name:'moli', a1:'2227 S Wentworth Ave, Chicago, IL 60616', a2:'', city:'Port Vern', state:'IL', zip:'60616'},
+  ];
+  function tsRender(){
+    document.getElementById('tsCnt').textContent = WORKPLACES.length + ' workplace' + (WORKPLACES.length===1?'':'s');
+    document.getElementById('tsBody').innerHTML = WORKPLACES.map((w,i)=>
+      '<tr><td class="idx">'+(i+1)+'</td><td>'+w.name+'</td><td>'+w.a1+'</td><td'+(w.a2?'':' class="ts-empty-a2"')+'>'+(w.a2||'—')+'</td><td>'+w.city+'</td><td>'+w.state+'</td><td>'+w.zip+'</td></tr>').join('');
+  }
+  function tsSync(){ document.getElementById('tsCont').disabled = !document.getElementById('tsConfirm').checked; }
+  function tsContinue(){ showToast('Workplaces confirmed'); setTimeout(()=>location.href='chowbus-payroll-company-setup.html', 1000); }
+  tsRender();
+
+  function openWk(){ ['wkName','wkA1','wkA2','wkCity','wkZip'].forEach(id=>document.getElementById(id).value=''); document.getElementById('wkState').value=''; document.getElementById('wkOverlay').classList.add('open'); }
+  function closeWk(){ document.getElementById('wkOverlay').classList.remove('open'); }
+  function saveWk(){
+    const name=document.getElementById('wkName').value.trim();
+    const a1=document.getElementById('wkA1').value.trim();
+    const state=document.getElementById('wkState').value;
+    if(!name){ showToast('Please enter a name'); return; }
+    if(!a1 || !state){ showToast('Please complete the address'); return; }
+    WORKPLACES.push({name, a1, a2:document.getElementById('wkA2').value.trim(), city:document.getElementById('wkCity').value.trim(), state, zip:document.getElementById('wkZip').value.trim()});
+    closeWk(); tsRender();
+    document.getElementById('tsConfirm').checked=false; tsSync();
+  }
+
+  function showToast(msg){ const t=document.getElementById('toast'); document.getElementById('toastMsg').textContent=msg; t.classList.add('show'); clearTimeout(t._tm); t._tm=setTimeout(()=>t.classList.remove('show'),2200); }
+</script>
+</body>
+</html>
