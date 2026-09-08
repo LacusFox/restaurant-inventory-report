@@ -82,7 +82,7 @@
     <div class="cb-scroll">
       <div class="cb-content">
         <div class="ts-wrap">
-          <div class="crumb" onclick="location.href='chowbus-payroll-company-setup.html'">← <span class="zh">返回公司设置</span><span class="en">Back to Company Setup</span></div>
+          <div class="crumb" onclick="cbNav('chowbus-payroll-company-setup.html')">← <span class="zh">返回公司设置</span><span class="en">Back to Company Setup</span></div>
 
           <div class="ts-banner">
             <span class="bic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M16 19v-1a3 3 0 0 0-3-3H6a3 3 0 0 0-3 3v1"/><circle cx="9.5" cy="8" r="3"/><path d="M21 19v-1a3 3 0 0 0-2.2-2.9M15.5 5.2a3 3 0 0 1 0 5.6"/></svg></span>
@@ -99,7 +99,7 @@
           <div style="overflow-x:auto;">
             <table class="ts-tbl">
               <thead><tr>
-                <th>#</th><th>Name</th><th>Restaurant ID</th><th>Address line 1</th><th>Address line 2</th><th>City</th><th>State</th><th>ZIP</th><th>Action</th>
+                <th>#</th><th>Name</th><th>Restaurant ID</th><th>Address line 1</th><th>Address line 2</th><th>City</th><th>State</th><th>ZIP</th>
               </tr></thead>
               <tbody id="tsBody"></tbody>
             </table>
@@ -128,16 +128,6 @@
   </div>
 </div>
 
-<!-- 匹配员工 弹窗 -->
-<div class="wk-ov" id="meOverlay">
-  <div class="me-modal">
-    <div class="me-h"><div class="me-t">Match employees</div><button class="wk-x" onclick="closeMe()">✕</button></div>
-    <div class="me-sub"><span class="zh">为「<b id="meWp"></b>」选择在此工作地点的员工。</span><span class="en">Select employees who work at <b id="meWpEn"></b>.</span></div>
-    <div class="me-list" id="meList"></div>
-    <div class="me-foot"><button class="me-cancel" onclick="closeMe()"><span class="zh">取消</span><span class="en">Cancel</span></button><button class="me-save2" onclick="saveMe()"><span class="zh">保存</span><span class="en">Save</span></button></div>
-  </div>
-</div>
-
 <div class="toast" id="toast"><span id="toastMsg"></span></div>
 
 <script src="cb-shell.js"></script>
@@ -158,39 +148,9 @@
   function tsRender(){
     document.getElementById('tsCnt').textContent = WORKPLACES.length + ' workplace' + (WORKPLACES.length===1?'':'s');
     document.getElementById('tsBody').innerHTML = WORKPLACES.map((w,i)=>
-      '<tr><td class="idx">'+(i+1)+'</td><td>'+w.name+'</td><td>'+(w.rid||'—')+'</td><td>'+w.a1+'</td><td'+(w.a2?'':' class="ts-empty-a2"')+'>'+(w.a2||'—')+'</td><td>'+w.city+'</td><td>'+w.state+'</td><td>'+w.zip+'</td>'+
-      '<td><button class="ts-match" onclick="openMe('+i+')">匹配员工 · '+((w.emps&&w.emps.length)||0)+'</button></td></tr>').join('');
+      '<tr><td class="idx">'+(i+1)+'</td><td>'+w.name+'</td><td>'+(w.rid||'—')+'</td><td>'+w.a1+'</td><td'+(w.a2?'':' class="ts-empty-a2"')+'>'+(w.a2||'—')+'</td><td>'+w.city+'</td><td>'+w.state+'</td><td>'+w.zip+'</td></tr>').join('');
   }
   tsRender();
-
-  /* ===== 匹配员工 ===== */
-  const ME_POOL=[
-    {name:'Bohong Xu', role:'Super Admin'},
-    {name:'Ruiqi Zhang', role:'Manager'},
-    {name:'Wei Huang', role:'Owner'},
-    {name:'Yang Feng', role:'Manager / Server'},
-    {name:'司机 2号', role:'Driver'},
-    {name:'Maria Lopez', role:'Server'},
-    {name:'Kenji Tanaka', role:'Cook'},
-  ];
-  let meWp=null, meSel=new Set();
-  function openMe(i){
-    meWp=i; meSel=new Set(WORKPLACES[i].emps||[]);
-    document.getElementById('meWp').textContent=WORKPLACES[i].name;
-    document.getElementById('meWpEn').textContent=WORKPLACES[i].name;
-    meRender();
-    document.getElementById('meOverlay').classList.add('open');
-  }
-  function closeMe(){ document.getElementById('meOverlay').classList.remove('open'); }
-  function meToggle(i){ meSel.has(i)?meSel.delete(i):meSel.add(i); meRender(); }
-  function meRender(){
-    document.getElementById('meList').innerHTML = ME_POOL.map((e,i)=>
-      '<div class="me-row '+(meSel.has(i)?'on':'')+'" onclick="meToggle('+i+')"><span class="me-cb">'+(meSel.has(i)?'<svg width="12" height="12" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10.5 8 14l8-8"/></svg>':'')+'</span>'+e.name+'<span class="me-role">'+e.role+'</span></div>').join('');
-  }
-  function saveMe(){
-    if(meWp!=null){ WORKPLACES[meWp].emps=[...meSel]; }
-    closeMe(); tsRender(); showToast(meSel.size+' 名员工已匹配到该工作地点', meSel.size+' employees matched');
-  }
 
   function openWk(){
     document.getElementById('wkName').value='';

@@ -26,6 +26,8 @@
   .act-btn{border:1px solid var(--border);background:#fff;border-radius:8px;padding:6px 12px;font-size:13px;font-weight:600;color:var(--tb);cursor:pointer;}
   .act-btn:hover{border-color:var(--brand);color:var(--brand);}
   .act-btn.del:hover{border-color:#dc2626;color:#dc2626;}
+  .act-btn.enter{background:var(--brand);border-color:var(--brand);color:#fff;}
+  .act-btn.enter:hover{background:var(--brand-hover);color:#fff;}
 
   /* 弹窗 */
   .ov{position:fixed;inset:0;background:rgba(17,24,39,.45);display:none;align-items:center;justify-content:center;z-index:1200;}
@@ -125,6 +127,7 @@
   function bi(zh,en){ return '<span class="zh">'+zh+'</span><span class="en">'+en+'</span>'; }
 
   let COMPANIES = (window.CB_COMPANIES||[]).map(c=>Object.assign({},c));
+  function enterDetail(i){ try{ localStorage.setItem('cbCompany', i); }catch(e){} location.href='chowbus-payroll-ein-detail.html?i='+i; }
   function render(){
     document.getElementById('coBody').innerHTML = COMPANIES.map((c,i)=>
       '<tr>'+
@@ -133,7 +136,8 @@
         '<td class="c-mut">'+(c.trade||'—')+'</td>'+
         '<td class="c-mut">'+(c.phone||'—')+'</td>'+
         '<td class="c-mut">'+(c.addr||'—')+'</td>'+
-        '<td><div class="co-acts"><button class="act-btn" onclick="location.href=\'chowbus-payroll-team-setup.html\'">'+bi('管理门店','Manage stores')+'</button>'+
+        '<td><div class="co-acts"><button class="act-btn enter" onclick="enterDetail('+i+')">'+bi('进入详情','Enter')+'</button>'+
+          '<button class="act-btn" onclick="location.href=\'chowbus-payroll-team-setup.html\'">'+bi('管理门店','Manage stores')+'</button>'+
           '<button class="act-btn del" onclick="askDel('+i+')">'+bi('删除','Delete')+'</button></div></td>'+
       '</tr>').join('');
   }

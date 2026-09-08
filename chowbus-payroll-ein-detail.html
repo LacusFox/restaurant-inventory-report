@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chowbus Payroll · 公司详情</title>
+<link rel="stylesheet" href="cb-inter.css">
+<link rel="stylesheet" href="cb-shell.css">
+<style>
+  .crumb{font-size:13px;color:#9aa0aa;margin-bottom:14px;cursor:pointer;display:inline-flex;align-items:center;gap:6px;}
+  .crumb:hover{color:var(--brand);}
+  .ein-head{display:flex;align-items:center;gap:14px;margin-bottom:16px;}
+  .ein-name{font-size:22px;font-weight:800;color:var(--t1);}
+  .ein-badge{display:inline-flex;align-items:center;gap:6px;background:#fff0f5;color:var(--brand);border:1px solid #fbd5e2;border-radius:8px;padding:5px 12px;font-size:13px;font-weight:700;font-variant-numeric:tabular-nums;}
+  .ein-meta{font-size:13px;color:var(--t2);}
+
+  /* 三级 Tab（截图4 样式） */
+  .ein-tabs{display:flex;gap:30px;border-bottom:1px solid var(--border);margin-bottom:0;}
+  .ein-tab{padding:12px 2px;font-size:15px;font-weight:600;color:var(--t2);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;transition:.15s;white-space:nowrap;}
+  .ein-tab:hover{color:var(--t1);}
+  .ein-tab.on{color:var(--brand);border-bottom-color:var(--brand);font-weight:700;}
+
+  .ein-frame-wrap{background:var(--page);}
+  .ein-frame{width:100%;border:none;display:block;min-height:calc(100vh - 200px);background:var(--page);}
+</style>
+</head>
+<body class="lang-zh">
+
+<div class="cb-app">
+  <main class="cb-main">
+    <div class="cb-scroll">
+      <div class="cb-content" style="padding-bottom:0;">
+        <div class="crumb" onclick="location.href='chowbus-payroll-company-list.html'">← <span class="zh">返回公司列表</span><span class="en">Back to Company List</span></div>
+        <div class="ein-head">
+          <div class="ein-name" id="einName">—</div>
+          <span class="ein-badge">EIN <span id="einNo"></span></span>
+          <span class="ein-meta" id="einTrade"></span>
+        </div>
+        <div class="ein-tabs" id="einTabs"></div>
+      </div>
+      <div class="ein-frame-wrap">
+        <iframe class="ein-frame" id="einFrame"></iframe>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script src="cb-shell.js"></script>
+<script>
+  renderShell('companylist');
+  function bi(zh,en){ return '<span class="zh">'+zh+'</span><span class="en">'+en+'</span>'; }
+
+  const qi = parseInt(new URLSearchParams(location.search).get('i'));
+  const C = (window.CB_COMPANIES||[])[(qi>=0&&qi<(window.CB_COMPANIES||[]).length)?qi:0] || {legal:'—',ein:'',trade:''};
+  document.getElementById('einName').textContent = C.legal;
+  document.getElementById('einNo').textContent = C.ein;
+  document.getElementById('einTrade').textContent = C.trade;
+
+  /* 三级 Tab：不同 Tab 内嵌对应原流程（发薪员工管理已整体去除） */
+  const TABS=[
+    {zh:'初始化设置', en:'Payroll Setup', url:'chowbus-payroll-overview-init.html'},
+    {zh:'公司设置',   en:'Company Setup', url:'chowbus-payroll-company-setup.html'},
+    {zh:'跑薪',       en:'Run Payroll',   url:'chowbus-payroll-run-payroll.html'},
+    {zh:'税务与申报', en:'Taxes & Filings', url:'chowbus-payroll-taxes-filings.html'},
+  ];
+  let tab=0;
+  function renderTabs(){
+    document.getElementById('einTabs').innerHTML = TABS.map((t,i)=>
+      '<div class="ein-tab '+(i===tab?'on':'')+'" onclick="goTab('+i+')">'+bi(t.zh,t.en)+'</div>').join('');
+  }
+  function goTab(i){ tab=i; renderTabs(); document.getElementById('einFrame').src = TABS[i].url+'?embed=1'; }
+  renderTabs();
+  goTab(0);
+</script>
+</body>
+</html>

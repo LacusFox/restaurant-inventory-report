@@ -30,13 +30,8 @@
     ['run','跑薪','Run Payroll','chowbus-payroll-run-payroll.html'],
     ['taxes','税务与申报','Taxes &amp; Filings','chowbus-payroll-taxes-filings.html']
   ];
-  /* RG 视角：仅保留 Payroll 相关功能，顺序按需求 */
+  /* RG 视角：侧边栏仅保留「公司列表」，其余功能进入某个 EIN 详情后以三级 Tab 展示 */
   var RG_SUBS = [
-    ['setup','初始化设置','Payroll Setup','chowbus-payroll-overview-init.html'],
-    ['company','公司设置','Company Setup','chowbus-payroll-company-setup.html'],
-    ['run','跑薪','Run Payroll','chowbus-payroll-run-payroll.html'],
-    ['employees','发薪员工管理','Payroll Employees','chowbus-payroll-employees.html'],
-    ['taxes','税务与申报','Taxes &amp; Filings','chowbus-payroll-taxes-filings.html'],
     ['companylist','公司列表','Company List','chowbus-payroll-company-list.html']
   ];
 
@@ -122,6 +117,8 @@
   }
 
   window.cbIsRG = isRG;
+  /* 内嵌模式下导航保持 embed（避免 Tab iframe 内出现外壳） */
+  window.cbNav = function(url){ var e=false; try{ e=new URLSearchParams(location.search).get('embed')==='1'; }catch(x){} location.href = url + (e ? (url.indexOf('?')>=0?'&':'?')+'embed=1' : ''); };
 
   function injectStoreCss(){
     if(document.getElementById('cbStoreCss')) return;
@@ -155,6 +152,16 @@
   window.renderShell = function(active){
     var app = document.querySelector('.cb-app');
     if(!app) return;
+    var embed=false; try{ embed = new URLSearchParams(location.search).get('embed')==='1'; }catch(e){}
+    if(embed){   // 内嵌模式（EIN 详情页的 Tab iframe）：不渲染头部/侧边栏，仅保留内容
+      document.body.classList.add('cb-embed');
+      if(!document.getElementById('cbEmbedCss')){
+        var es=document.createElement('style'); es.id='cbEmbedCss';
+        es.textContent='body.cb-embed .cb-header,body.cb-embed .cb-sidebar{display:none!important;}body.cb-embed .cb-app{display:block;}body.cb-embed .cb-scroll{height:auto;min-height:100vh;}';
+        document.head.appendChild(es);
+      }
+      return;
+    }
     injectStoreCss();
     var main = app.querySelector('.cb-main');
     var header = document.createElement('header');
