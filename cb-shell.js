@@ -52,9 +52,9 @@
 
   /* ===== RG 视角：公司（EIN）列表，供公司列表页与头部切换共用 ===== */
   window.CB_COMPANIES = [
-    {ein:'88-1234567', legal:'Curry Flurry LLC',            trade:'Curry Flurry',       phone:'(312) 555-0110', addr:'200 W Madison St, Suite 100, Chicago, IL 60606'},
-    {ein:'47-2029581', legal:'Wentworth Dining Group LLC',  trade:'Wentworth Dining',   phone:'(773) 555-0143', addr:'2227 S Wentworth Ave, Chicago, IL 60616'},
-    {ein:'82-4471903', legal:'Evanston Flavors Inc',        trade:'Evanston Flavors',   phone:'(847) 555-0198', addr:'1620 Orrington Ave, Evanston, IL 60201'}
+    {ein:'88-1234567', legal:'Curry Flurry LLC',            trade:'Curry Flurry',       phone:'(312) 555-0110', addr:'200 W Madison St, Suite 100, Chicago, IL 60606', multi:true},
+    {ein:'47-2029581', legal:'Wentworth Dining Group LLC',  trade:'Wentworth Dining',   phone:'(773) 555-0143', addr:'2227 S Wentworth Ave, Chicago, IL 60616', multi:true},
+    {ein:'82-4471903', legal:'Evanston Flavors Inc',        trade:'Evanston Flavors',   phone:'(847) 555-0198', addr:'1620 Orrington Ave, Evanston, IL 60201', multi:false}
   ];
   function getCompanyIdx(){ try{ var v=parseInt(localStorage.getItem('cbCompany')); return (v>=0&&v<window.CB_COMPANIES.length)?v:0; }catch(e){ return 0; } }
   window.cbGetCompany = function(){ return window.CB_COMPANIES[getCompanyIdx()]; };

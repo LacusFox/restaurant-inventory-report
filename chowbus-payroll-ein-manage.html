@@ -44,6 +44,12 @@
   .m-cancel{background:#fff;border:1px solid #DCDCDC;color:var(--tb);}
   .m-save{background:var(--brand);border:1px solid var(--brand);color:#fff;}
   .m-save:hover{background:var(--brand-hover);}
+  .seg2{display:inline-flex;background:#f1f2f4;border-radius:9px;padding:3px;gap:2px;}
+  .seg2-opt{border:none;background:transparent;border-radius:7px;padding:8px 24px;font-size:13.5px;font-weight:700;color:var(--t2);cursor:pointer;font-family:inherit;}
+  .seg2-opt.on{background:#fff;color:var(--brand);box-shadow:0 1px 3px rgba(0,0,0,.12);}
+  .multi-pill{display:inline-block;border-radius:7px;padding:3px 11px;font-size:12.5px;font-weight:700;}
+  .multi-pill.yes{background:#e7f6ee;color:#12905a;}
+  .multi-pill.no{background:#f1f2f4;color:#6b7280;}
 
   .dl-modal{text-align:center;padding:28px 30px 22px;}
   .dl-ic{width:52px;height:52px;border-radius:50%;background:#FDECEC;color:#DC2626;display:flex;align-items:center;justify-content:center;margin:0 auto 14px;}
@@ -79,6 +85,7 @@
                 <th>Trade Name</th>
                 <th>Phone Number</th>
                 <th>Address</th>
+                <th><span class="zh">多门店</span><span class="en">Multi-store</span></th>
                 <th><span class="zh">操作</span><span class="en">Action</span></th>
               </tr></thead>
               <tbody id="coBody"></tbody>
@@ -100,6 +107,12 @@
       <div class="m-fld"><label class="m-lb">Trade Name</label><input class="m-inp" id="aTrade" placeholder="Doing-business-as name"></div>
       <div class="m-fld"><label class="m-lb">Phone Number</label><input class="m-inp" id="aPhone" placeholder="(000) 000-0000"></div>
       <div class="m-fld"><label class="m-lb">Address</label><input class="m-inp" id="aAddr" placeholder="Street, City, State, ZIP"></div>
+      <div class="m-fld"><label class="m-lb"><span class="zh">一个 EIN 是否对应多个门店</span><span class="en">One EIN maps to multiple stores</span></label>
+        <div class="seg2">
+          <button class="seg2-opt" id="segYes" onclick="setMulti(true)"><span class="zh">是</span><span class="en">Yes</span></button>
+          <button class="seg2-opt" id="segNo" onclick="setMulti(false)"><span class="zh">否</span><span class="en">No</span></button>
+        </div>
+      </div>
     </div>
     <div class="m-foot"><button class="m-cancel" onclick="closeAdd()"><span class="zh">取消</span><span class="en">Cancel</span></button><button class="m-save" onclick="saveEin()"><span class="zh">保存</span><span class="en">Save</span></button></div>
   </div>
@@ -131,19 +144,22 @@
         '<td class="c-mut">'+(c.trade||'—')+'</td>'+
         '<td class="c-mut">'+(c.phone||'—')+'</td>'+
         '<td class="c-mut">'+(c.addr||'—')+'</td>'+
+        '<td>'+(c.multi ? '<span class="multi-pill yes">'+bi('是','Yes')+'</span>' : '<span class="multi-pill no">'+bi('否','No')+'</span>')+'</td>'+
         '<td><div class="co-acts"><button class="act-btn del" onclick="askDel('+i+')">'+bi('删除','Delete')+'</button></div></td>'+
       '</tr>').join('');
   }
   render();
 
-  function openAdd(){ ['aEin','aLegal','aTrade','aPhone','aAddr'].forEach(id=>document.getElementById(id).value=''); document.getElementById('addOverlay').classList.add('open'); }
+  let addMulti=true;
+  function setMulti(v){ addMulti=v; document.getElementById('segYes').classList.toggle('on',v); document.getElementById('segNo').classList.toggle('on',!v); }
+  function openAdd(){ ['aEin','aLegal','aTrade','aPhone','aAddr'].forEach(id=>document.getElementById(id).value=''); setMulti(true); document.getElementById('addOverlay').classList.add('open'); }
   function closeAdd(){ document.getElementById('addOverlay').classList.remove('open'); }
   function saveEin(){
     const ein=document.getElementById('aEin').value.trim();
     const legal=document.getElementById('aLegal').value.trim();
     if(!ein){ showToast('请填写 EIN Number','Please enter EIN'); return; }
     if(!legal){ showToast('请填写 Legal Name','Please enter legal name'); return; }
-    EINS.push({ein, legal, trade:document.getElementById('aTrade').value.trim(), phone:document.getElementById('aPhone').value.trim(), addr:document.getElementById('aAddr').value.trim()});
+    EINS.push({ein, legal, trade:document.getElementById('aTrade').value.trim(), phone:document.getElementById('aPhone').value.trim(), addr:document.getElementById('aAddr').value.trim(), multi:addMulti});
     closeAdd(); render(); showToast('EIN 已添加','EIN added');
   }
 
