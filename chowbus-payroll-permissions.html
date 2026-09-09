@@ -49,6 +49,16 @@
   .perm-row:last-child{border-bottom:none;}
   .perm-cb{width:19px;height:19px;border:1.7px solid #c4c8cf;border-radius:5px;display:flex;align-items:center;justify-content:center;flex-shrink:0;color:#fff;}
   .perm-row.on .perm-cb{background:var(--brand);border-color:var(--brand);}
+  .perm-row.locked{cursor:not-allowed;opacity:.75;}
+  .perm-row.locked .perm-cb{background:#e9eaee;border-color:#dfe1e6;color:#9aa0aa;}
+  .perm-row.locked.on .perm-cb{background:var(--brand);border-color:var(--brand);color:#fff;opacity:.7;}
+  /* 关联员工 多选弹窗 */
+  .as-list{padding:12px 26px 6px;max-height:340px;overflow-y:auto;}
+  .as-row{display:flex;align-items:center;gap:12px;padding:12px 4px;border-bottom:1px solid #F1F2F4;font-size:14.5px;color:var(--t1);cursor:pointer;}
+  .as-row:last-child{border-bottom:none;}
+  .as-cb{width:19px;height:19px;border:1.7px solid #c4c8cf;border-radius:5px;display:flex;align-items:center;justify-content:center;flex-shrink:0;color:#fff;}
+  .as-row.on .as-cb{background:var(--brand);border-color:var(--brand);}
+  .as-role{margin-left:auto;font-size:12.5px;color:#9ca3af;}
   .m-foot{display:flex;justify-content:flex-end;gap:12px;padding:16px 26px 22px;}
   .m-foot button{border-radius:10px;padding:10px 22px;font-size:14px;font-weight:700;cursor:pointer;}
   .m-cancel{background:#fff;border:1px solid #DCDCDC;color:var(--tb);}
@@ -105,6 +115,16 @@
   </div>
 </div>
 
+<!-- 关联员工 多选弹窗 -->
+<div class="ov" id="assocOverlay">
+  <div class="modal">
+    <div class="m-h"><div class="m-t"><span class="zh">关联员工</span><span class="en">Link staff</span></div><button class="m-x" onclick="closeAssoc()">✕</button></div>
+    <div class="page-sub" style="padding:6px 26px 0;margin:0;"><span class="zh">为「<b id="assocRole"></b>」选择拥有该角色的员工（可多选）。</span><span class="en">Select staff who have the <b id="assocRoleEn"></b> role.</span></div>
+    <div class="as-list" id="assocList"></div>
+    <div class="m-foot"><button class="m-cancel" onclick="closeAssoc()"><span class="zh">取消</span><span class="en">Cancel</span></button><button class="m-save" onclick="saveAssoc()"><span class="zh">保存</span><span class="en">Save</span></button></div>
+  </div>
+</div>
+
 <div class="toast" id="toast"><span id="toastMsg"></span></div>
 
 <script src="cb-shell.js"></script>
@@ -123,7 +143,7 @@
   ];
   const ALL = PERMS.map(p=>p.key);
   let ROLES=[
-    {name:'超级管理员', nameEn:'Super Admin', desc:'全部薪酬功能与设置', descEn:'Full access to all payroll features', members:2, perms:[...ALL]},
+    {name:'超级管理员', nameEn:'Super Admin', desc:'全部薪酬功能与设置', descEn:'Full access to all payroll features', members:2, perms:[...ALL], sys:true},
     {name:'薪酬管理员', nameEn:'Payroll Admin', desc:'日常跑薪与员工管理', descEn:'Run payroll and manage employees', members:3, perms:['setup','company','employees','run','taxes']},
     {name:'财务查看',   nameEn:'Finance Viewer', desc:'仅查看税务与申报', descEn:'View taxes & filings only', members:1, perms:['taxes']},
   ];
@@ -139,20 +159,24 @@
         '<td class="r-mut"><span class="zh">'+r.desc+'</span><span class="en">'+r.descEn+'</span></td>'+
         '<td><span class="mem">'+r.members+'</span></td>'+
         '<td>'+permsCell(r)+'</td>'+
-        '<td><div class="r-acts"><button class="act-btn" onclick="openEdit('+i+')">'+bi('编辑','Edit')+'</button>'+
+        '<td><div class="r-acts"><button class="act-btn" onclick="openAssoc('+i+')">'+bi('关联员工','Link staff')+'</button>'+
+          '<button class="act-btn" onclick="openEdit('+i+')">'+bi('编辑','Edit')+'</button>'+
           (i===0?'':'<button class="act-btn del" onclick="delRole('+i+')">'+bi('删除','Delete')+'</button>')+'</div></td>'+
       '</tr>').join('');
   }
   render();
 
-  let editIdx=null, sel=new Set();
+  let editIdx=null, sel=new Set(), lockPerms=false;
+  function isSingle(){ try{ return localStorage.getItem('cbInitMode')==='single'; }catch(e){ return false; } }
+  function visiblePerms(){ return PERMS.filter(function(p){ return !(p.key==='multi' && isSingle()); }); }   // 单店隐藏「多公司管理」
   function renderPerms(){
-    document.getElementById('permGrid').innerHTML = PERMS.map(p=>
-      '<div class="perm-row '+(sel.has(p.key)?'on':'')+'" onclick="togglePerm(\''+p.key+'\')"><span class="perm-cb">'+(sel.has(p.key)?'<svg width="12" height="12" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10.5 8 14l8-8"/></svg>':'')+'</span>'+bi(p.zh,p.en)+'</div>').join('');
+    const CK='<svg width="12" height="12" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10.5 8 14l8-8"/></svg>';
+    document.getElementById('permGrid').innerHTML = visiblePerms().map(p=>
+      '<div class="perm-row '+(sel.has(p.key)?'on':'')+(lockPerms?' locked':'')+'" '+(lockPerms?'':'onclick="togglePerm(\''+p.key+'\')"')+'><span class="perm-cb">'+(sel.has(p.key)?CK:'')+'</span>'+bi(p.zh,p.en)+'</div>').join('');
   }
-  function togglePerm(k){ sel.has(k)?sel.delete(k):sel.add(k); renderPerms(); }
-  function openAdd(){ editIdx=null; sel=new Set(); document.getElementById('roleTitle').innerHTML=bi('添加角色','Add role'); document.getElementById('rName').value=''; document.getElementById('rDesc').value=''; renderPerms(); document.getElementById('roleOverlay').classList.add('open'); }
-  function openEdit(i){ editIdx=i; const r=ROLES[i]; sel=new Set(r.perms); document.getElementById('roleTitle').innerHTML=bi('编辑角色','Edit role'); document.getElementById('rName').value=r.name; document.getElementById('rDesc').value=r.desc; renderPerms(); document.getElementById('roleOverlay').classList.add('open'); }
+  function togglePerm(k){ if(lockPerms) return; sel.has(k)?sel.delete(k):sel.add(k); renderPerms(); }
+  function openAdd(){ editIdx=null; lockPerms=false; sel=new Set(); document.getElementById('roleTitle').innerHTML=bi('添加角色','Add role'); document.getElementById('rName').value=''; document.getElementById('rDesc').value=''; renderPerms(); document.getElementById('roleOverlay').classList.add('open'); }
+  function openEdit(i){ editIdx=i; const r=ROLES[i]; lockPerms=!!r.sys; sel = r.sys ? new Set(visiblePerms().map(p=>p.key)) : new Set(r.perms); document.getElementById('roleTitle').innerHTML=bi(r.sys?'查看角色':'编辑角色', r.sys?'View role':'Edit role'); document.getElementById('rName').value=r.name; document.getElementById('rDesc').value=r.desc; renderPerms(); document.getElementById('roleOverlay').classList.add('open'); }
   function closeRole(){ document.getElementById('roleOverlay').classList.remove('open'); }
   function saveRole(){
     const name=document.getElementById('rName').value.trim();
@@ -163,6 +187,29 @@
     closeRole(); render(); showToast('角色已保存','Role saved');
   }
   function delRole(i){ ROLES.splice(i,1); render(); showToast('角色已删除','Role deleted'); }
+
+  /* ===== 关联员工 ===== */
+  const STAFF=[
+    {name:'Bohong Xu', role:'超级管理员', roleEn:'Super Admin'},
+    {name:'Ruiqi Zhang', role:'经理', roleEn:'Manager'},
+    {name:'Wei Huang', role:'餐厅老板', roleEn:'Owner'},
+    {name:'Yang Feng', role:'收银员', roleEn:'Cashier'},
+    {name:'Yiran Chen', role:'经理', roleEn:'Manager'},
+    {name:'Maria Lopez', role:'服务员', roleEn:'Server'},
+    {name:'Kenji Tanaka', role:'厨师', roleEn:'Cook'},
+  ];
+  let assocIdx=null, assocSel=new Set();
+  function openAssoc(i){ assocIdx=i; assocSel=new Set(ROLES[i].staff||[]); document.getElementById('assocRole').textContent=ROLES[i].name; document.getElementById('assocRoleEn').textContent=ROLES[i].nameEn; assocRender(); document.getElementById('assocOverlay').classList.add('open'); }
+  function closeAssoc(){ document.getElementById('assocOverlay').classList.remove('open'); }
+  function assocToggle(i){ assocSel.has(i)?assocSel.delete(i):assocSel.add(i); assocRender(); }
+  function assocRender(){
+    document.getElementById('assocList').innerHTML = STAFF.map((e,i)=>
+      '<div class="as-row '+(assocSel.has(i)?'on':'')+'" onclick="assocToggle('+i+')"><span class="as-cb">'+(assocSel.has(i)?'<svg width="12" height="12" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10.5 8 14l8-8"/></svg>':'')+'</span>'+e.name+'<span class="as-role">'+(document.body.classList.contains('lang-en')?e.roleEn:e.role)+'</span></div>').join('');
+  }
+  function saveAssoc(){
+    if(assocIdx!=null){ ROLES[assocIdx].staff=[...assocSel]; ROLES[assocIdx].members=assocSel.size; }
+    closeAssoc(); render(); showToast('已关联 '+assocSel.size+' 名员工', assocSel.size+' staff linked');
+  }
 
   function showToast(zh,en){ const t=document.getElementById('toast'); document.getElementById('toastMsg').textContent=document.body.classList.contains('lang-en')?en:zh; t.classList.add('show'); clearTimeout(t._tm); t._tm=setTimeout(()=>t.classList.remove('show'),2200); }
 </script>
