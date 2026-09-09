@@ -21,7 +21,8 @@
     building:'<path d="M4 17V6l6-3 6 3v11M4 17h12M8 8h.01M8 11h.01M12 8h.01M12 11h.01M8 17v-3h4v3"/>',
     run:'<path d="M6.5 4.5v11l9-5.5z"/>',
     ein:'<path d="M3.5 6h13v8h-13zM3.5 9.2h13M6.2 12h3M11.5 12h2.3"/>',
-    gear:'<path d="M10 12.4a2.4 2.4 0 1 0 0-4.8 2.4 2.4 0 0 0 0 4.8ZM10 3.5v1.8M10 14.7v1.8M16.5 10h-1.8M5.3 10H3.5M14.6 5.4l-1.3 1.3M6.7 13.3l-1.3 1.3M14.6 14.6l-1.3-1.3M6.7 6.7 5.4 5.4"/>'
+    gear:'<path d="M10 12.4a2.4 2.4 0 1 0 0-4.8 2.4 2.4 0 0 0 0 4.8ZM10 3.5v1.8M10 14.7v1.8M16.5 10h-1.8M5.3 10H3.5M14.6 5.4l-1.3 1.3M6.7 13.3l-1.3 1.3M14.6 14.6l-1.3-1.3M6.7 6.7 5.4 5.4"/>',
+    shield:'<path d="M10 3.2 4.5 5.4v4.1c0 3.3 2.3 5.6 5.5 6.9 3.2-1.3 5.5-3.6 5.5-6.9V5.4z"/><path d="M7.7 10 9.4 11.7 12.6 8.4"/>'
   };
   function itm(key,zh,en,chev){
     return '<div class="cb-item"><svg width="19" height="19" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.35" stroke-linecap="round" stroke-linejoin="round">'+IC[key]+'</svg><span class="lb"><span class="zh">'+zh+'</span><span class="en">'+en+'</span></span>'+(chev?CHEV:'')+'</div>';
@@ -45,7 +46,8 @@
     ['employees','发薪员工管理','Payroll Employees','chowbus-payroll-employees.html','team'],
     ['run','跑薪','Run Payroll','chowbus-payroll-run-payroll.html','run'],
     ['taxes','税务与申报','Taxes &amp; Filings','chowbus-payroll-taxes-filings.html','txn'],
-    ['einmanage','管理 EIN','Manage EIN','chowbus-payroll-ein-manage.html','ein']
+    ['einmanage','多公司管理','Multi-company','chowbus-payroll-ein-manage.html','ein'],
+    ['perm','权限管理','Permissions','chowbus-payroll-permissions.html','shield']
   ];
 
   /* ===== RG 视角：公司（EIN）列表，供公司列表页与头部切换共用 ===== */
@@ -77,19 +79,27 @@
     var opts = STORES.map(function(s){
       return '<div class="cb-store-opt '+(s.id===cur.id?'on':'')+'" onclick="cbSetStore(\''+s.id+'\')">'+s.name+(s.rg?'<span class="rgtag">RG</span>':'')+'</div>';
     }).join('');
-    return '<div class="cb-logo"><span class="wm">chowbus</span></div>'+
+    var pb = isPlanB();
+    var logo = pb
+      ? '<div class="cb-logo"><span class="wm">chowbus</span><span class="wm-pay">&nbsp;Payroll</span></div>'
+      : '<div class="cb-logo"><span class="wm">chowbus</span></div>';
+    var leftArea = pb
+      ? '<span class="cb-back" onclick="cbBackDash()"><svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5l-5 5 5 5"/></svg><span class="zh">返回 chowbus 后台</span><span class="en">Back to chowbus dashboard</span></span>'
+      : '<div class="cb-store-wrap">'+
+          '<span class="cb-store" onclick="cbToggleStore(event)">'+cur.name+'<svg width="13" height="13" viewBox="0 0 14 14" fill="none" style="color:#374151"><path d="M3 5.5 7 9.5l4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>'+
+          '<div class="cb-store-pop" id="cbStorePop">'+opts+'</div>'+
+        '</div>'+
+        '<div class="cb-vsep"></div>'+
+        '<span class="cb-region">USA<svg width="13" height="13" viewBox="0 0 14 14" fill="none" style="color:#374151"><path d="M3 5.5 7 9.5l4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>';
+    return logo+
     '<div class="cb-hbar">'+
       '<svg class="cb-collapse" width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M7.6 4.4h9.4M7.6 10h9.4M7.6 15.6h9.4M5 6.6 2.4 10 5 13.4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>'+
-      '<div class="cb-store-wrap">'+
-        '<span class="cb-store" onclick="cbToggleStore(event)">'+cur.name+'<svg width="13" height="13" viewBox="0 0 14 14" fill="none" style="color:#374151"><path d="M3 5.5 7 9.5l4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>'+
-        '<div class="cb-store-pop" id="cbStorePop">'+opts+'</div>'+
-      '</div>'+
-      '<div class="cb-vsep"></div>'+
-      '<span class="cb-region">USA<svg width="13" height="13" viewBox="0 0 14 14" fill="none" style="color:#374151"><path d="M3 5.5 7 9.5l4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>'+
+      leftArea+
       coSwitcher()+
       '<div class="cb-hright"><span>sisi.hu@chowbus.com</span><div class="cb-lang" onclick="toggleLanguage()"><span class="lz">中文</span><span class="le">EN</span></div></div>'+
     '</div>';
   }
+  window.cbBackDash = function(){ try{ localStorage.setItem('cbStore','12555'); }catch(e){} location.href='chowbus-payroll-overview-init.html'; };
   function coSwitcher(){
     if(!isPlanB()) return '';   // EIN 切换仅 Plan B 顶部展示
     var cur = window.cbGetCompany();
@@ -168,7 +178,10 @@
       '.cb-item.pb-item{cursor:pointer;}'+
       '.cb-item.pb-item:hover{background:#f7f7f8;}'+
       '.cb-item.pb-active{background:var(--brand-sub,#fff0f5);}'+
-      '.cb-item.pb-active .lb,.cb-item.pb-active svg{color:var(--brand,#e00051);}';
+      '.cb-item.pb-active .lb,.cb-item.pb-active svg{color:var(--brand,#e00051);}'+
+      '.cb-logo .wm-pay{font-weight:600;color:var(--brand,#e00051);font-size:15px;}'+
+      '.cb-back{display:inline-flex;align-items:center;gap:6px;font-size:13.5px;font-weight:600;color:#374151;cursor:pointer;}'+
+      '.cb-back:hover{color:var(--brand,#e00051);}';
     document.head.appendChild(st);
   }
   document.addEventListener('click', function(e){
