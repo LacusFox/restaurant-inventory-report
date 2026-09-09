@@ -209,9 +209,11 @@
         <!-- 演示开关（仅引导态显示） -->
         <div class="demo-bar" id="demoBar">
           <b>演示开关：</b>
-          <label><input type="checkbox" id="d-company" onchange="setStep('company',this.checked)"> 公司登录完成</label>
-          <label><input type="checkbox" id="d-schedule" onchange="setStep('schedule',this.checked)"> 发薪周期完成</label>
-          <span>（两项都勾选 → 进入第二步「员工初始化设置」）</span>
+          <label><input type="checkbox" id="d-info" onchange="setStep('info',this.checked)"> 初始化信息</label>
+          <label><input type="checkbox" id="d-workplace" onchange="setStep('workplace',this.checked)"> 工作地点</label>
+          <label><input type="checkbox" id="d-company" onchange="setStep('company',this.checked)"> 公司登录</label>
+          <label><input type="checkbox" id="d-schedule" onchange="setStep('schedule',this.checked)"> 发薪周期</label>
+          <span>（四项都完成 → 进入第二步「员工初始化设置」）</span>
         </div>
 
         <!-- 初始化引导 -->
@@ -252,6 +254,7 @@
     <div class="io-h"><span class="zh">请输入您的初始化信息</span><span class="en">Enter your setup info</span></div>
     <div class="io-f"><label><span class="zh">公司法定名称</span><span class="en">Company Legal Name</span></label><input id="io-legal" value="Curry Flurry"></div>
     <div class="io-f"><label><span class="zh">公司商用名称</span><span class="en">Company Trade Name</span></label><input id="io-trade" value="Curry Flurry"></div>
+    <div class="io-f"><label><span class="zh">EIN 号码</span><span class="en">EIN Number</span></label><input id="io-ein" placeholder="XX-XXXXXXX"></div>
     <div class="io-f"><label><span class="zh">企业类型</span><span class="en">Business Type</span></label>
       <select id="io-btype" class="io-select">
         <option value="" disabled selected hidden>Select…</option>
@@ -337,12 +340,22 @@
 <script src="cb-shell.js"></script>
 <script>
   renderShell('setup');
-  const st={company:false, schedule:false, empSelected:false, paidBefore:'', empFinished:false};
+  const st={info:false, workplace:false, company:false, schedule:false, empSelected:false, paidBefore:'', empFinished:false};
   const STEPS=[
-    {key:'company',  zh:'完成公司登录', en:'Company onboarding', href:'chowbus-payroll-company-setup.html'},
-    {key:'schedule', zh:'设置发薪周期', en:'Set up pay schedule', href:'chowbus-payroll-pay-schedule.html'},
+    {key:'info',      zh:'填写初始化信息', en:'Fill company info'},
+    {key:'workplace', zh:'设置工作地点',   en:'Set up workplaces'},
+    {key:'company',   zh:'完成公司登录',   en:'Company onboarding'},
+    {key:'schedule',  zh:'设置发薪周期',   en:'Set up pay schedule'},
   ];
-  function setStep(k,v){ st[k]=v; render(); }
+  /* 第一步 4 个子步骤状态持久化（跨页面导航保留） */
+  function saveInit(){ try{ localStorage.setItem('cbInitState', JSON.stringify({info:st.info,workplace:st.workplace,company:st.company,schedule:st.schedule})); }catch(e){} }
+  (function loadInit(){
+    try{ var s=JSON.parse(localStorage.getItem('cbInitState')||'{}'); ['info','workplace','company','schedule'].forEach(function(k){ if(s[k]) st[k]=true; }); }catch(e){}
+    try{ if(localStorage.getItem('cbInitWorkplace')==='1'){ st.workplace=true; localStorage.removeItem('cbInitWorkplace'); } }catch(e){}  // 从工作地点页 Save 返回
+    try{ if(localStorage.getItem('cbInitSchedule')==='1'){ st.schedule=true; localStorage.removeItem('cbInitSchedule'); } }catch(e){}    // 从发薪周期页 Save 返回
+    saveInit();
+  })();
+  function setStep(k,v){ st[k]=v; saveInit(); render(); }
 
   /* ===== 第二步：员工初始化设置（复用「添加员工到 payroll」穿梭弹窗） ===== */
   let empCount=0;
@@ -408,13 +421,15 @@
   function currentStep(){ return STEPS.find(s=>!st[s.key]) || null; }   // 串行：第一个未完成的步骤
   function goCurrent(){
     const c=currentStep(); if(!c) return;
-    if(c.key==='company'){ openInfo(); }                                // 第一步：先弹「信息收集」→ Company Onboarding
-    else if(c.key==='schedule'){ location.href='chowbus-payroll-pay-schedule.html'; }  // 第二步：跳发薪周期
+    if(c.key==='info'){ openInfo(); }                                                    // 1）填写初始化信息
+    else if(c.key==='workplace'){ (window.cbNav||function(u){location.href=u;})('chowbus-payroll-team-setup.html?from=init'); }  // 2）设置工作地点
+    else if(c.key==='company'){ openCompanyOnboard(); }                                  // 3）完成公司登录
+    else if(c.key==='schedule'){ (window.cbNav||function(u){location.href=u;})('chowbus-payroll-pay-schedule.html?from=init'); }  // 4）设置发薪组
   }
   /* 弹窗控制 */
-  function openInfo(){ document.getElementById('ioOverlay').classList.add('open'); }
+  function openInfo(){ var e=(window.cbGetCompany&&window.cbGetCompany().ein)||''; if(e)document.getElementById('io-ein').value=e; document.getElementById('ioOverlay').classList.add('open'); }
   function closeInfo(){ document.getElementById('ioOverlay').classList.remove('open'); }
-  function infoNext(){ closeInfo(); openCompanyOnboard(); }   // 信息填完 → Company Onboarding（真实可交互组件）
+  function infoNext(){ closeInfo(); st.info=true; saveInit(); render(); }   // 信息填完 → 标记「填写初始化信息」完成
 
   /* ===== Check「公司入驻」弹窗（初始化流程版：空白起始，逐步填写打勾） ===== */
   let coStep='', coPayView='list', coAddMode='instant';
@@ -423,7 +438,7 @@
   function allCoDone(){ return CO_STEPS.every(k=>coDone[k]); }
   function firstIncomplete(){ return CO_STEPS.find(k=>!coDone[k]) || ''; }
   function openCompanyOnboard(){ coPayView='list'; coAddMode='instant'; coStep = allCoDone()?'':firstIncomplete(); document.getElementById('coOverlay').classList.add('open'); coRender(); }
-  function closeCompanyOnboard(){ document.getElementById('coOverlay').classList.remove('open'); st.company=allCoDone(); render(); }  // 5 步全部完成才算「公司登录完成」
+  function closeCompanyOnboard(){ document.getElementById('coOverlay').classList.remove('open'); st.company=allCoDone(); saveInit(); render(); }  // 5 步全部完成才算「公司登录完成」
   function coGo(s){ coStep=s; if(s==='payment') coPayView='list'; coRender(); }
   function coPayAdd(){ coPayView='add'; coAddMode='instant'; coRender(); }
   function coPayCancel(){ coPayView='list'; coRender(); }
@@ -510,7 +525,7 @@
   }
 
   function render(){
-    const companyDone = st.company && st.schedule;        // 第一步：公司初始化设置
+    const companyDone = st.info && st.workplace && st.company && st.schedule;   // 第一步：公司初始化设置（4 步全完成）
     const empDone = st.empFinished;                        // 第二步：员工初始化设置（完成）
     const phase = !companyDone ? 'company' : (!empDone ? 'employee' : 'dash');
 

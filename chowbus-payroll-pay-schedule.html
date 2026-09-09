@@ -718,6 +718,11 @@ function saveGroup(){
   else { groups.push(Object.assign({id:seq++}, data)); }
   closeWizard(); renderList();
   showToast(editingId?'发薪组已更新':'发薪组已创建', editingId?'Pay group updated':'Pay group created');
+  /* 从初始化流程进入 → 标记发薪周期完成并返回初始化 */
+  if(new URLSearchParams(location.search).get('from')==='init'){
+    try{ localStorage.setItem('cbInitSchedule','1'); }catch(e){}
+    setTimeout(function(){ (window.cbNav||function(u){location.href=u;})('chowbus-payroll-overview-init.html'); }, 800);
+  }
 }
 
 /* ---- 预览 ---- */

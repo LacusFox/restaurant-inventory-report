@@ -166,7 +166,8 @@
 <script src="cb-shell.js"></script>
 <script>
   renderShell('company');
-  if(window.cbIsPlanB && window.cbIsPlanB()){ document.getElementById('teamSetupCard').hidden=false; }   // Team Setup 在 Plan B 显示
+  (function(){ var embed=false; try{ embed=new URLSearchParams(location.search).get('embed')==='1'; }catch(e){}
+    if(window.cbIsPlanB && window.cbIsPlanB() && !embed){ document.getElementById('teamSetupCard').hidden=false; } })();  // Team Setup 仅 Plan B 扁平菜单显示，不在 Tab 内嵌页显示
 
   function soon(en,zh){
     const t=document.getElementById('toast');

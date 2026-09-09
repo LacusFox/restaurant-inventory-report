@@ -51,6 +51,9 @@
   .wk-row2{display:grid;grid-template-columns:1fr 150px;gap:12px;}
   .wk-save{width:100%;background:#2b4eff;color:#fff;border:none;border-radius:10px;padding:15px;font-size:15px;font-weight:700;cursor:pointer;margin-top:8px;display:flex;align-items:center;justify-content:center;gap:8px;}
   .wk-save:hover{background:#2140db;}
+  .ts-savebar{display:flex;justify-content:flex-end;margin-top:34px;padding-top:20px;border-top:1px solid #EFF0F3;}
+  .ts-save{display:inline-flex;align-items:center;gap:8px;background:#2b4eff;color:#fff;border:none;border-radius:10px;padding:13px 30px;font-size:15px;font-weight:700;cursor:pointer;}
+  .ts-save:hover{background:#2140db;}
   .ts-match{border:1px solid #C7D2FE;background:#F5F7FF;color:#2b4eff;border-radius:8px;padding:6px 13px;font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap;}
   .ts-match:hover{background:#e9eeff;}
 
@@ -105,6 +108,8 @@
             </table>
           </div>
 
+          <div class="ts-savebar"><button class="ts-save" onclick="tsSave()">Save <svg width="15" height="15" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10.5 8 14l8-8"/></svg></button></div>
+
         </div>
       </div>
     </div>
@@ -151,6 +156,15 @@
       '<tr><td class="idx">'+(i+1)+'</td><td>'+w.name+'</td><td>'+(w.rid||'—')+'</td><td>'+w.a1+'</td><td'+(w.a2?'':' class="ts-empty-a2"')+'>'+(w.a2||'—')+'</td><td>'+w.city+'</td><td>'+w.state+'</td><td>'+w.zip+'</td></tr>').join('');
   }
   tsRender();
+
+  /* Save：从初始化流程进入 → 标记完成并回到初始化，跳到下一步；否则回公司设置 */
+  function tsSave(){
+    const fromInit = new URLSearchParams(location.search).get('from')==='init';
+    try{ if(fromInit) localStorage.setItem('cbInitWorkplace','1'); }catch(e){}
+    showToast('工作地点已保存');
+    const go = window.cbNav||function(u){location.href=u;};
+    setTimeout(()=> go(fromInit ? 'chowbus-payroll-overview-init.html' : 'chowbus-payroll-company-setup.html'), 700);
+  }
 
   function openWk(){
     document.getElementById('wkName').value='';
