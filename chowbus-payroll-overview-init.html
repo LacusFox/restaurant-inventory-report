@@ -359,7 +359,7 @@
   function STEPS(){ return initMode==='single'
     ? [STEP_DEFS.info, STEP_DEFS.company, STEP_DEFS.schedule]
     : [STEP_DEFS.info, STEP_DEFS.workplace, STEP_DEFS.company, STEP_DEFS.schedule]; }
-  function setInitMode(m){ initMode=m; try{ localStorage.setItem('cbInitMode',m); }catch(e){} render(); }
+  function setInitMode(m){ initMode=m; try{ localStorage.setItem('cbInitMode',m); }catch(e){} render(); if(window.cbRefreshSidebar) window.cbRefreshSidebar(); }   // 切换后即时刷新侧边栏（单店隐藏多公司管理）
   /* 第一步 4 个子步骤状态持久化（跨页面导航保留） */
   function saveInit(){ try{ localStorage.setItem('cbInitState', JSON.stringify({info:st.info,workplace:st.workplace,company:st.company,schedule:st.schedule})); }catch(e){} }
   let autoOnLoad=false;

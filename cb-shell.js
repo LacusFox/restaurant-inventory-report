@@ -113,10 +113,11 @@
       '</div>';
   }
 
+  function initMode(){ try{ return localStorage.getItem('cbInitMode')||'chain'; }catch(e){ return 'chain'; } }
   function buildSidebar(active){
     if(isPlanB()){
-      /* Plan B：Payroll 各功能升级为一级菜单 */
-      return PLANB_SUBS.map(function(s){
+      /* Plan B：Payroll 各功能升级为一级菜单（单店模式隐藏「多公司管理」） */
+      return PLANB_SUBS.filter(function(s){ return !(s[0]==='einmanage' && initMode()==='single'); }).map(function(s){
         var on = s[0]===active;
         return '<div class="cb-item pb-item '+(on?'pb-active':'')+'" onclick="location.href=\''+s[3]+'\'"><svg width="19" height="19" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.35" stroke-linecap="round" stroke-linejoin="round">'+IC[s[4]]+'</svg><span class="lb"><span class="zh">'+s[1]+'</span><span class="en">'+s[2]+'</span></span></div>';
       }).join('');
@@ -189,7 +190,10 @@
     if(!e.target.closest('.cb-co-wrap')){ var q=document.getElementById('cbCoPop'); if(q) q.classList.remove('open'); }
   });
 
+  var _cbActive='';
+  window.cbRefreshSidebar = function(){ var nav=document.getElementById('cbSidebar'); if(nav) nav.innerHTML=buildSidebar(_cbActive); };
   window.renderShell = function(active){
+    _cbActive = active;
     var app = document.querySelector('.cb-app');
     if(!app) return;
     var embed=false; try{ embed = new URLSearchParams(location.search).get('embed')==='1'; }catch(e){}
