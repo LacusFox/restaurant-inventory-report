@@ -9,6 +9,9 @@
 <style>
   /* 标题行 + Setup Flow 入口（仅仪表盘态显示） */
   .cb-titlerow{display:flex;align-items:center;justify-content:space-between;gap:16px;}
+  .mode-seg{margin-left:auto;display:inline-flex;background:#f1f2f4;border-radius:10px;padding:4px;gap:2px;}
+  .ms-opt{border:none;background:transparent;border-radius:8px;padding:7px 18px;font-size:13.5px;font-weight:700;color:var(--t2);cursor:pointer;transition:.12s;font-family:inherit;}
+  .ms-opt.on{background:#fff;color:var(--brand);box-shadow:0 1px 3px rgba(0,0,0,.12);}
   .init-link{display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:600;color:var(--brand);background:var(--brand-sub);border:1px solid var(--brand-muted);border-radius:8px;padding:7px 14px;cursor:pointer;transition:.15s;white-space:nowrap;}
   .init-link:hover{background:#ffe1ec;}
   .init-link svg{flex-shrink:0;}
@@ -194,6 +197,10 @@
       <div class="cb-content">
         <div class="cb-titlerow">
           <h1 class="cb-title"><span class="zh">Payroll 初始化设置</span><span class="en">Payroll Setup</span></h1>
+          <div class="mode-seg" id="modeSeg">
+            <button class="ms-opt" data-m="single" onclick="setInitMode('single')"><span class="zh">单店</span><span class="en">Single</span></button>
+            <button class="ms-opt" data-m="chain" onclick="setInitMode('chain')"><span class="zh">连锁</span><span class="en">Chain</span></button>
+          </div>
           <button class="init-link" id="setupFlowBtn" style="display:none;" onclick="location.href='chowbus-payroll-overview-init.html'" title="仅用于研发查看初始化交互">
             <svg width="14" height="14" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 12.4a2.4 2.4 0 1 0 0-4.8 2.4 2.4 0 0 0 0 4.8Z"/><path d="M10 3.5v1.8M10 14.7v1.8M16.5 10h-1.8M5.3 10H3.5M14.6 5.4l-1.3 1.3M6.7 13.3l-1.3 1.3M14.6 14.6l-1.3-1.3M6.7 6.7 5.4 5.4"/></svg>
             <span class="zh">初始化流程</span><span class="en">Setup Flow</span>
@@ -340,12 +347,19 @@
 <script>
   renderShell('setup');
   const st={info:false, workplace:false, company:false, schedule:false, empSelected:false, paidBefore:'', empFinished:false};
-  const STEPS=[
-    {key:'info',      zh:'填写初始化信息', en:'Fill company info'},
-    {key:'workplace', zh:'设置工作地点',   en:'Set up workplaces'},
-    {key:'company',   zh:'完成公司登录',   en:'Company onboarding'},
-    {key:'schedule',  zh:'设置发薪周期',   en:'Set up pay schedule'},
-  ];
+  /* 单店 / 连锁 模式：单店无「设置工作地点」步骤 */
+  let initMode='chain';
+  try{ initMode = localStorage.getItem('cbInitMode')||'chain'; }catch(e){}
+  const STEP_DEFS={
+    info:      {key:'info',      zh:'填写初始化信息', en:'Fill company info'},
+    workplace: {key:'workplace', zh:'设置工作地点',   en:'Set up workplaces'},
+    company:   {key:'company',   zh:'完成公司登录',   en:'Company onboarding'},
+    schedule:  {key:'schedule',  zh:'设置发薪周期',   en:'Set up pay schedule'},
+  };
+  function STEPS(){ return initMode==='single'
+    ? [STEP_DEFS.info, STEP_DEFS.company, STEP_DEFS.schedule]
+    : [STEP_DEFS.info, STEP_DEFS.workplace, STEP_DEFS.company, STEP_DEFS.schedule]; }
+  function setInitMode(m){ initMode=m; try{ localStorage.setItem('cbInitMode',m); }catch(e){} render(); }
   /* 第一步 4 个子步骤状态持久化（跨页面导航保留） */
   function saveInit(){ try{ localStorage.setItem('cbInitState', JSON.stringify({info:st.info,workplace:st.workplace,company:st.company,schedule:st.schedule})); }catch(e){} }
   let autoOnLoad=false;
@@ -419,7 +433,7 @@
   }
   function setPaid(v){ if(!st.empSelected)return; st.paidBefore=v; render(); }
   function finishEmp(){ st.empFinished=true; render(); }   // 之前没发过 → 完成初始化
-  function currentStep(){ return STEPS.find(s=>!st[s.key]) || null; }   // 串行：第一个未完成的步骤
+  function currentStep(){ return STEPS().find(s=>!st[s.key]) || null; }   // 串行：第一个未完成的步骤
   function goCurrent(){
     const c=currentStep(); if(!c) return;
     if(c.key==='info'){ openInfo(); }                                                    // 1）填写初始化信息
@@ -527,7 +541,7 @@
   }
 
   function render(){
-    const companyDone = st.info && st.workplace && st.company && st.schedule;   // 第一步：公司初始化设置（4 步全完成）
+    const companyDone = STEPS().every(s=>st[s.key]);   // 第一步：公司初始化设置（当前模式所有步骤完成）
     const empDone = st.empFinished;                        // 第二步：员工初始化设置（完成）
     const phase = !companyDone ? 'company' : (!empDone ? 'employee' : 'dash');
 
@@ -537,8 +551,10 @@
     s2.className = 'ip-seg ' + (empDone ? 'done' : (phase==='employee' ? 'on' : ''));
     document.getElementById('initProg').style.display = phase==='dash' ? 'none' : 'flex';
 
-    // 演示开关与实际步骤状态同步
-    [['d-info','info'],['d-workplace','workplace'],['d-company','company'],['d-schedule','schedule']].forEach(function(p){ var el=document.getElementById(p[0]); if(el) el.checked=!!st[p[1]]; });
+    // 模式切换高亮
+    document.querySelectorAll('#modeSeg .ms-opt').forEach(function(b){ b.classList.toggle('on', b.dataset.m===initMode); });
+    // 演示开关与实际步骤状态同步（单店模式隐藏「工作地点」开关）
+    [['d-info','info'],['d-workplace','workplace'],['d-company','company'],['d-schedule','schedule']].forEach(function(p){ var el=document.getElementById(p[0]); if(el){ el.checked=!!st[p[1]]; if(el.parentElement) el.parentElement.style.display=(p[1]==='workplace'&&initMode==='single')?'none':''; } });
     document.getElementById('demoBar').style.display  = phase==='dash' ? 'none' : '';
     document.getElementById('dashView').style.display = phase==='dash' ? '' : 'none';
     document.getElementById('setupFlowBtn').style.display = phase==='dash' ? '' : 'none';
@@ -551,7 +567,7 @@
   /* 第一步：公司初始化设置（公司登录 + 发薪周期） */
   function renderCompanyStep(){
     let prevDone = true;   // 串行锁：前一步未完成则当前步锁定置灰
-    const rows = STEPS.map((s,i)=>{
+    const rows = STEPS().map((s,i)=>{
       const done=st[s.key];
       const locked = !done && !prevDone;
       const row = `<div class="guide-row ${locked?'locked':''}">
