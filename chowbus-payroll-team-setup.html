@@ -160,7 +160,7 @@
   /* Save：从初始化流程进入 → 标记完成并回到初始化，跳到下一步；否则回公司设置 */
   function tsSave(){
     const fromInit = new URLSearchParams(location.search).get('from')==='init';
-    try{ if(fromInit) localStorage.setItem('cbInitWorkplace','1'); }catch(e){}
+    try{ if(fromInit){ localStorage.setItem('cbInitWorkplace','1'); localStorage.setItem('cbInitAuto','1'); } }catch(e){}
     showToast('工作地点已保存');
     const go = window.cbNav||function(u){location.href=u;};
     setTimeout(()=> go(fromInit ? 'chowbus-payroll-overview-init.html' : 'chowbus-payroll-company-setup.html'), 700);

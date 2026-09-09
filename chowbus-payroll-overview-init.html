@@ -348,10 +348,12 @@
   ];
   /* 第一步 4 个子步骤状态持久化（跨页面导航保留） */
   function saveInit(){ try{ localStorage.setItem('cbInitState', JSON.stringify({info:st.info,workplace:st.workplace,company:st.company,schedule:st.schedule})); }catch(e){} }
+  let autoOnLoad=false;
   (function loadInit(){
     try{ var s=JSON.parse(localStorage.getItem('cbInitState')||'{}'); ['info','workplace','company','schedule'].forEach(function(k){ if(s[k]) st[k]=true; }); }catch(e){}
     try{ if(localStorage.getItem('cbInitWorkplace')==='1'){ st.workplace=true; localStorage.removeItem('cbInitWorkplace'); } }catch(e){}  // 从工作地点页 Save 返回
     try{ if(localStorage.getItem('cbInitSchedule')==='1'){ st.schedule=true; localStorage.removeItem('cbInitSchedule'); } }catch(e){}    // 从发薪周期页 Save 返回
+    try{ if(localStorage.getItem('cbInitAuto')==='1'){ autoOnLoad=true; localStorage.removeItem('cbInitAuto'); } }catch(e){}   // 从子页面返回后自动进入下一步
     saveInit();
   })();
   function setStep(k,v){ st[k]=v; saveInit(); render(); }
@@ -428,7 +430,8 @@
   /* 弹窗控制 */
   function openInfo(){ var e=(window.cbGetCompany&&window.cbGetCompany().ein)||''; if(e)document.getElementById('io-ein').value=e; document.getElementById('ioOverlay').classList.add('open'); }
   function closeInfo(){ document.getElementById('ioOverlay').classList.remove('open'); }
-  function infoNext(){ closeInfo(); st.info=true; saveInit(); render(); }   // 信息填完 → 标记「填写初始化信息」完成
+  function infoNext(){ closeInfo(); st.info=true; saveInit(); render(); autoAdvance(); }   // 信息填完 → 标记完成并自动进入下一步
+  function autoAdvance(){ const c=currentStep(); if(c) goCurrent(); }   // 串联 4 步：完成一步自动进入下一步
 
   /* ===== Check「公司入驻」弹窗（初始化流程版：空白起始，逐步填写打勾） ===== */
   let coStep='', coPayView='list', coAddMode='instant';
@@ -437,7 +440,7 @@
   function allCoDone(){ return CO_STEPS.every(k=>coDone[k]); }
   function firstIncomplete(){ return CO_STEPS.find(k=>!coDone[k]) || ''; }
   function openCompanyOnboard(){ coPayView='list'; coAddMode='instant'; coStep = allCoDone()?'':firstIncomplete(); document.getElementById('coOverlay').classList.add('open'); coRender(); }
-  function closeCompanyOnboard(){ document.getElementById('coOverlay').classList.remove('open'); st.company=allCoDone(); saveInit(); render(); }  // 5 步全部完成才算「公司登录完成」
+  function closeCompanyOnboard(){ document.getElementById('coOverlay').classList.remove('open'); st.company=allCoDone(); saveInit(); render(); if(st.company) autoAdvance(); }  // 5 步全部完成才算「公司登录完成」，完成后自动进入下一步
   function coGo(s){ coStep=s; if(s==='payment') coPayView='list'; coRender(); }
   function coPayAdd(){ coPayView='add'; coAddMode='instant'; coRender(); }
   function coPayCancel(){ coPayView='list'; coRender(); }
@@ -625,6 +628,7 @@
       </div>${foot}`;
   }
   render();
+  if(autoOnLoad){ setTimeout(autoAdvance, 250); }   // 从工作地点/发薪周期页返回 → 自动进入下一步
 </script>
 </body>
 </html>
