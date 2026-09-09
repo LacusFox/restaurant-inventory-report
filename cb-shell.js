@@ -179,7 +179,7 @@
       '.cb-item.pb-item:hover{background:#f7f7f8;}'+
       '.cb-item.pb-active{background:var(--brand-sub,#fff0f5);}'+
       '.cb-item.pb-active .lb,.cb-item.pb-active svg{color:var(--brand,#e00051);}'+
-      '.cb-logo .wm-pay{font-weight:600;color:var(--brand,#e00051);font-size:15px;}'+
+      '.cb-logo .wm-pay{font-size:23px;font-weight:700;letter-spacing:-0.035em;color:var(--brand,#e00051);}'+
       '.cb-back{display:inline-flex;align-items:center;gap:6px;font-size:13.5px;font-weight:600;color:#374151;cursor:pointer;}'+
       '.cb-back:hover{color:var(--brand,#e00051);}';
     document.head.appendChild(st);
