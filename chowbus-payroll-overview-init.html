@@ -534,6 +534,8 @@
     s2.className = 'ip-seg ' + (empDone ? 'done' : (phase==='employee' ? 'on' : ''));
     document.getElementById('initProg').style.display = phase==='dash' ? 'none' : 'flex';
 
+    // 演示开关与实际步骤状态同步
+    [['d-info','info'],['d-workplace','workplace'],['d-company','company'],['d-schedule','schedule']].forEach(function(p){ var el=document.getElementById(p[0]); if(el) el.checked=!!st[p[1]]; });
     document.getElementById('demoBar').style.display  = phase==='dash' ? 'none' : '';
     document.getElementById('dashView').style.display = phase==='dash' ? '' : 'none';
     document.getElementById('setupFlowBtn').style.display = phase==='dash' ? '' : 'none';
