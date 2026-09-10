@@ -170,6 +170,36 @@ function pills(list,cur,setter){let h='<div class="pills">';list.forEach(n=>{con
 function nav(save){return `<div class="btns"><button class="btn" onclick="prev()">← ${L('Previous question','上一步')}</button><button class="btn primary" onclick="next()">${save}</button></div>`;}
 function BTN(){return {save:L('Save and continue →','保存并继续 →'),cont:L('Continue →','继续 →'),skip:L("I'm not sure, skip for now.",'暂不确定,先跳过。'),dash:L('Return to dashboard','返回仪表盘'),begin:L('Begin first step','开始第一步'),nextm:L('Next milestone','下一里程碑')};}
 
+function numOf(v){return v==='More'?6:(parseInt(v)||1);}
+function feinBlock(i){const f=i===0;
+  return `<div class="sub" style="font-size:16px;">FEIN ${i+1}</div><hr style="margin:10px 0 18px;">
+    <div class="grid2"><div><label class="f">${L('Business Legal Name','公司法定名称')} <span class="qmark">?</span></label><input class="t" value="${f?'Fishermans Son Inc':''}" placeholder="${L('Legal name','法定名称')}"></div><div><label class="f">${L('Doing Business As Name (DBA)','经营名称(DBA)')} <span class="qmark">?</span></label><input class="t" value="${f?'The Fishermans Son':''}" placeholder="DBA"></div></div>
+    <label class="f">${L('Federal Employer Identification Number (FEIN)','联邦雇主识别号(FEIN)')} <span class="qmark">?</span></label><input class="t" value="${f?'00-0000000':''}" placeholder="00-0000000">
+    <label class="f">${L('Registration Status','注册状态')}</label><select class="t"><option>${L('Registered','已注册')}</option><option>${L('Applied for','已申请')}</option></select>
+    <label class="f">${L('Address Line 1','地址第 1 行')} <span class="qmark">?</span></label><input class="t" value="${f?'1 Lighthouse Road':''}">
+    <label class="f">${L('Address Line 2','地址第 2 行')} <span class="hint">- ${L('optional','可选')}</span></label><input class="t" value="${f?'Unit C':''}">
+    <div class="grid4" style="margin-top:14px;"><div><label class="f" style="margin-top:0;">${L('City','城市')}</label><input class="t" value="${f?'Scitaute':''}"></div><div><label class="f" style="margin-top:0;">${L('State','州')}</label><select class="t"><option>Massachusetts</option><option>Illinois</option><option>California</option></select></div><div><label class="f" style="margin-top:0;">${L('Zip Code','邮编')}</label><input class="t" value="${f?'02066':''}"></div><div><label class="f" style="margin-top:0;">${L('Country','国家')}</label><input class="t" value="USA"></div></div>`;}
+function stateGrpBlock(i){const f=i===0;
+  return `<div class="sub" style="font-size:16px;">${L('State Tax Account Group','州税务账户组')} ${i+1}</div><hr style="margin:10px 0 16px;">
+    <label class="f">${L('State','州')} <span class="qmark">?</span></label><select class="t"><option>Massachusetts</option><option>Illinois</option><option>California</option></select>
+    <label class="f">${L('Associated FEIN','关联 FEIN')}</label><select class="t"><option>00-0000000 (Fishermans Son Inc)</option></select>
+    <div class="sub">${L('State Withholding Account Information','州预扣账户信息')}</div>
+    <label class="f">${L('Registration Status','注册状态')} <span class="qmark">?</span></label><select class="t"><option>${L('Registered','已注册')}</option><option>${L('Applied for','已申请')}</option></select>
+    <label class="f">${L('Account Number','账号')}</label><input class="t" value="${f?'646-784-316':''}" placeholder="646-784-316">
+    <label class="f">${L('Payment Frequency','缴纳频率')} <span class="qmark">?</span></label><select class="t"><option>${L('Select a SIT Payment Frequency','选择 SIT 缴纳频率')}</option></select>
+    <div class="sub">${L('State Unemployment Account Information','州失业保险账户信息')}</div><label class="f">${L('Account Number','账号')}</label><input class="t" placeholder="e.g. 000000000">`;}
+function calBlock(name,dis){
+  return `<div class="sub" style="color:#8a949c;font-size:17px;margin-top:22px;">${name} ${L('Payroll Calendar','发薪日历')}</div><hr style="margin:8px 0 16px;">
+    <label class="f" style="margin-top:0;">FEIN</label><input class="t" value="00-0000000" disabled>
+    <p class="lead" style="margin:16px 0 6px;">${L('If payday falls on a bank holiday, pay employees on…','若发薪日恰逢银行假日,则在…发薪')}</p>
+    <label class="radio"><input type="radio" name="hol_${dis}" checked> ${L('Business Day before','前一个工作日')}</label>
+    <label class="radio"><input type="radio" name="hol_${dis}"> ${L('Business Day after','后一个工作日')}</label>
+    <label class="f">${L('Pay Frequency','发薪频率')}</label><select class="t"><option>${L('Bi-weekly','双周')}</option><option>${L('Weekly','每周')}</option><option>${L('Semi-monthly','半月')}</option><option>${L('Monthly','每月')}</option></select>
+    <label class="f">${L('Work Week Start Day','工作周起始日')} <span class="qmark">?</span></label><select class="t"><option>${L('Monday','周一')}</option><option>${L('Sunday','周日')}</option></select>
+    <label class="f">${L('Day of Week Paid','发薪日(星期几)')} <span class="qmark">?</span></label><select class="t"><option>${L('Monday','周一')}</option><option>${L('Friday','周五')}</option></select>
+    <label class="f">${L('First Paycheck Date','首次发薪日期')} <span class="qmark">?</span></label><input class="t" type="date" value="2024-09-02">
+    <label class="f">${L('Associated Pay Period','关联薪资周期')} <span class="qmark">?</span></label><select class="t"><option>8/5/2024 - 8/18/2024</option></select>`;}
+
 /* SCREENS */
 function screen(){
   const s=state.step,B=BTN();
@@ -198,14 +228,8 @@ function screen(){
     ${pills([1,2,3,4,5,'More'],state.fein,'setFein')}
     <div class="info"><span class="i">i</span><div>${L('<b>What is a FEIN?</b> A Federal Employer Identification Number (FEIN) is assigned to your business when the company is registered with the IRS. The number depends on the business: you may have multiple locations under one FEIN or you may have one FEIN for each location. Please enter the number of FEINs that you intend to manage in Toast Payroll. If you are having trouble locating your FEIN information, see <a class="inl" href="#">here</a>.','<b>FEIN 是什么?</b> 联邦雇主识别号(FEIN)在公司向 IRS 注册时分配。数量取决于业务:你可能多个门店共用一个 FEIN,也可能每个门店一个 FEIN。请输入你打算在 Toast Payroll 中管理的 FEIN 数量。若找不到 FEIN 信息,请参见<a class="inl" href="#">此处</a>。')}</div></div>${nav(B.save)}`;
 
-  if(s==='tax3') return `<div class="stepnum">${L('Step','步骤')} 3/5</div>
-    <div class="sub" style="font-size:16px;">FEIN 1</div><hr style="margin:10px 0 18px;">
-    <div class="grid2"><div><label class="f">${L('Business Legal Name','公司法定名称')} <span class="qmark">?</span></label><input class="t" value="Fishermans Son Inc"></div><div><label class="f">${L('Doing Business As Name (DBA)','经营名称(DBA)')} <span class="qmark">?</span></label><input class="t" value="The Fishermans Son"></div></div>
-    <label class="f">${L('Federal Employer Identification Number (FEIN)','联邦雇主识别号(FEIN)')} <span class="qmark">?</span></label><input class="t" value="00-0000000">
-    <label class="f">${L('Registration Status','注册状态')}</label><select class="t"><option>${L('Registered','已注册')}</option><option>${L('Applied for','已申请')}</option></select>
-    <label class="f">${L('Address Line 1','地址第 1 行')} <span class="qmark">?</span></label><input class="t" value="1 Lighthouse Road">
-    <label class="f">${L('Address Line 2','地址第 2 行')} <span class="hint">- ${L('optional','可选')}</span></label><input class="t" value="Unit C">
-    <div class="grid4" style="margin-top:14px;"><div><label class="f" style="margin-top:0;">${L('City','城市')}</label><input class="t" value="Scitaute"></div><div><label class="f" style="margin-top:0;">${L('State','州')}</label><select class="t"><option>Massachusetts</option></select></div><div><label class="f" style="margin-top:0;">${L('Zip Code','邮编')}</label><input class="t" value="02066"></div><div><label class="f" style="margin-top:0;">${L('Country','国家')}</label><input class="t" value="USA"></div></div>${nav(B.save)}`;
+  if(s==='tax3'){let blocks='';const n=numOf(state.fein);for(let i=0;i<n;i++){blocks+=feinBlock(i)+(i<n-1?'<hr style="border-top:2px solid #cfd6db;margin:30px 0;">':'');}
+    return `<div class="stepnum">${L('Step','步骤')} 3/5</div>${blocks}${nav(B.save)}`;}
 
   if(s==='tax4') return `<div class="stepnum">${L('Step','步骤')} 4/5</div>
     <h2 class="q">${L('How many State Tax Account groups does your organization have?','你的组织有多少个州税务账户组(State Tax Account group)?')}</h2>${pills([1,2,3,4,5,'More'],state.stategrp,'setGrp')}
@@ -214,14 +238,7 @@ function screen(){
   if(s==='tax5') return `<div class="stepnum">${L('Step','步骤')} 5/5</div>
     <h2 class="q">${L('Please provide your State Tax Account details.','请提供你的州税务账户详情。')}</h2>
     <div class="info"><span class="i">i</span><div>${L('For assistance finding your State Tax Account information for any of the fields below please see <a class="inl" href="#">here</a>. Find the state in question and navigate to its corresponding link.<br><br>If you have not registered your business within your operating state, you can apply for a state payroll tax account on the state\'s website. In the \'Registration Status\' field below, select "Applied for" if you have not received a State Tax Account number yet. You\'ll need to provide this account number to us once it has been received.','查找下方任一字段的州税务账户信息请参见<a class="inl" href="#">此处</a>,找到相应的州并进入对应链接。<br><br>若你尚未在经营所在州注册,可在该州官网申请州薪资税账户。若尚未拿到州税务账户号,请在下方「注册状态」中选择「已申请」;拿到账号后需再提供给我们。')}</div></div>
-    <div class="sub" style="font-size:16px;">${L('State Tax Account Group 1','州税务账户组 1')}</div><hr style="margin:10px 0 16px;">
-    <label class="f">${L('State','州')} <span class="qmark">?</span></label><select class="t"><option>Massachusetts</option></select>
-    <label class="f">${L('Associated FEIN','关联 FEIN')}</label><select class="t"><option>00-0000000 (Fishermans Son Inc)</option></select>
-    <div class="sub">${L('State Withholding Account Information','州预扣账户信息')}</div>
-    <label class="f">${L('Registration Status','注册状态')} <span class="qmark">?</span></label><select class="t"><option>${L('Registered','已注册')}</option><option>${L('Applied for','已申请')}</option></select>
-    <label class="f">${L('Account Number','账号')}</label><input class="t" value="646-784-316">
-    <label class="f">${L('Payment Frequency','缴纳频率')} <span class="qmark">?</span></label><select class="t"><option>${L('Select a SIT Payment Frequency','选择 SIT 缴纳频率')}</option></select>
-    <div class="sub">${L('State Unemployment Account Information','州失业保险账户信息')}</div><label class="f">${L('Account Number','账号')}</label><input class="t" placeholder="e.g. 000000000">${nav(B.save)}`;
+    ${(()=>{let b='';const n=numOf(state.stategrp);for(let i=0;i<n;i++){b+=stateGrpBlock(i)+(i<n-1?'<hr style="border-top:2px solid #cfd6db;margin:30px 0;">':'');}return b;})()}${nav(B.save)}`;
 
   if(s==='tax_done') return milestoneDone(L('Tax Information complete!','税务信息完成!'),L('Locations & Jobs','门店与岗位'));
 
@@ -283,22 +300,13 @@ function screen(){
     <h2 class="q">${L('In how many groups do you need to pay your employees?','你需要将员工分成多少个组来发薪?')}</h2>${pills([1,2],state.payGroups,'setPG')}
     <div class="info"><span class="i">i</span><div>${L("'Pay Groups' group employees together to decrease how long it takes you to process payroll. You need at least one group for each FEIN and each payroll frequency (e.g. weekly vs biweekly) that you have.",'「发薪组」将员工分组以缩短跑薪时间。每个 FEIN、每种发薪频率(如每周 vs 双周)至少需要一个组。')}</div></div>
     <h2 class="q" style="text-align:left;font-size:20px;margin-top:28px;">${L('What do you want to call your pay groups?','你想如何命名你的发薪组?')}</h2>
-    <div class="grid2"><div><label class="f" style="margin-top:0;">${L('Pay Group Name','发薪组名称')}</label><input class="t" value="bi-weekly"></div><div><label class="f" style="margin-top:0;">FEIN</label><select class="t"><option>00-0000000 (Fishermans Son Inc)</option></select></div></div>${nav(B.save)}`;
+    ${(()=>{let r='';const n=numOf(state.payGroups);for(let i=0;i<n;i++){r+=`<div class="grid2" style="margin-bottom:12px;"><div><label class="f" style="margin-top:0;">${L('Pay Group Name','发薪组名称')}</label><input class="t" value="${i===0?'bi-weekly':''}" placeholder="${L('Group Name','组名称')}"></div><div><label class="f" style="margin-top:0;">FEIN</label><select class="t"><option>00-0000000 (Fishermans Son Inc)</option></select></div></div>`;}return r;})()}${nav(B.save)}`;
 
   if(s==='pay2') return `<div class="stepnum">${L('Step','步骤')} 2/4</div>
     <h2 class="q" style="font-size:20px;">${L('Set up a payroll calendar for each pay group you created in the previous step.','为你在上一步创建的每个发薪组设置一个发薪日历。')}</h2>
     <div class="info"><span class="i">i</span><div>${L('Please keep laws surrounding payment schedules in mind as you set up your schedule. A weekly or biweekly pay frequency with a Friday check date is often recommended for hourly employees.','设置日历时请注意有关发薪安排的法律。对小时工,通常建议采用每周或双周、发薪日为周五的频率。')}</div></div>
     <div class="info"><span class="i">i</span><div>${L('Consider the amount of time it takes you to complete payroll. We recommend completing payroll at least three days prior to the date you pay employees. This ensures time for processing and check delivery.','请考虑你完成跑薪所需的时间。我们建议在发薪日前至少三天完成跑薪,以留出处理和支票寄送的时间。')}</div></div>
-    <div class="sub" style="color:#8a949c;font-size:17px;margin-top:22px;">${L('bi-weekly Payroll Calendar','bi-weekly 发薪日历')}</div><hr style="margin:8px 0 16px;">
-    <label class="f" style="margin-top:0;">FEIN</label><input class="t" value="00-0000000" disabled>
-    <p class="lead" style="margin:16px 0 6px;">${L('If payday falls on a bank holiday, pay employees on…','若发薪日恰逢银行假日,则在…发薪')}</p>
-    <label class="radio"><input type="radio" name="hol" checked> ${L('Business Day before','前一个工作日')}</label>
-    <label class="radio"><input type="radio" name="hol"> ${L('Business Day after','后一个工作日')}</label>
-    <label class="f">${L('Pay Frequency','发薪频率')}</label><select class="t"><option>${L('Bi-weekly','双周')}</option><option>${L('Weekly','每周')}</option><option>${L('Semi-monthly','半月')}</option><option>${L('Monthly','每月')}</option></select>
-    <label class="f">${L('Work Week Start Day','工作周起始日')} <span class="qmark">?</span></label><select class="t"><option>${L('Monday','周一')}</option><option>${L('Sunday','周日')}</option></select>
-    <label class="f">${L('Day of Week Paid','发薪日(星期几)')} <span class="qmark">?</span></label><select class="t"><option>${L('Monday','周一')}</option><option>${L('Friday','周五')}</option></select>
-    <label class="f">${L('First Paycheck Date','首次发薪日期')} <span class="qmark">?</span></label><input class="t" type="date" value="2024-09-02">
-    <label class="f">${L('Associated Pay Period','关联薪资周期')} <span class="qmark">?</span></label><select class="t"><option>8/5/2024 - 8/18/2024</option></select>${nav(B.save)}`;
+    ${(()=>{let b='';const n=numOf(state.payGroups);for(let i=0;i<n;i++){b+=calBlock(i===0?'bi-weekly':L('Pay Group','发薪组')+' '+(i+1),i);}return b;})()}${nav(B.save)}`;
 
   if(s==='pay3') return `<div class="stepnum">${L('Step','步骤')} 3/4</div>
     <h2 class="q" style="font-size:20px;">${L("In this step, you can let us know which bank accounts you will use to pay your employees and fund other payroll costs. Let's start by adding your first account.",'在这一步,你可以告诉我们将用哪些银行账户来发放工资并支付其他薪资成本。先添加你的第一个账户。')}</h2>
