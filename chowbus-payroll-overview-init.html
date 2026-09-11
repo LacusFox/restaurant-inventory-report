@@ -62,6 +62,12 @@
   .og-lb{font-size:13px;font-weight:700;color:var(--tb);margin-bottom:7px;display:block;}
   .og-inp{width:100%;max-width:420px;height:42px;border:1px solid var(--border);border-radius:9px;padding:0 13px;font-size:14px;color:var(--t1);font-family:inherit;}
   .og-inp:focus{outline:none;border-color:var(--brand);}
+  .id-modal{position:relative;background:#fff;width:min(560px,96vw);border-radius:16px;box-shadow:0 30px 80px rgba(0,0,0,.35);padding:30px 32px 26px;}
+  .id-modal .guide-sub{margin-bottom:2px;}
+  .id-foot{display:flex;justify-content:flex-end;gap:12px;margin-top:22px;}
+  .btn-ghost2{border:1px solid #DCDCDC;background:#fff;border-radius:10px;padding:12px 24px;font-size:15px;font-weight:700;color:#374151;cursor:pointer;}
+  .btn-ghost2:hover{border-color:#b8bcc4;}
+  .id-foot .g-btn{padding:12px 28px;}
 
   /* ===== 添加员工到 payroll 弹窗（穿梭框，复用自员工管理页） ===== */
   .am-ov{position:fixed;inset:0;background:rgba(17,24,39,.45);display:none;align-items:center;justify-content:center;z-index:1200;}
@@ -224,6 +230,7 @@
         <!-- 演示开关（仅引导态显示） -->
         <div class="demo-bar" id="demoBar">
           <b>演示开关：</b>
+          <label><input type="checkbox" id="d-identity" onchange="setStep('identity',this.checked)"> 签署身份</label>
           <label><input type="checkbox" id="d-company" onchange="setStep('company',this.checked)"> 公司登录</label>
           <label><input type="checkbox" id="d-schedule" onchange="setStep('schedule',this.checked)"> 发薪周期</label>
         </div>
@@ -347,29 +354,30 @@
   </div>
 </div>
 
+<!-- 第 1 步：确认签署身份 弹窗 -->
+<div class="ov" id="idOverlay">
+  <div class="id-modal"><span class="io-x" onclick="closeIdentity()">✕</span><div id="idBody"></div></div>
+</div>
+
 <div class="toast" id="toast"><span id="toastMsg"></span></div>
 
 <script src="cb-shell.js"></script>
 <script>
   renderShell('setup');
-  const st={info:false, workplace:false, company:false, schedule:false, empSelected:false, paidBefore:'', empFinished:false};
-  /* 单店 / 连锁 模式：单店无「设置工作地点」步骤 */
+  const st={identity:false, company:false, schedule:false, empSelected:false, paidBefore:'', empFinished:false};
   let initMode='chain';
   try{ initMode = localStorage.getItem('cbInitMode')||'chain'; }catch(e){}
   const STEP_DEFS={
-    info:      {key:'info',      zh:'填写初始化信息', en:'Fill company info'},
-    workplace: {key:'workplace', zh:'设置工作地点',   en:'Set up workplaces'},
+    identity:  {key:'identity',  zh:'确认签署身份',   en:'Confirm signing identity'},
     company:   {key:'company',   zh:'完成公司登录',   en:'Company onboarding'},
     schedule:  {key:'schedule',  zh:'设置发薪周期',   en:'Set up pay schedule'},
   };
-  function STEPS(){ return [STEP_DEFS.company, STEP_DEFS.schedule]; }   // 简化为 2 步：完成公司登录、设置发薪周期
-  function setInitMode(m){ initMode=m; try{ localStorage.setItem('cbInitMode',m); }catch(e){} render(); if(window.cbRefreshSidebar) window.cbRefreshSidebar(); }   // 切换后即时刷新侧边栏（单店隐藏多公司管理）
-  /* 第一步 4 个子步骤状态持久化（跨页面导航保留） */
-  function saveInit(){ try{ localStorage.setItem('cbInitState', JSON.stringify({info:st.info,workplace:st.workplace,company:st.company,schedule:st.schedule})); }catch(e){} }
+  function STEPS(){ return [STEP_DEFS.identity, STEP_DEFS.company, STEP_DEFS.schedule]; }   // 3 步：确认签署身份、完成公司登录、设置发薪周期
+  /* 第一步各子步骤状态持久化（跨页面导航保留） */
+  function saveInit(){ try{ localStorage.setItem('cbInitState', JSON.stringify({identity:st.identity,company:st.company,schedule:st.schedule})); }catch(e){} }
   let autoOnLoad=false;
   (function loadInit(){
-    try{ var s=JSON.parse(localStorage.getItem('cbInitState')||'{}'); ['info','workplace','company','schedule'].forEach(function(k){ if(s[k]) st[k]=true; }); }catch(e){}
-    try{ if(localStorage.getItem('cbInitWorkplace')==='1'){ st.workplace=true; localStorage.removeItem('cbInitWorkplace'); } }catch(e){}  // 从工作地点页 Save 返回
+    try{ var s=JSON.parse(localStorage.getItem('cbInitState')||'{}'); ['identity','company','schedule'].forEach(function(k){ if(s[k]) st[k]=true; }); }catch(e){}
     try{ if(localStorage.getItem('cbInitSchedule')==='1'){ st.schedule=true; localStorage.removeItem('cbInitSchedule'); } }catch(e){}    // 从发薪周期页 Save 返回
     try{ if(localStorage.getItem('cbInitAuto')==='1'){ autoOnLoad=true; localStorage.removeItem('cbInitAuto'); } }catch(e){}   // 从子页面返回后自动进入下一步
     saveInit();
@@ -440,8 +448,9 @@
   function currentStep(){ return STEPS().find(s=>!st[s.key]) || null; }   // 串行：第一个未完成的步骤
   function goCurrent(){
     const c=currentStep(); if(!c) return;
-    if(c.key==='company'){ openCompanyOnboard(); }                                        // 1）完成公司登录
-    else if(c.key==='schedule'){ (window.cbNav||function(u){location.href=u;})('chowbus-payroll-pay-schedule.html?from=init'); }  // 2）设置发薪组
+    if(c.key==='identity'){ openIdentity(); }                                              // 1）确认签署身份
+    else if(c.key==='company'){ openCompanyOnboard(); }                                    // 2）完成公司登录
+    else if(c.key==='schedule'){ (window.cbNav||function(u){location.href=u;})('chowbus-payroll-pay-schedule.html?from=init'); }  // 3）设置发薪组
   }
   /* 弹窗控制 */
   function openInfo(){ var e=(window.cbGetCompany&&window.cbGetCompany().ein)||''; if(e)document.getElementById('io-ein').value=e; document.getElementById('ioOverlay').classList.add('open'); }
@@ -554,22 +563,35 @@
     document.getElementById('initProg').style.display = phase==='dash' ? 'none' : 'flex';
 
     // 演示开关与实际步骤状态同步
-    [['d-company','company'],['d-schedule','schedule']].forEach(function(p){ var el=document.getElementById(p[0]); if(el) el.checked=!!st[p[1]]; });
-    // 第一步开始前，先确认签署身份（Owner 门）
-    const gate = (phase==='company' && !ownerResolved);
-    document.getElementById('demoBar').style.display  = (phase==='dash'||gate) ? 'none' : '';
+    [['d-identity','identity'],['d-company','company'],['d-schedule','schedule']].forEach(function(p){ var el=document.getElementById(p[0]); if(el) el.checked=!!st[p[1]]; });
+    document.getElementById('demoBar').style.display  = phase==='dash' ? 'none' : '';
     document.getElementById('dashView').style.display = phase==='dash' ? '' : 'none';
     document.getElementById('setupFlowBtn').style.display = phase==='dash' ? '' : 'none';
     const iv=document.getElementById('initView');
     iv.style.display = phase==='dash' ? 'none' : '';
     if(phase==='dash') return;
-    iv.innerHTML = gate ? renderOwnerGate() : (phase==='company' ? renderCompanyStep() : renderEmployeeStep());
+    iv.innerHTML = phase==='company' ? renderCompanyStep() : renderEmployeeStep();
   }
 
-  /* ===== 开始前：签署身份确认（Owner 门） ===== */
-  let ownerResolved=null, ownerOpt='', ownerEmail='';
-  try{ ownerResolved=localStorage.getItem('cbInitOwner')||null; ownerEmail=localStorage.getItem('cbInitOwnerEmail')||''; }catch(e){}
-  function setOwnerOpt(o){ ownerOpt=o; render(); }
+  /* ===== 第 1 步：确认签署身份（弹窗） ===== */
+  let ownerOpt='', ownerEmail='';
+  try{ ownerEmail=localStorage.getItem('cbInitOwnerEmail')||''; }catch(e){}
+  function openIdentity(){ ownerOpt=''; renderIdentity(); document.getElementById('idOverlay').classList.add('open'); }
+  function closeIdentity(){ document.getElementById('idOverlay').classList.remove('open'); }
+  function setOwnerOpt(o){ ownerOpt=o; renderIdentity(); }
+  function renderIdentity(){
+    const em = ownerOpt==='notowner'
+      ? `<div class="og-email"><label class="og-lb"><span class="zh">Owner 邮箱</span><span class="en">Owner's email</span></label><input class="og-inp" id="ogEmail" value="${ownerEmail}" placeholder="owner@example.com"></div>`
+      : '';
+    const btn = ownerOpt==='notowner' ? bi('发送邮件并继续','Send email & continue') : bi('确认并继续','Confirm & continue');
+    document.getElementById('idBody').innerHTML = `
+      <div class="guide-h"><span class="zh">开始前，请确认签署身份</span><span class="en">Confirm who will sign</span></div>
+      <div class="guide-sub"><span class="zh">薪酬开通需要餐厅 Owner 签署相关文件。</span><span class="en">Activating payroll requires the restaurant owner to sign documents.</span></div>
+      <div class="og-opt ${ownerOpt==='owner'?'on':''}" onclick="setOwnerOpt('owner')"><span class="og-radio"></span><div class="og-t">${bi('我是该餐厅的 Owner 本人，我有权签署文件','I am the restaurant owner and can sign documents')}</div></div>
+      <div class="og-opt ${ownerOpt==='notowner'?'on':''}" onclick="setOwnerOpt('notowner')"><span class="og-radio"></span><div class="og-t">${bi('我不是该餐厅的 Owner 本人，签署文件需给 Owner 发送邮件','I am not the owner — send the signing request to the owner by email')}</div></div>
+      ${em}
+      <div class="id-foot"><button class="btn-ghost2" onclick="closeIdentity()">${bi('取消','Cancel')}</button><button class="g-btn" onclick="submitOwner()">${btn}</button></div>`;
+  }
   function submitOwner(){
     if(!ownerOpt){ coToast('请先选择一项','Please choose an option'); return; }
     if(ownerOpt==='notowner'){
@@ -578,23 +600,7 @@
       ownerEmail=em; try{ localStorage.setItem('cbInitOwnerEmail',em); }catch(e){}
       coToast('已向 Owner 发送签署邮件','Signing email sent to the owner');
     }
-    ownerResolved=ownerOpt; try{ localStorage.setItem('cbInitOwner',ownerOpt); }catch(e){}
-    render();
-  }
-  function renderOwnerGate(){
-    const em = ownerOpt==='notowner'
-      ? `<div class="og-email"><label class="og-lb"><span class="zh">Owner 邮箱</span><span class="en">Owner's email</span></label><input class="og-inp" id="ogEmail" value="${ownerEmail}" placeholder="owner@example.com"></div>`
-      : '';
-    const btn = ownerOpt==='notowner' ? bi('发送邮件并继续','Send email & continue') : bi('确认并继续','Confirm & continue');
-    return `
-      <div class="guide-card">
-        <div class="guide-h"><span class="zh">开始前，请确认签署身份</span><span class="en">Confirm who will sign</span></div>
-        <div class="guide-sub"><span class="zh">薪酬开通需要餐厅 Owner 签署相关文件。</span><span class="en">Activating payroll requires the restaurant owner to sign documents.</span></div>
-        <div class="og-opt ${ownerOpt==='owner'?'on':''}" onclick="setOwnerOpt('owner')"><span class="og-radio"></span><div class="og-t">${bi('我是该餐厅的 Owner 本人，我有权签署文件','I am the restaurant owner and can sign documents')}</div></div>
-        <div class="og-opt ${ownerOpt==='notowner'?'on':''}" onclick="setOwnerOpt('notowner')"><span class="og-radio"></span><div class="og-t">${bi('我不是该餐厅的 Owner 本人，签署文件需给 Owner 发送邮件','I am not the owner — send the signing request to the owner by email')}</div></div>
-        ${em}
-      </div>
-      <div class="guide-foot"><button class="g-btn" onclick="submitOwner()">${btn}</button></div>`;
+    closeIdentity(); st.identity=true; saveInit(); render(); autoAdvance();   // 标记完成并自动进入下一步
   }
 
   /* 第一步：公司初始化设置（公司登录 + 发薪周期） */
