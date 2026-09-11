@@ -54,6 +54,16 @@
   .ts-savebar{display:flex;justify-content:flex-end;margin-top:34px;padding-top:20px;border-top:1px solid #EFF0F3;}
   .ts-save{display:inline-flex;align-items:center;gap:8px;background:#2b4eff;color:#fff;border:none;border-radius:10px;padding:13px 30px;font-size:15px;font-weight:700;cursor:pointer;}
   .ts-save:hover{background:#2140db;}
+  /* 联系专属顾问 弹窗 */
+  .ad-modal{position:relative;width:520px;text-align:center;padding:34px 34px 28px;}
+  .ad-t{font-size:24px;font-weight:800;color:#111;margin-bottom:8px;}
+  .ad-sub{font-size:13.5px;color:#6b7280;line-height:1.6;margin-bottom:22px;}
+  .ad-card{display:flex;align-items:center;gap:16px;border:1px solid #E7E8EC;border-radius:14px;padding:18px 20px;text-align:left;margin-bottom:22px;}
+  .ad-avatar{width:48px;height:48px;border-radius:50%;background:#FBE3C4;color:#C98A3E;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+  .ad-name{font-size:16px;font-weight:700;color:#111;}
+  .ad-email{font-size:14px;color:#6b7280;margin-top:3px;}
+  .ad-confirm{background:var(--brand,#e00051);color:#fff;border:none;border-radius:10px;padding:13px 44px;font-size:15px;font-weight:700;cursor:pointer;}
+  .ad-confirm:hover{background:var(--brand-hover,#b80042);}
   .ts-match{border:1px solid #C7D2FE;background:#F5F7FF;color:#2b4eff;border-radius:8px;padding:6px 13px;font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap;}
   .ts-match:hover{background:#e9eeff;}
 
@@ -116,20 +126,20 @@
   </main>
 </div>
 
-<!-- Add workplace 弹窗 -->
+<!-- 联系专属顾问 弹窗（工作地点由 CSM 维护） -->
 <div class="wk-ov" id="wkOverlay">
-  <div class="wk-modal">
-    <div class="wk-h">
-      <div class="wk-t">Add workplace</div>
-      <button class="wk-x" onclick="closeWk()">✕</button>
+  <div class="wk-modal ad-modal">
+    <button class="wk-x" onclick="closeWk()" style="position:absolute;top:18px;right:20px;">✕</button>
+    <div class="ad-t"><span class="zh">联系您的专属顾问</span><span class="en">Contact Your Dedicated Advisor</span></div>
+    <div class="ad-sub"><span class="zh">工作地点由您的专属顾问（CSM）为您维护。如需新增，请联系 TA。</span><span class="en">Workplaces are maintained by your dedicated advisor (CSM). To add one, please reach out to them.</span></div>
+    <div class="ad-card">
+      <div class="ad-avatar"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="12" cy="8" r="4"/><path d="M4 20a8 8 0 0 1 16 0" stroke-linecap="round"/></svg></div>
+      <div class="ad-info">
+        <div class="ad-name" id="adName">—</div>
+        <div class="ad-email" id="adEmail">—</div>
+      </div>
     </div>
-    <label class="wk-lb">Name <span class="rq">*</span></label>
-    <div class="wk-desc">This is used for internal reference only.</div>
-    <input class="wk-input" id="wkName" placeholder="Workplace name">
-    <label class="wk-lb">Location Mapping <span class="rq">*</span></label>
-    <div class="wk-desc">Match this workplace to a Location in your system. Address and Restaurant ID are filled automatically.</div>
-    <select class="wk-select" id="wkLoc"></select>
-    <button class="wk-save" onclick="saveWk()">Save workplace <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10.5 8 14l8-8"/></svg></button>
+    <button class="ad-confirm" onclick="adConfirm()"><span class="zh">确认</span><span class="en">Confirm</span></button>
   </div>
 </div>
 
@@ -166,22 +176,15 @@
     setTimeout(()=> go(fromInit ? 'chowbus-payroll-overview-init.html' : 'chowbus-payroll-company-setup.html'), 700);
   }
 
+  /* 工作地点由 CSM 维护，客户不可自助新增 → 点击 Add workplace 弹出「联系专属顾问」 */
+  const ADVISOR={ name:'Jessica Wang', email:'jessica.wang@chowbus.com' };
   function openWk(){
-    document.getElementById('wkName').value='';
-    document.getElementById('wkLoc').innerHTML = '<option value="">Select a location</option>' +
-      LOCATIONS.map((l,i)=>'<option value="'+i+'">'+l.loc+' · #'+l.rid+'</option>').join('');
+    document.getElementById('adName').textContent=ADVISOR.name;
+    document.getElementById('adEmail').textContent=ADVISOR.email;
     document.getElementById('wkOverlay').classList.add('open');
   }
   function closeWk(){ document.getElementById('wkOverlay').classList.remove('open'); }
-  function saveWk(){
-    const name=document.getElementById('wkName').value.trim();
-    const li=document.getElementById('wkLoc').value;
-    if(!name){ showToast('Please enter a name'); return; }
-    if(li===''){ showToast('Please select a location'); return; }
-    const L=LOCATIONS[li];
-    WORKPLACES.push({name, rid:L.rid, a1:L.a1, a2:L.a2, city:L.city, state:L.state, zip:L.zip, emps:[]});
-    closeWk(); tsRender();
-  }
+  function adConfirm(){ closeWk(); showToast('已通知您的专属顾问，将尽快为您添加'); }
 
   function showToast(msg){ const t=document.getElementById('toast'); document.getElementById('toastMsg').textContent=msg; t.classList.add('show'); clearTimeout(t._tm); t._tm=setTimeout(()=>t.classList.remove('show'),2200); }
 </script>
