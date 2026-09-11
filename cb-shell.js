@@ -46,7 +46,6 @@
     ['employees','发薪员工管理','Payroll Employees','chowbus-payroll-employees.html','team'],
     ['run','跑薪','Run Payroll','chowbus-payroll-run-payroll.html','run'],
     ['taxes','税务与申报','Taxes &amp; Filings','chowbus-payroll-taxes-filings.html','txn'],
-    ['einmanage','多公司管理','Multi-company','chowbus-payroll-ein-manage.html','ein'],
     ['perm','权限管理','Permissions','chowbus-payroll-permissions.html','shield']
   ];
 

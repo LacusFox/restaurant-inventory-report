@@ -50,6 +50,18 @@
   .guide-foot{display:flex;justify-content:center;margin-top:22px;max-width:760px;}
   .g-btn{border:none;border-radius:10px;padding:12px 40px;font-size:15px;font-weight:700;cursor:pointer;background:var(--brand);color:#fff;transition:.15s;}
   .g-btn:hover{background:var(--brand-hover);}
+  /* 签署身份确认（Owner 门） */
+  .og-opt{display:flex;align-items:flex-start;gap:14px;border:1.5px solid var(--border);border-radius:12px;padding:16px 18px;margin-top:14px;cursor:pointer;transition:.12s;}
+  .og-opt:hover{border-color:#c4c8cf;}
+  .og-opt.on{border-color:var(--brand);background:var(--brand-sub);}
+  .og-radio{width:20px;height:20px;border:2px solid #c4c8cf;border-radius:50%;flex:0 0 auto;margin-top:1px;display:flex;align-items:center;justify-content:center;}
+  .og-opt.on .og-radio{border-color:var(--brand);}
+  .og-opt.on .og-radio::after{content:"";width:10px;height:10px;border-radius:50%;background:var(--brand);}
+  .og-t{font-size:15px;font-weight:600;color:#1a1a1a;line-height:1.5;}
+  .og-email{margin-top:16px;}
+  .og-lb{font-size:13px;font-weight:700;color:var(--tb);margin-bottom:7px;display:block;}
+  .og-inp{width:100%;max-width:420px;height:42px;border:1px solid var(--border);border-radius:9px;padding:0 13px;font-size:14px;color:var(--t1);font-family:inherit;}
+  .og-inp:focus{outline:none;border-color:var(--brand);}
 
   /* ===== 添加员工到 payroll 弹窗（穿梭框，复用自员工管理页） ===== */
   .am-ov{position:fixed;inset:0;background:rgba(17,24,39,.45);display:none;align-items:center;justify-content:center;z-index:1200;}
@@ -216,8 +228,6 @@
         <!-- 演示开关（仅引导态显示） -->
         <div class="demo-bar" id="demoBar">
           <b>演示开关：</b>
-          <label><input type="checkbox" id="d-info" onchange="setStep('info',this.checked)"> 初始化信息</label>
-          <label><input type="checkbox" id="d-workplace" onchange="setStep('workplace',this.checked)"> 工作地点</label>
           <label><input type="checkbox" id="d-company" onchange="setStep('company',this.checked)"> 公司登录</label>
           <label><input type="checkbox" id="d-schedule" onchange="setStep('schedule',this.checked)"> 发薪周期</label>
         </div>
@@ -356,9 +366,7 @@
     company:   {key:'company',   zh:'完成公司登录',   en:'Company onboarding'},
     schedule:  {key:'schedule',  zh:'设置发薪周期',   en:'Set up pay schedule'},
   };
-  function STEPS(){ return initMode==='single'
-    ? [STEP_DEFS.info, STEP_DEFS.company, STEP_DEFS.schedule]
-    : [STEP_DEFS.info, STEP_DEFS.workplace, STEP_DEFS.company, STEP_DEFS.schedule]; }
+  function STEPS(){ return [STEP_DEFS.company, STEP_DEFS.schedule]; }   // 简化为 2 步：完成公司登录、设置发薪周期
   function setInitMode(m){ initMode=m; try{ localStorage.setItem('cbInitMode',m); }catch(e){} render(); if(window.cbRefreshSidebar) window.cbRefreshSidebar(); }   // 切换后即时刷新侧边栏（单店隐藏多公司管理）
   /* 第一步 4 个子步骤状态持久化（跨页面导航保留） */
   function saveInit(){ try{ localStorage.setItem('cbInitState', JSON.stringify({info:st.info,workplace:st.workplace,company:st.company,schedule:st.schedule})); }catch(e){} }
@@ -436,10 +444,8 @@
   function currentStep(){ return STEPS().find(s=>!st[s.key]) || null; }   // 串行：第一个未完成的步骤
   function goCurrent(){
     const c=currentStep(); if(!c) return;
-    if(c.key==='info'){ openInfo(); }                                                    // 1）填写初始化信息
-    else if(c.key==='workplace'){ (window.cbNav||function(u){location.href=u;})('chowbus-payroll-team-setup.html?from=init'); }  // 2）设置工作地点
-    else if(c.key==='company'){ openCompanyOnboard(); }                                  // 3）完成公司登录
-    else if(c.key==='schedule'){ (window.cbNav||function(u){location.href=u;})('chowbus-payroll-pay-schedule.html?from=init'); }  // 4）设置发薪组
+    if(c.key==='company'){ openCompanyOnboard(); }                                        // 1）完成公司登录
+    else if(c.key==='schedule'){ (window.cbNav||function(u){location.href=u;})('chowbus-payroll-pay-schedule.html?from=init'); }  // 2）设置发薪组
   }
   /* 弹窗控制 */
   function openInfo(){ var e=(window.cbGetCompany&&window.cbGetCompany().ein)||''; if(e)document.getElementById('io-ein').value=e; document.getElementById('ioOverlay').classList.add('open'); }
@@ -553,15 +559,48 @@
 
     // 模式切换高亮
     document.querySelectorAll('#modeSeg .ms-opt').forEach(function(b){ b.classList.toggle('on', b.dataset.m===initMode); });
-    // 演示开关与实际步骤状态同步（单店模式隐藏「工作地点」开关）
-    [['d-info','info'],['d-workplace','workplace'],['d-company','company'],['d-schedule','schedule']].forEach(function(p){ var el=document.getElementById(p[0]); if(el){ el.checked=!!st[p[1]]; if(el.parentElement) el.parentElement.style.display=(p[1]==='workplace'&&initMode==='single')?'none':''; } });
-    document.getElementById('demoBar').style.display  = phase==='dash' ? 'none' : '';
+    // 演示开关与实际步骤状态同步
+    [['d-company','company'],['d-schedule','schedule']].forEach(function(p){ var el=document.getElementById(p[0]); if(el) el.checked=!!st[p[1]]; });
+    // 第一步开始前，先确认签署身份（Owner 门）
+    const gate = (phase==='company' && !ownerResolved);
+    document.getElementById('demoBar').style.display  = (phase==='dash'||gate) ? 'none' : '';
     document.getElementById('dashView').style.display = phase==='dash' ? '' : 'none';
     document.getElementById('setupFlowBtn').style.display = phase==='dash' ? '' : 'none';
     const iv=document.getElementById('initView');
     iv.style.display = phase==='dash' ? 'none' : '';
     if(phase==='dash') return;
-    iv.innerHTML = phase==='company' ? renderCompanyStep() : renderEmployeeStep();
+    iv.innerHTML = gate ? renderOwnerGate() : (phase==='company' ? renderCompanyStep() : renderEmployeeStep());
+  }
+
+  /* ===== 开始前：签署身份确认（Owner 门） ===== */
+  let ownerResolved=null, ownerOpt='', ownerEmail='';
+  try{ ownerResolved=localStorage.getItem('cbInitOwner')||null; ownerEmail=localStorage.getItem('cbInitOwnerEmail')||''; }catch(e){}
+  function setOwnerOpt(o){ ownerOpt=o; render(); }
+  function submitOwner(){
+    if(!ownerOpt){ coToast('请先选择一项','Please choose an option'); return; }
+    if(ownerOpt==='notowner'){
+      const em=(document.getElementById('ogEmail')&&document.getElementById('ogEmail').value||'').trim();
+      if(!em){ coToast('请输入 Owner 邮箱','Please enter the owner\'s email'); return; }
+      ownerEmail=em; try{ localStorage.setItem('cbInitOwnerEmail',em); }catch(e){}
+      coToast('已向 Owner 发送签署邮件','Signing email sent to the owner');
+    }
+    ownerResolved=ownerOpt; try{ localStorage.setItem('cbInitOwner',ownerOpt); }catch(e){}
+    render();
+  }
+  function renderOwnerGate(){
+    const em = ownerOpt==='notowner'
+      ? `<div class="og-email"><label class="og-lb"><span class="zh">Owner 邮箱</span><span class="en">Owner's email</span></label><input class="og-inp" id="ogEmail" value="${ownerEmail}" placeholder="owner@example.com"></div>`
+      : '';
+    const btn = ownerOpt==='notowner' ? bi('发送邮件并继续','Send email & continue') : bi('确认并继续','Confirm & continue');
+    return `
+      <div class="guide-card">
+        <div class="guide-h"><span class="zh">开始前，请确认签署身份</span><span class="en">Confirm who will sign</span></div>
+        <div class="guide-sub"><span class="zh">薪酬开通需要餐厅 Owner 签署相关文件。</span><span class="en">Activating payroll requires the restaurant owner to sign documents.</span></div>
+        <div class="og-opt ${ownerOpt==='owner'?'on':''}" onclick="setOwnerOpt('owner')"><span class="og-radio"></span><div class="og-t">${bi('我是该餐厅的 Owner 本人，我有权签署文件','I am the restaurant owner and can sign documents')}</div></div>
+        <div class="og-opt ${ownerOpt==='notowner'?'on':''}" onclick="setOwnerOpt('notowner')"><span class="og-radio"></span><div class="og-t">${bi('我不是该餐厅的 Owner 本人，签署文件需给 Owner 发送邮件','I am not the owner — send the signing request to the owner by email')}</div></div>
+        ${em}
+      </div>
+      <div class="guide-foot"><button class="g-btn" onclick="submitOwner()">${btn}</button></div>`;
   }
 
   /* 第一步：公司初始化设置（公司登录 + 发薪周期） */
