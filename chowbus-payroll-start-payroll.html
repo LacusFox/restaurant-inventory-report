@@ -65,6 +65,7 @@
   .btn-skip{background:#fff;color:#6b7280;border:1px solid var(--border);border-radius:7px;padding:6px 16px;font-size:13px;font-weight:700;cursor:pointer;transition:.15s;}
   .btn-skip:hover{background:#f3f4f6;border-color:#c4c8cf;color:#374151;}
   .skipped-tag{display:inline-flex;align-items:center;gap:5px;font-size:12.5px;font-weight:700;color:#6b7280;background:#f1f2f4;border:1px solid #e2e4e8;border-radius:7px;padding:6px 13px;}
+  .pending-tag{display:inline-flex;align-items:center;gap:5px;font-size:12.5px;font-weight:700;color:#9a6a12;background:#FBF1DC;border:1px solid #F3E1BC;border-radius:7px;padding:6px 13px;}
   /* 忽略发薪 强提示弹窗 */
   .sk-ov{position:fixed;inset:0;background:rgba(17,24,39,.5);display:none;align-items:center;justify-content:center;z-index:1300;}
   .sk-ov.open{display:flex;}
@@ -206,6 +207,7 @@
               <th class="num"><span class="zh">常规工时</span><span class="en">Reg. hrs</span></th>
               <th class="num"><span class="zh">加班</span><span class="en">OT</span></th>
               <th class="num"><span class="zh">小费</span><span class="en">Tips</span></th>
+              <th class="ctr"><span class="zh">审批状态</span><span class="en">Status</span></th>
               <th class="ctr"><span class="zh">操作</span><span class="en">Action</span></th>
             </tr></thead>
             <tbody id="tsBody"></tbody>
@@ -405,15 +407,23 @@
     const approved = isPeriodApproved(selPid) || rows.every(Boolean);
     document.getElementById('approvedBanner').style.display = approved ? '' : 'none';
     document.getElementById('rowTools').style.display = approved ? 'none' : '';
-    document.getElementById('tsBody').innerHTML = ROSTER.map((e,i)=>`<tr>
+    document.getElementById('tsBody').innerHTML = ROSTER.map((e,i)=>{
+      const status = skipped[i] ? 'skipped' : ((rows[i]||approved) ? 'approved' : 'pending');
+      const statusPill = status==='approved'
+        ? `<span class="approved-tag">✓ <span class="zh">已审批</span><span class="en">Approved</span></span>`
+        : status==='skipped'
+          ? `<span class="skipped-tag"><span class="zh">已忽略</span><span class="en">Skipped</span></span>`
+          : `<span class="pending-tag"><span class="zh">未审批</span><span class="en">Pending</span></span>`;
+      const actions = status==='pending'
+        ? `<div class="ts-acts"><button class="btn-approve" onclick="approveRow(${i})"><span class="zh">确认工时</span><span class="en">Confirm</span></button><button class="btn-skip" onclick="askSkip(${i})"><span class="zh">忽略</span><span class="en">Skip</span></button></div>`
+        : `<button class="btn-skip" onclick="cancelRow(${i})"><span class="zh">取消确认</span><span class="en">Undo</span></button>`;
+      return `<tr>
         <td class="nm">${e.name}</td><td><span class="role-pill">${e.role}</span></td>
         <td class="num">${e.reg}</td><td class="num">${e.ot}</td><td class="num">${e.tips}</td>
-        <td class="ctr">${ skipped[i]
-          ? `<span class="skipped-tag"><span class="zh">已忽略</span><span class="en">Skipped</span></span>`
-          : (rows[i]||approved)
-            ? `<span class="approved-tag">✓ <span class="zh">已审批</span><span class="en">Approved</span></span>`
-            : `<div class="ts-acts"><button class="btn-approve" onclick="approveRow(${i})">Approve</button><button class="btn-skip" onclick="askSkip(${i})"><span class="zh">忽略</span><span class="en">Skip</span></button></div>` }</td>
-      </tr>`).join('');
+        <td class="ctr">${statusPill}</td>
+        <td class="ctr">${actions}</td>
+      </tr>`;
+    }).join('');
     const settled = ROSTER.map((_,i)=> (rows[i]||approved||skipped[i]));
     const allSettled = settled.every(Boolean);
     const done = settled.filter(Boolean).length, tot=ROSTER.length;
@@ -421,7 +431,8 @@
     ['apTot','apTotEn'].forEach(id=>document.getElementById(id).textContent=tot);
     document.getElementById('toEditBtn').disabled = !allSettled;
   }
-  function approveRow(i){ rows[i]=true; if(rows.every((v,k)=>v||skipped[k])){ if(rows.every(Boolean))setPeriodApproved(selPid,true); showToast('工时和小费已确认','Confirmed'); } renderConfirm(); }
+  function approveRow(i){ rows[i]=true; skipped[i]=false; if(rows.every((v,k)=>v||skipped[k])){ if(rows.every(Boolean))setPeriodApproved(selPid,true); showToast('工时和小费已确认','Confirmed'); } renderConfirm(); }
+  function cancelRow(i){ rows[i]=false; skipped[i]=false; setPeriodApproved(selPid,false); showToast('已取消确认','Reverted to pending'); renderConfirm(); }   // 取消确认 → 未审批
 
   /* 忽略本次发薪（强提示，不可逆） */
   let skipIdx=null;
