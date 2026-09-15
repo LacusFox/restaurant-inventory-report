@@ -42,6 +42,26 @@
   .oc-ms-opt:hover{background:#f3f5f9;}
   .oc-ms-opt input{width:17px;height:17px;accent-color:#2b4eff;}
   .oc-ms-sub{color:#9aa1ac;font-size:12px;margin-left:auto;}
+  /* 确认工时页 */
+  .ts-banner{border-radius:12px;padding:13px 18px;font-size:13.5px;margin-bottom:14px;line-height:1.6;}
+  .ts-banner.ok{background:#EAF7F0;border:1px solid #CBEBD9;color:#12905a;}
+  .ts-banner.ok .ic{display:inline-flex;width:20px;height:20px;border-radius:50%;background:#22A353;color:#fff;align-items:center;justify-content:center;font-size:12px;font-weight:900;margin-right:8px;vertical-align:middle;}
+  .ts-banner.note{background:#F5F6FF;border:1px solid #E3E6F5;color:#4b5170;}
+  .ts-tbl{width:100%;border-collapse:collapse;}
+  .ts-tbl th{text-align:left;font-size:13px;font-weight:700;color:#6b7280;padding:10px 14px;border-bottom:1px solid #EFF0F3;}
+  .ts-tbl th.n,.ts-tbl td.n{text-align:right;} .ts-tbl th.ctr,.ts-tbl td.ctr{text-align:center;}
+  .ts-tbl td{padding:16px 14px;font-size:14.5px;color:#111;border-bottom:1px solid #F4F5F7;}
+  .ts-tbl td.nm{font-weight:700;}
+  .role-pill{background:#EEF0FF;color:#4a52c0;border-radius:7px;padding:3px 10px;font-size:12.5px;font-weight:700;}
+  .ts-pill{display:inline-flex;align-items:center;gap:5px;border-radius:7px;padding:5px 12px;font-size:12.5px;font-weight:700;}
+  .ts-pill.green{background:#EAF7F0;color:#12905a;} .ts-pill.grey{background:#f1f2f4;color:#6b7280;} .ts-pill.amber{background:#FBF1DC;color:#9a6a12;}
+  .ts-confirm{background:#2b4eff;color:#fff;border:none;border-radius:7px;padding:7px 16px;font-size:13px;font-weight:700;cursor:pointer;margin-right:8px;box-shadow:0 1px 3px rgba(43,78,255,.25);}
+  .ts-confirm:hover{background:#2140db;}
+  .ts-skip{background:none;border:none;color:#9ca3af;font-size:13px;font-weight:600;cursor:pointer;text-decoration:underline;text-underline-offset:2px;}
+  .ts-skip:hover{color:#6b7280;}
+  .ts-undo{background:none;border:none;color:#9ca3af;font-size:13px;font-weight:600;cursor:pointer;text-decoration:underline;text-underline-offset:2px;}
+  .ts-undo:hover{color:#6b7280;}
+  .ts-foot{display:flex;justify-content:space-between;margin-top:26px;padding-top:20px;border-top:1px solid #EFF0F3;}
   .oc-btn{background:var(--ck);color:#fff;border:none;border-radius:10px;padding:14px;font-size:15px;font-weight:700;cursor:pointer;width:100%;}
   .oc-btn:hover{background:var(--ck-hover);}
 
@@ -173,11 +193,25 @@
     '2% Shareholder':['2% Shareholder Benefits','2% Shareholder HSA'],
   };
   function earningOptions(sel){ let h=`<option value="" ${!sel?'selected':''}>Choose an earning type</option>`; for(const g in EARN_GROUPS){ h+=`<optgroup label="${g}">`+EARN_GROUPS[g].map(o=>`<option ${sel===o?'selected':''}>${o}</option>`).join('')+`</optgroup>`; } return h; }
-  /* 供创建页多选员工 */
-  const OC_ROSTER=[{id:'e1',name:'Qiyi Gong',wp:'moli'},{id:'e2',name:'Moli Wang',wp:'moli'},{id:'e3',name:'Chen Li',wp:'Downtown'},{id:'e4',name:'Sarah Park',wp:'Downtown'},{id:'e5',name:'David Kim',wp:'Uptown'}];
+  /* 供创建页多选员工（含确认工时用的角色/工时示例数据） */
+  const OC_ROSTER=[
+    {id:'e1',name:'Qiyi Gong', wp:'moli',     role:'Cook',       reg:'80.0',ot:'4.0',tips:45},
+    {id:'e2',name:'Moli Wang', wp:'moli',     role:'Server',     reg:'72.5',ot:'0.0',tips:180},
+    {id:'e3',name:'Chen Li',   wp:'Downtown', role:'Line Cook',  reg:'80.0',ot:'6.5',tips:30},
+    {id:'e4',name:'Sarah Park',wp:'Downtown', role:'Dishwasher', reg:'64.0',ot:'0.0',tips:0},
+    {id:'e5',name:'David Kim', wp:'Uptown',   role:'Bartender',  reg:'70.0',ot:'2.0',tips:220},
+  ];
   let ocSelEmps=[], ocMsOpen=false;
   function ocToggleMs(){ ocMsOpen=!ocMsOpen; render(); }
   function ocToggleEmp(id){ ocSelEmps.includes(id) ? ocSelEmps=ocSelEmps.filter(x=>x!==id) : ocSelEmps.push(id); render(); }
+  function ocEmpName(){ return ocSelEmps.length ? OC_ROSTER.find(r=>r.id===ocSelEmps[0]).name : 'Qiyi Gong'; }
+
+  /* 确认工时（Fetch hours 时的中间页），复用 run payroll 那一步 */
+  let ocTsStatus={};
+  function ocTsConfirm(id){ ocTsStatus[id]='approved'; render(); }
+  function ocTsSkip(id){ ocTsStatus[id]='skipped'; render(); }
+  function ocTsCancel(id){ ocTsStatus[id]='pending'; render(); }
+  function ocGoEdit(){ ocEmp={name:ocEmpName()}; ocRowOpen=true; ocRow={type:'',desc:'',workplace:'moli',rate:'',hours:oc.fetchHours?'80':'',amount:''}; ocView='run'; render(); }
 
   function fmtMDY(iso){ if(!iso) return ''; const [y,m,d]=iso.split('-'); return `${+m}/${+d}/${y}`; }
   function money(n){ return '$'+(Math.round(n*100)/100).toFixed(2); }
@@ -187,11 +221,16 @@
   function ocSet(k,v){ oc[k]=v; }                          // 无需重渲染（保持焦点）
   function ocCreate(){
     if(!oc.start||!oc.end||!oc.pay){ showToast('Please fill start / end / pay date'); return; }
-    ocView='run'; render();
+    if(oc.fetchHours){                                   // 勾选 Fetch hours → 先进入「确认工时」
+      if(!ocSelEmps.length){ showToast('请先选择员工 / Select employees first'); return; }
+      ocSelEmps.forEach(id=>{ if(!ocTsStatus[id]) ocTsStatus[id]='approved'; });   // 带出的工时默认已审批
+      ocView='confirm'; render(); return;
+    }
+    ocEmp=null; ocView='run'; render();
   }
 
   /* ---- run 视图：员工与收入项 ---- */
-  function ocAddEmp(){ ocEmp={name:'Qiyi Gong'}; ocRowOpen=true; ocRow={type:'',desc:'',workplace:'moli',rate:'',hours:'',amount:''}; render(); }
+  function ocAddEmp(){ ocEmp={name:ocEmpName()}; ocRowOpen=true; ocRow={type:'',desc:'',workplace:'moli',rate:'',hours:'',amount:''}; render(); }
   function ocNewEarning(){ ocRowOpen=true; ocRow={type:'',desc:'',workplace:'moli',rate:'',hours:'',amount:''}; render(); }
   function ocRowSet(k,v){ ocRow[k]=v; }                    // 文本框：不重渲染
   function ocRowType(v){ ocRow.type=v; if(v==='Hourly'&&!ocRow.rate) ocRow.rate='hour'; render(); }
@@ -208,6 +247,7 @@
   function render(){
     const app=document.getElementById('ocApp');
     app.innerHTML = ocView==='create' ? renderCreate()
+      : ocView==='confirm' ? renderConfirmTs()
       : ocView==='run' ? renderRun()
       : ocView==='preview' ? renderPreview()
       : renderDone();
@@ -329,6 +369,44 @@
     </div>`;
   }
 
+  function renderConfirmTs(){
+    const range = `${fmtMDY(oc.start)} - ${fmtMDY(oc.end)}`;
+    const emps = ocSelEmps.map(id=>OC_ROSTER.find(r=>r.id===id));
+    const rows = emps.map(r=>{
+      const s = ocTsStatus[r.id]||'approved';
+      const pill = s==='approved' ? `<span class="ts-pill green">✓ 已审批</span>`
+                 : s==='skipped'  ? `<span class="ts-pill grey">已忽略</span>`
+                                   : `<span class="ts-pill amber">未审批</span>`;
+      const act = s==='pending'
+        ? `<button class="ts-confirm" onclick="ocTsConfirm('${r.id}')">确认工时</button><button class="ts-skip" onclick="ocTsSkip('${r.id}')">忽略</button>`
+        : `<button class="ts-undo" onclick="ocTsCancel('${r.id}')">取消确认</button>`;
+      return `<tr>
+        <td class="nm">${r.name}</td>
+        <td><span class="role-pill">${r.role}</span></td>
+        <td class="n">${r.reg}</td><td class="n">${r.ot}</td><td class="n">${money(r.tips)}</td>
+        <td class="ctr">${pill}</td>
+        <td class="ctr">${act}</td>
+      </tr>`;
+    }).join('');
+    const allApproved = emps.every(r=>(ocTsStatus[r.id]||'approved')==='approved');
+    return `<div class="oc-run-head">
+        <span class="oc-back" onclick="ocView='create';render()">‹</span>
+        <span class="oc-badge">Unsaved</span>
+        <span class="oc-range">${range} (Off-cycle)</span>
+      </div>
+      <div class="oc-sec-title">② 确认工时</div>
+      ${allApproved? `<div class="ts-banner ok"><span class="ic">✓</span>该周期工时已在「审批工时」中<b>全部审批</b>，可直接进入下一步。</div>`:''}
+      <div class="ts-banner note">数据只读。如需修改工时或小费，请前往<b>员工考勤表</b>进行修改。</div>
+      <table class="ts-tbl">
+        <thead><tr><th>员工</th><th>角色</th><th class="n">常规工时</th><th class="n">加班</th><th class="n">小费</th><th class="ctr">审批状态</th><th class="ctr">操作</th></tr></thead>
+        <tbody>${rows}</tbody>
+      </table>
+      <div class="ts-foot">
+        <button class="oc-ghost" onclick="ocView='create';render()">← 上一步</button>
+        <button class="oc-primary" onclick="ocGoEdit()">下一步：编辑薪资 →</button>
+      </div>`;
+  }
+
   function renderRun(){
     const range = `${fmtMDY(oc.start)} - ${fmtMDY(oc.end)}`;
     let emp;
@@ -360,7 +438,7 @@
         </div>` : '';
       const newBtn = (!ocRowOpen && ocEarnings.length) ? `<div class="oc-newearn"><span class="oc-link" onclick="ocNewEarning()">＋ New earning</span></div>` : '';
       emp = `<div class="oc-emp-card">
-        <div class="oc-emp-head"><span class="oc-emp-name">Qiyi Gong</span><span class="oc-total">Total: ${money(ocTotal())}</span></div>
+        <div class="oc-emp-head"><span class="oc-emp-name">${ocEmp.name||ocEmpName()}</span><span class="oc-total">Total: ${money(ocTotal())}</span></div>
         <div class="oc-emp-meta">
           <label>Payment Method: <select class="oc-mini"><option>Direct Deposit</option><option>Manual Check</option></select></label>
         </div>
