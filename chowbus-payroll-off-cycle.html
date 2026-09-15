@@ -319,7 +319,10 @@
       <label class="oc-check"><input type="checkbox" ${oc.supp?'checked':''} onchange="ocSet('supp',this.checked)"> Tax all earnings as supplemental earnings</label>
       <label class="oc-check"><input type="checkbox" ${oc.benefits?'checked':''} onchange="ocSet('benefits',this.checked)"> Apply benefits</label>
       <label class="oc-check"><input type="checkbox" ${oc.posttax?'checked':''} onchange="ocSet('posttax',this.checked)"> Apply post-tax deductions</label>
-      <div class="oc-field" style="margin-top:18px;"><label class="oc-label">Bank account</label>
+      <div class="oc-field" style="margin-top:18px;"><label class="oc-label">Funding payment method</label>
+        <select class="oc-select"><option value="ach" selected>ACH</option><option value="wire">Wire</option></select>
+        <div class="oc-help">ACH（默认）到账较慢、成本更低；Wire 当日到账、成本更高。</div></div>
+      <div class="oc-field"><label class="oc-label">Bank account</label>
         <select class="oc-select"><option>Tartan Bank checking ••0000</option></select></div>
       <div class="oc-hr"></div>
       <button class="oc-btn" onclick="ocCreate()">Create payroll</button>
