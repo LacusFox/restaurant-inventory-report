@@ -27,6 +27,21 @@
   .oc-check{display:flex;align-items:center;gap:11px;font-size:15px;color:#111;margin:13px 0;cursor:pointer;}
   .oc-check input{width:18px;height:18px;accent-color:var(--ck);}
   .oc-hr{height:1px;background:#EFF0F3;margin:20px 0;}
+  /* 员工多选 */
+  .oc-ms{position:relative;}
+  .oc-ms-box{width:100%;min-height:48px;padding:9px 14px;border:1px solid #DADCE0;border-radius:10px;background:#fff;cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:10px;}
+  .oc-ms-box:hover{border-color:#c4c8cf;}
+  .oc-ms-arrow{color:#8a929e;flex-shrink:0;}
+  .oc-ms-ph{color:#8a929e;}
+  .oc-ms-tags{display:flex;flex-wrap:wrap;gap:6px;}
+  .oc-tag{background:#eef1f6;border-radius:7px;padding:3px 9px;font-size:13px;font-weight:600;display:flex;align-items:center;gap:6px;}
+  .oc-tag b{cursor:pointer;color:#8a929e;font-weight:700;}
+  .oc-ms-pop{position:absolute;top:calc(100% + 6px);left:0;right:0;background:#fff;border:1px solid #DADCE0;border-radius:12px;box-shadow:0 12px 30px rgba(20,25,40,.14);z-index:30;padding:6px;display:none;max-height:280px;overflow:auto;}
+  .oc-ms-pop.on{display:block;}
+  .oc-ms-opt{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:8px;cursor:pointer;font-size:14px;color:#111;}
+  .oc-ms-opt:hover{background:#f3f5f9;}
+  .oc-ms-opt input{width:17px;height:17px;accent-color:#2b4eff;}
+  .oc-ms-sub{color:#9aa1ac;font-size:12px;margin-left:auto;}
   .oc-btn{background:var(--ck);color:#fff;border:none;border-radius:10px;padding:14px;font-size:15px;font-weight:700;cursor:pointer;width:100%;}
   .oc-btn:hover{background:var(--ck-hover);}
 
@@ -144,12 +159,25 @@
   renderShell('run');
 
   let ocView='create';
-  const oc={start:'',end:'',pay:'',freq:'',supp:false,benefits:false,posttax:false};
+  const oc={start:'',end:'',pay:'',freq:'',fetchHours:false,supp:false,benefits:false,posttax:false};
   let ocEmp=null;                 // 员工是否已加入
   let ocEarnings=[];              // 已添加的收入项
   let ocRowOpen=false;            // 是否显示可编辑的收入行
   let ocRow={type:'',desc:'',workplace:'moli',rate:'',hours:'',amount:''};
-  const EARN_TYPES=['Hourly','Salary','Bonus','Commission','Overtime','Reimbursement','Tips'];
+  const EARN_GROUPS={
+    'Hourly':['Hourly','Salaried','Overtime','Double overtime','Rest and recovery','Non productive','Piece'],
+    'Hourly Time Off':['PTO','Sick','Paid holiday'],
+    'Non-hourly':['Bonus','Commission','Cash tips','Paycheck tips','Group term life','Severance','Non hourly regular','Other imputed','NQDC Distribution','Tip credit adjustment to minimum wage'],
+    'Reimbursement':['Reimbursement'],
+    'Memo Hourly':['Piece adjustment to minimum wage','Weighted overtime','Weighted double overtime'],
+    '2% Shareholder':['2% Shareholder Benefits','2% Shareholder HSA'],
+  };
+  function earningOptions(sel){ let h=`<option value="" ${!sel?'selected':''}>Choose an earning type</option>`; for(const g in EARN_GROUPS){ h+=`<optgroup label="${g}">`+EARN_GROUPS[g].map(o=>`<option ${sel===o?'selected':''}>${o}</option>`).join('')+`</optgroup>`; } return h; }
+  /* 供创建页多选员工 */
+  const OC_ROSTER=[{id:'e1',name:'Qiyi Gong',wp:'moli'},{id:'e2',name:'Moli Wang',wp:'moli'},{id:'e3',name:'Chen Li',wp:'Downtown'},{id:'e4',name:'Sarah Park',wp:'Downtown'},{id:'e5',name:'David Kim',wp:'Uptown'}];
+  let ocSelEmps=[], ocMsOpen=false;
+  function ocToggleMs(){ ocMsOpen=!ocMsOpen; render(); }
+  function ocToggleEmp(id){ ocSelEmps.includes(id) ? ocSelEmps=ocSelEmps.filter(x=>x!==id) : ocSelEmps.push(id); render(); }
 
   function fmtMDY(iso){ if(!iso) return ''; const [y,m,d]=iso.split('-'); return `${+m}/${+d}/${y}`; }
   function money(n){ return '$'+(Math.round(n*100)/100).toFixed(2); }
@@ -264,6 +292,30 @@
           ${['Weekly','Biweekly','Semi-monthly','Monthly'].map(f=>`<option ${oc.freq===f?'selected':''}>${f}</option>`).join('')}
         </select>
         <div class="oc-help">Impacts tax calculation. Defaults to the company's pay frequency if left blank.</div></div>
+
+      <div class="oc-hr"></div>
+
+      <div class="oc-field">
+        <label class="oc-check" style="font-weight:700"><input type="checkbox" ${oc.fetchHours?'checked':''} onchange="ocSet('fetchHours',this.checked)"> Fetch hours for this pay period</label>
+        <div class="oc-help" style="margin-left:28px">Pull each selected employee's worked hours for the selected period from the timesheet, and prefill Hours / units.</div>
+      </div>
+
+      <div class="oc-field">
+        <label class="oc-label">Select employees</label>
+        <div class="oc-ms">
+          <div class="oc-ms-box" onclick="ocToggleMs()">
+            <div class="oc-ms-tags">${ocSelEmps.length? ocSelEmps.map(id=>{const r=OC_ROSTER.find(x=>x.id===id);return `<span class="oc-tag">${r.name}<b onclick="event.stopPropagation();ocToggleEmp('${id}')">×</b></span>`;}).join('') : '<span class="oc-ms-ph">Choose one or more employees…</span>'}</div>
+            <span class="oc-ms-arrow">▾</span>
+          </div>
+          <div class="oc-ms-pop ${ocMsOpen?'on':''}">
+            ${OC_ROSTER.map(r=>`<label class="oc-ms-opt" onclick="event.stopPropagation()"><input type="checkbox" ${ocSelEmps.includes(r.id)?'checked':''} onchange="ocToggleEmp('${r.id}')"> ${r.name}<span class="oc-ms-sub">${r.wp}</span></label>`).join('')}
+          </div>
+        </div>
+        <div class="oc-help">Only these employees will appear in the payroll editor.</div>
+      </div>
+
+      <div class="oc-hr"></div>
+
       <label class="oc-check"><input type="checkbox" ${oc.supp?'checked':''} onchange="ocSet('supp',this.checked)"> Tax all earnings as supplemental earnings</label>
       <label class="oc-check"><input type="checkbox" ${oc.benefits?'checked':''} onchange="ocSet('benefits',this.checked)"> Apply benefits</label>
       <label class="oc-check"><input type="checkbox" ${oc.posttax?'checked':''} onchange="ocSet('posttax',this.checked)"> Apply post-tax deductions</label>
@@ -292,10 +344,7 @@
         </div>`).join('');
       const editable = ocRowOpen ? `
         <div class="oc-grid oc-erow">
-          <div><select class="oc-cell-sel" onchange="ocRowType(this.value)">
-            <option value="" ${!ocRow.type?'selected':''}>Choose an earning type</option>
-            ${EARN_TYPES.map(t=>`<option ${ocRow.type===t?'selected':''}>${t}</option>`).join('')}
-          </select></div>
+          <div><select class="oc-cell-sel" onchange="ocRowType(this.value)">${earningOptions(ocRow.type)}</select></div>
           <div><input class="oc-cell-in" placeholder="e.g. Description..." value="${ocRow.desc.replace(/"/g,'&quot;')}" oninput="ocRowSet('desc',this.value)"></div>
           <div><select class="oc-cell-sel" onchange="ocRowSet('workplace',this.value)"><option ${ocRow.workplace==='moli'?'selected':''}>moli</option></select></div>
           <div><select class="oc-cell-sel" onchange="ocRowSet('rate',this.value)">
@@ -311,7 +360,6 @@
         <div class="oc-emp-head"><span class="oc-emp-name">Qiyi Gong</span><span class="oc-total">Total: ${money(ocTotal())}</span></div>
         <div class="oc-emp-meta">
           <label>Payment Method: <select class="oc-mini"><option>Direct Deposit</option><option>Manual Check</option></select></label>
-          <label>Supplemental tax: <select class="oc-mini"><option>Aggregate</option><option>Flat</option></select></label>
         </div>
         <div class="oc-earn">
           <div class="oc-grid">
