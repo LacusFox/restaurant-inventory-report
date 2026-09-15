@@ -356,7 +356,8 @@
   let step = 1;
   let sched = 'biweekly';
   let selPid = PERIODS_BW[1].id;   // 默认 7/15–7/28（已审批）
-  let rows = ROSTER.map(()=>false);
+  function defaultRows(){ return ROSTER.map((_,i)=> i!==ROSTER.length-1); }   // 演示默认：最后一名未审批，呈现「工时未审批完」
+  let rows = defaultRows();
   let skipped = ROSTER.map(()=>false);   // 忽略本次发薪的员工
 
   const SCHED_EN = {weekly:'Weekly',biweekly:'Bi-weekly'};
@@ -369,7 +370,7 @@
     sched=v;
     document.querySelectorAll('.sched').forEach(el=>el.classList.toggle('active', el.dataset.v===v));
     const list=periods(); selPid=list[list.length-1].id;   // 切换方案后重置为该方案下的默认周期
-    rows=ROSTER.map(()=>isPeriodApproved(selPid));
+    rows = isPeriodApproved(selPid) ? ROSTER.map(()=>true) : defaultRows();
     fillPeriodSelect();
   }
 
@@ -378,7 +379,7 @@
     sel.innerHTML = periods().map(p=>`<option value="${p.id}" ${p.id===selPid?'selected':''}>${periodLabel(p)}${isPeriodApproved(p.id)?(isZh()?'（工时已审批）':' (approved)'):''}</option>`).join('');
     updatePayDay();
   }
-  function onPeriodChange(){ selPid = document.getElementById('periodSel').value; rows = ROSTER.map(()=>isPeriodApproved(selPid)); updatePayDay(); }
+  function onPeriodChange(){ selPid = document.getElementById('periodSel').value; rows = isPeriodApproved(selPid) ? ROSTER.map(()=>true) : defaultRows(); skipped=ROSTER.map(()=>false); updatePayDay(); }
   function updatePayDay(){ document.getElementById('payDay').textContent = period().pay; }
 
   function renderStepper(){
