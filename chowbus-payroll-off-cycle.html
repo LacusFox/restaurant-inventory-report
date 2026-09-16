@@ -180,10 +180,10 @@
 
   let ocView='create';
   const oc={start:'',end:'',pay:'',freq:'',fetchHours:false,supp:false,benefits:false,posttax:false};
-  let ocEmp=null;                 // 员工是否已加入
-  let ocEarnings=[];              // 已添加的收入项
-  let ocRowOpen=false;            // 是否显示可编辑的收入行
-  let ocRow={type:'',desc:'',workplace:'moli',rate:'',hours:'',amount:''};
+  const OC_WP=['moli','Downtown','Uptown'];
+  let ocES={};   // 每位所选员工的收入项状态： id -> {earnings:[], rowOpen, row:{...}}
+  function ocFreshRow(id){ const r=OC_ROSTER.find(x=>x.id===id); return {type:'',desc:'',workplace:(r&&r.wp)||'moli',rate:'',hours:oc.fetchHours?'80':'',amount:''}; }
+  function ocEnterEditor(){ ocES={}; ocSelEmps.forEach(id=>{ ocES[id]={earnings:[], rowOpen:true, row:ocFreshRow(id)}; }); ocView='run'; render(); }
   const EARN_GROUPS={
     'Hourly':['Hourly','Salaried','Overtime','Double overtime','Rest and recovery','Non productive','Piece'],
     'Hourly Time Off':['PTO','Sick','Paid holiday'],
@@ -211,38 +211,39 @@
   function ocTsConfirm(id){ ocTsStatus[id]='approved'; render(); }
   function ocTsSkip(id){ ocTsStatus[id]='skipped'; render(); }
   function ocTsCancel(id){ ocTsStatus[id]='pending'; render(); }
-  function ocGoEdit(){ ocEmp={name:ocEmpName()}; ocRowOpen=true; ocRow={type:'',desc:'',workplace:'moli',rate:'',hours:oc.fetchHours?'80':'',amount:''}; ocView='run'; render(); }
+  function ocGoEdit(){ ocEnterEditor(); }
 
   function fmtMDY(iso){ if(!iso) return ''; const [y,m,d]=iso.split('-'); return `${+m}/${+d}/${y}`; }
   function money(n){ return '$'+(Math.round(n*100)/100).toFixed(2); }
-  function ocTotal(){ return ocEarnings.reduce((s,e)=>s+(parseFloat(e.amount)||0),0); }
+  function ocEmpTotal(id){ return (ocES[id]?ocES[id].earnings:[]).reduce((s,e)=>s+(parseFloat(e.amount)||0),0); }
+  function ocTotal(){ return ocSelEmps.reduce((s,id)=>s+ocEmpTotal(id),0); }
 
   /* ---- create 视图字段 ---- */
   function ocSet(k,v){ oc[k]=v; }                          // 无需重渲染（保持焦点）
   function ocCreate(){
     if(!oc.start||!oc.end||!oc.pay){ showToast('Please fill start / end / pay date'); return; }
+    if(!ocSelEmps.length){ showToast('请先选择员工 / Select employees first'); return; }   // 没选员工不让下一步
     if(oc.fetchHours){                                   // 勾选 Fetch hours → 先进入「确认工时」
-      if(!ocSelEmps.length){ showToast('请先选择员工 / Select employees first'); return; }
       ocSelEmps.forEach(id=>{ if(!ocTsStatus[id]) ocTsStatus[id]='approved'; });   // 带出的工时默认已审批
       ocView='confirm'; render(); return;
     }
-    ocEmp=null; ocView='run'; render();
+    ocEnterEditor();
   }
 
-  /* ---- run 视图：员工与收入项 ---- */
-  function ocAddEmp(){ ocEmp={name:ocEmpName()}; ocRowOpen=true; ocRow={type:'',desc:'',workplace:'moli',rate:'',hours:'',amount:''}; render(); }
-  function ocNewEarning(){ ocRowOpen=true; ocRow={type:'',desc:'',workplace:'moli',rate:'',hours:'',amount:''}; render(); }
-  function ocRowSet(k,v){ ocRow[k]=v; }                    // 文本框：不重渲染
-  function ocRowType(v){ ocRow.type=v; if(v==='Hourly'&&!ocRow.rate) ocRow.rate='hour'; render(); }
-  function ocCancelRow(){ ocRowOpen=false; render(); }
-  function ocAddEarning(){
-    if(!ocRow.type){ showToast('Choose an earning type'); return; }
-    let amt=parseFloat(ocRow.amount);
-    if(!amt && ocRow.hours) amt=parseFloat(ocRow.hours)*10;   // 时薪示例：$10/hr
-    ocEarnings.push({type:ocRow.type, desc:ocRow.desc||'—', workplace:ocRow.workplace||'moli', rate:ocRow.rate||'', hours:ocRow.hours||'0', amount:(amt||0).toFixed(2)});
-    ocRowOpen=false; render();
+  /* ---- run 视图：按员工逐卡管理收入项 ---- */
+  function ocNewEarning(id){ ocES[id].rowOpen=true; ocES[id].row=ocFreshRow(id); render(); }
+  function ocRowSet(id,k,v){ ocES[id].row[k]=v; }          // 文本框：不重渲染
+  function ocRowType(id,v){ const row=ocES[id].row; row.type=v; if(v==='Hourly'&&!row.rate) row.rate='hour'; render(); }
+  function ocCancelRow(id){ ocES[id].rowOpen=false; render(); }
+  function ocAddEarning(id){
+    const s=ocES[id];
+    if(!s.row.type){ showToast('Choose an earning type'); return; }
+    let amt=parseFloat(s.row.amount);
+    if(!amt && s.row.hours) amt=parseFloat(s.row.hours)*10;   // 时薪示例：$10/hr
+    s.earnings.push({type:s.row.type, desc:s.row.desc||'—', workplace:s.row.workplace||'moli', rate:s.row.rate||'', hours:s.row.hours||'0', amount:(amt||0).toFixed(2)});
+    s.rowOpen=false; render();
   }
-  function ocDelEarning(i){ ocEarnings.splice(i,1); render(); }
+  function ocDelEarning(id,i){ ocES[id].earnings.splice(i,1); render(); }
 
   function render(){
     const app=document.getElementById('ocApp');
@@ -257,7 +258,7 @@
   let prTab='pay';
   function parseISO(s){const [y,m,d]=s.split('-').map(Number);return new Date(y,m-1,d);}
   function subBiz(d,n){let x=new Date(d),c=0;while(c<n){x.setDate(x.getDate()-1);const w=x.getDay();if(w!==0&&w!==6)c++;}return x;}
-  function ocPreview(){ if(!ocEarnings.length){ showToast('Add at least one earning first'); return; } prTab='pay'; ocView='preview'; render(); }
+  function ocPreview(){ if(!ocSelEmps.some(id=>ocES[id]&&ocES[id].earnings.length)){ showToast('Add at least one earning first'); return; } prTab='pay'; ocView='preview'; render(); }
   function setPrTab(t){ prTab=t; render(); }
   function ocSubmitClick(){ document.getElementById('ocPayDay').textContent=fmtMDY(oc.pay); document.getElementById('ocConfirm').classList.add('open'); }
   function ocCloseConfirm(){ document.getElementById('ocConfirm').classList.remove('open'); }
@@ -266,7 +267,7 @@
   function prContent(gross, net){
     if(prTab==='pay') return `<table class="oc-pt">
       <thead><tr><th>Employee</th><th>Payment Method</th><th class="n">Earnings</th><th class="n">Add'l earnings</th><th class="n">Total reimb.</th><th class="n">PTO/Sick leave</th><th class="n">Gross pay</th><th class="n">Net pay</th></tr></thead>
-      <tbody><tr><td>Qiyi Gong</td><td>Direct Deposit</td><td class="n">${money(gross)}</td><td class="n">$0.00</td><td class="n">$0.00</td><td class="n">$0.00</td><td class="n">${money(gross)}</td><td class="n">${money(net)}</td></tr></tbody></table>`;
+      <tbody>${ocSelEmps.map(id=>{const g=ocEmpTotal(id);return `<tr><td>${OC_ROSTER.find(r=>r.id===id).name}</td><td>Direct Deposit</td><td class="n">${money(g)}</td><td class="n">$0.00</td><td class="n">$0.00</td><td class="n">$0.00</td><td class="n">${money(g)}</td><td class="n">${money(g*0.98547)}</td></tr>`;}).join('')}</tbody></table>`;
     if(prTab==='taxes'){ const med=gross*0.0145, futa=gross*0.006, suta=gross*0.02; return `<table class="oc-pt">
       <thead><tr><th>Tax Description</th><th class="n">by Employees</th><th class="n">by Company</th></tr></thead>
       <tbody>
@@ -274,9 +275,9 @@
         <tr><td>Federal Unemployment Tax</td><td class="n">—</td><td class="n">${money(futa)}</td></tr>
         <tr><td>State Unemployment Tax</td><td class="n">—</td><td class="n">${money(suta)}</td></tr>
       </tbody></table>`; }
-    if(prTab==='hourly'){ const hrs=ocEarnings.filter(e=>e.type==='Hourly').reduce((s,e)=>s+(parseFloat(e.hours)||0),0); return `<table class="oc-pt">
+    if(prTab==='hourly'){ return `<table class="oc-pt">
       <thead><tr><th>Employee</th><th class="n">Regular</th><th class="n">OT</th><th class="n">Double OT</th><th class="n">PTO</th><th class="n">Sick</th></tr></thead>
-      <tbody><tr><td>Qiyi Gong</td><td class="n">${hrs.toFixed(2)}</td><td class="n">0.00</td><td class="n">0.00</td><td class="n">0.00</td><td class="n">0.00</td></tr></tbody></table>`; }
+      <tbody>${ocSelEmps.map(id=>{const hrs=ocES[id].earnings.filter(e=>e.type==='Hourly').reduce((s,e)=>s+(parseFloat(e.hours)||0),0);const ot=ocES[id].earnings.filter(e=>e.type==='Overtime').reduce((s,e)=>s+(parseFloat(e.hours)||0),0);return `<tr><td>${OC_ROSTER.find(r=>r.id===id).name}</td><td class="n">${hrs.toFixed(2)}</td><td class="n">${ot.toFixed(2)}</td><td class="n">0.00</td><td class="n">0.00</td><td class="n">0.00</td></tr>`;}).join('')}</tbody></table>`; }
     if(prTab==='posttax') return `<div class="oc-empty"><div class="t">No post-tax deductions</div><div class="d">This payroll has no post-tax deductions to show.</div></div>`;
     return `<div class="oc-empty"><div class="t">No benefits</div><div class="d">This payroll has no benefits to show.</div></div>`;
   }
@@ -407,13 +408,10 @@
       </div>`;
   }
 
-  function renderRun(){
-    const range = `${fmtMDY(oc.start)} - ${fmtMDY(oc.end)}`;
-    let emp;
-    if(!ocEmp){
-      emp = `<span class="oc-link" onclick="ocAddEmp()">＋ Add employee</span>`;
-    } else {
-      const rows = ocEarnings.map((e,i)=>`
+  function ocEmpCard(id){
+    const r=OC_ROSTER.find(x=>x.id===id); const s=ocES[id]; const row=s.row;
+    const wpOpts=OC_WP.map(w=>`<option ${row.workplace===w?'selected':''}>${w}</option>`).join('');
+    const rows = s.earnings.map((e,i)=>`
         <div class="oc-grid oc-erow">
           <div>${e.type}</div>
           <div class="${e.desc==='—'?'muted':''}">${e.desc}</div>
@@ -421,30 +419,30 @@
           <div class="muted">${e.rate||'—'}</div>
           <div class="right">${e.hours}</div>
           <div class="right">${money(parseFloat(e.amount))}</div>
-          <div class="right"><span class="oc-x" onclick="ocDelEarning(${i})">✕</span></div>
+          <div class="right"><span class="oc-x" onclick="ocDelEarning('${id}',${i})">✕</span></div>
         </div>`).join('');
-      const editable = ocRowOpen ? `
+    const editable = s.rowOpen ? `
         <div class="oc-grid oc-erow">
-          <div><select class="oc-cell-sel" onchange="ocRowType(this.value)">${earningOptions(ocRow.type)}</select></div>
-          <div><input class="oc-cell-in" placeholder="e.g. Description..." value="${ocRow.desc.replace(/"/g,'&quot;')}" oninput="ocRowSet('desc',this.value)"></div>
-          <div><select class="oc-cell-sel" onchange="ocRowSet('workplace',this.value)"><option ${ocRow.workplace==='moli'?'selected':''}>moli</option></select></div>
-          <div><select class="oc-cell-sel" onchange="ocRowSet('rate',this.value)">
-              <option value="" ${!ocRow.rate?'selected':''}>Select earning rate (optional)</option>
-              <option ${ocRow.rate==='hour'?'selected':''}>hour</option>
+          <div><select class="oc-cell-sel" onchange="ocRowType('${id}',this.value)">${earningOptions(row.type)}</select></div>
+          <div><input class="oc-cell-in" placeholder="e.g. Description..." value="${row.desc.replace(/"/g,'&quot;')}" oninput="ocRowSet('${id}','desc',this.value)"></div>
+          <div><select class="oc-cell-sel" onchange="ocRowSet('${id}','workplace',this.value)">${wpOpts}</select></div>
+          <div><select class="oc-cell-sel" onchange="ocRowSet('${id}','rate',this.value)">
+              <option value="" ${!row.rate?'selected':''}>Select earning rate (optional)</option>
+              <option ${row.rate==='hour'?'selected':''}>hour</option>
             </select><span class="oc-newrate" onclick="showToast('New earning rate (demo)')">+ New earning rate</span></div>
-          <div><input class="oc-cell-in" placeholder="0 hrs" value="${ocRow.hours}" oninput="ocRowSet('hours',this.value)"></div>
-          <div><input class="oc-cell-in" placeholder="$ 0" value="${ocRow.amount}" oninput="ocRowSet('amount',this.value)"></div>
-          <div class="right"><button class="oc-add" onclick="ocAddEarning()">Add</button><span class="oc-x" onclick="ocCancelRow()">✕</span></div>
+          <div><input class="oc-cell-in" placeholder="0 hrs" value="${row.hours}" oninput="ocRowSet('${id}','hours',this.value)"></div>
+          <div><input class="oc-cell-in" placeholder="$ 0" value="${row.amount}" oninput="ocRowSet('${id}','amount',this.value)"></div>
+          <div class="right"><button class="oc-add" onclick="ocAddEarning('${id}')">Add</button>${s.earnings.length?`<span class="oc-x" onclick="ocCancelRow('${id}')">✕</span>`:''}</div>
         </div>` : '';
-      const newBtn = (!ocRowOpen && ocEarnings.length) ? `<div class="oc-newearn"><span class="oc-link" onclick="ocNewEarning()">＋ New earning</span></div>` : '';
-      emp = `<div class="oc-emp-card">
-        <div class="oc-emp-head"><span class="oc-emp-name">${ocEmp.name||ocEmpName()}</span><span class="oc-total">Total: ${money(ocTotal())}</span></div>
+    const newBtn = (!s.rowOpen) ? `<div class="oc-newearn"><span class="oc-link" onclick="ocNewEarning('${id}')">＋ New earning</span></div>` : '';
+    return `<div class="oc-emp-card">
+        <div class="oc-emp-head"><span class="oc-emp-name">${r.name}</span><span class="oc-total">Total: ${money(ocEmpTotal(id))}</span></div>
         <div class="oc-emp-meta">
           <label>Payment Method: <select class="oc-mini"><option>Direct Deposit</option><option>Manual Check</option></select></label>
         </div>
         <div class="oc-earn">
           <div class="oc-grid">
-            <div class="oc-eh">Earning items (${ocEarnings.length})</div>
+            <div class="oc-eh">Earning items (${s.earnings.length})</div>
             <div class="oc-eh">Description</div>
             <div class="oc-eh">Workplace</div>
             <div class="oc-eh">Earning rate</div>
@@ -455,7 +453,11 @@
           ${rows}${editable}${newBtn}
         </div>
       </div>`;
-    }
+  }
+  function renderRun(){
+    const range = `${fmtMDY(oc.start)} - ${fmtMDY(oc.end)}`;
+    const cards = ocSelEmps.length ? ocSelEmps.map(id=>ocEmpCard(id)).join('')
+      : `<div class="oc-empty"><div class="t">未选择员工</div><div class="d">请返回上一步选择员工。</div></div>`;
     return `<div class="oc-run-head">
         <span class="oc-back" onclick="ocView='create';render()">‹</span>
         <span class="oc-badge">Unsaved</span>
@@ -467,7 +469,7 @@
         </div>
       </div>
       <div class="oc-sec-title">Employees</div>
-      ${emp}`;
+      ${cards}`;
   }
 
   function showToast(t){ const el=document.getElementById('toast'); document.getElementById('toastMsg').textContent=t; el.classList.add('show'); clearTimeout(el._tm); el._tm=setTimeout(()=>el.classList.remove('show'),2400); }
